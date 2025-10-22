@@ -1,0 +1,42 @@
+:root:root {
+  --mainfont:
+    'HarmonyOS Sans SC', MiSans, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC',
+    'WenQuanYi Micro Hei', sans-serif;
+  --monospacefont:
+    'JetBrains Mono', 'Sarasa Term SC', 'Iosevka', 'Fira Code', 'Source Code Pro', monospace;
+  --p-border-radius-md: 5px;
+  --p-border-radius-lg: 6px;
+  --p-border-radius-xl: 6px;
+  user-select: none;
+}
+
+.p-button-icon {
+  margin-bottom: -0.1em;
+}
+
+::selection {
+  background-color: color-mix(in srgb, var(--p-primary-400), transparent 55%);
+}
+
+.monospace {
+  font-family: var(--monospacefont);
+}
+.timeinput.timeinput,
+.durationinput input {
+  font-family: var(--monospacefont);
+  width: 9ch;
+  box-sizing: content-box;
+}
+
+.durationinput input {
+  text-align: right;
+}
+
+.hflex {
+  display: flex;
+  flex-direction: row;
+}
+.vflex {
+  display: flex;
+  flex-direction: column;
+}

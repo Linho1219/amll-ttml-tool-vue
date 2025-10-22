@@ -1,0 +1,8 @@
+.kvgrid {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-items: stretch;
+  row-gap: 0.3rem;
+  column-gap: 0.5rem;
+}

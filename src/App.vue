@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css'
+import '@/styles/common.scss'
+import '@/styles/ribbon.scss'
 import Titlebar from './components/Titlebar.vue'
-import Ribbon from './components/Ribbon.vue'
-import RibbonGroup from './components/RibbonGroup.vue'
+import Ribbon from './components/ribbon/Ribbon.vue'
 </script>
 
 <template>
   <Titlebar />
-  <Ribbon>
-    <RibbonGroup label="分词"> </RibbonGroup>
-    <RibbonGroup label="行属性"> </RibbonGroup>
-    <RibbonGroup label="词属性"> </RibbonGroup>
-  </Ribbon>
-  <div class="content"></div>
+  <Ribbon />
   <div class="player"></div>
 </template>
 

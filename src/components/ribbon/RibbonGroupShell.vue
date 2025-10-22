@@ -1,17 +1,21 @@
 <template>
   <div class="ribbon-group">
-    <div class="ribbon-group-content"><slot></slot></div>
+    <div class="ribbon-group-content">
+      <slot></slot>
+    </div>
     <div class="ribbon-group-label">
       <div></div>
       <span class="ribbon-group-label-text">{{ props.label }}</span>
-      <Button
-        v-if="props.more"
-        class="ribbon-group-label-button"
-        icon="pi pi-arrow-down-right"
-        size="small"
-        variant="text"
-        severity="secondary"
-      />
+      <div class="hflex" style="justify-content: end">
+        <Button
+          v-if="props.more"
+          class="ribbon-group-label-button"
+          icon="pi pi-arrow-down-right"
+          size="small"
+          variant="text"
+          severity="secondary"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -22,6 +26,7 @@ import { Button } from 'primevue'
 const props = defineProps<{
   label: string
   more?: boolean // to do
+  direction?: 'row' | 'column'
 }>()
 </script>
 
@@ -45,7 +50,18 @@ const props = defineProps<{
 }
 .ribbon-group-content {
   flex: 1;
-  padding: 0.5rem 0.5rem 0;
+  padding: 0.2rem 0.8rem 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  row-gap: 0.3rem;
+  column-gap: 0.5rem;
+  font-size: 0.9rem;
+  --p-inputtext-sm-padding-y: 0.3em;
+  --p-inputtext-sm-padding-x: 0.5em;
+  --p-button-sm-padding-y: 0.3rem;
 }
 .ribbon-group-label {
   display: grid;
@@ -53,8 +69,8 @@ const props = defineProps<{
   align-items: end;
 }
 .ribbon-group-label-text {
-  color: var(--p-surface-300);
-  font-size: 0.95rem;
+  color: var(--p-slate-400);
+  font-size: 0.85rem;
   margin: 0.1rem 0.5rem 0.25rem;
 }
 .ribbon-group-label-button {
@@ -62,5 +78,6 @@ const props = defineProps<{
   --p-button-sm-padding-x: 0.2rem;
   --p-button-sm-icon-only-width: 1.5rem;
   --p-button-sm-font-size: 0.7rem;
+  --p-button-text-secondary-color: var(--p-slate-400);
 }
 </style>
