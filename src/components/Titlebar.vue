@@ -2,11 +2,12 @@
   <div class="titlebar">
     <div class="leftbar">
       <Button label="打开" icon="pi pi-folder-open" severity="secondary" />
+      <Button icon="pi pi-cog" variant="text" severity="secondary" />
       <Button icon="pi pi-undo" variant="text" severity="secondary" />
       <Button icon="pi pi-refresh" variant="text" severity="secondary" disabled />
     </div>
     <div class="centerbar">
-      <SelectButton :options="['编辑', '打轴', '预览']" size="large" />
+      <SelectButton :options="['内容', '时轴', '预览']" size="large" />
     </div>
     <div class="rightbar">
       <SplitButton
@@ -29,7 +30,7 @@ import { Button, SelectButton, SplitButton } from 'primevue'
   .rightbar {
     flex: 1;
     display: flex;
-    gap: 0.5rem;
+    gap: 0.3rem;
   }
   .leftbar {
     justify-content: flex-start;
