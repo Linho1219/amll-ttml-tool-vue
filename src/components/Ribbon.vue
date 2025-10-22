@@ -1,0 +1,8 @@
+<template>
+  <Card></Card>
+</template>
+
+<script setup lang="ts">
+import { Card } from 'primevue';
+
+</script>

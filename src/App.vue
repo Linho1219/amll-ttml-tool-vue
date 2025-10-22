@@ -1,11 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import 'primeicons/primeicons.css'
+import Titlebar from './components/Titlebar.vue'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <Titlebar />
+  <div class="ribbon"></div>
+  <div class="content"></div>
+  <div class="player"></div>
 </template>
 
-<style scoped></style>
+<style lang="scss">
+:root {
+  font-size: 14px;
+}
+body {
+  margin: 0;
+  padding: 0.5rem;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+</style>
