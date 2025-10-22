@@ -7,7 +7,7 @@
       <Button icon="pi pi-refresh" variant="text" severity="secondary" disabled />
     </div>
     <div class="centerbar">
-      <SelectButton :options="['内容', '时轴', '预览']" size="large" />
+      <SelectButton v-model="viewHandler" :options="viewOptions" optionLabel="name" size="large" />
     </div>
     <div class="rightbar">
       <SplitButton
@@ -20,7 +20,23 @@
 </template>
 
 <script setup lang="ts">
+import { View } from '@/stores/runtime'
 import { Button, SelectButton, SplitButton } from 'primevue'
+import { useRuntimeStore } from '@/stores/runtime'
+import { computed } from 'vue'
+
+const runtimeStore = useRuntimeStore()
+const viewOptions = [
+  { name: '内容', value: View.Content },
+  { name: '时轴', value: View.Timing },
+  { name: '预览', value: View.Preview },
+]
+const viewHandler = computed({
+  get: () => viewOptions.find((v) => v.value === runtimeStore.currentView),
+  set: (val: (typeof viewOptions)[number]) => {
+    runtimeStore.currentView = val.value
+  },
+})
 </script>
 
 <style lang="scss">

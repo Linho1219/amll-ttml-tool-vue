@@ -4,13 +4,15 @@ import '@/styles/common.scss'
 import '@/styles/ribbon.scss'
 import Titlebar from './components/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
-import Player from './components/player/Player.vue'
+import Player from './components/audio/Player.vue'
+import { useRuntimeStore, View } from './stores/runtime'
+const runtimeStore = useRuntimeStore()
 </script>
 
 <template>
   <Titlebar />
-  <Ribbon />
-  <div class="content" style="flex:1"></div>
+  <Ribbon v-if="runtimeStore.currentView !== View.Preview" />
+  <div class="content" style="flex: 1"></div>
   <Player />
 </template>
 

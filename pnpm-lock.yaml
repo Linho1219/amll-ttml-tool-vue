@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@applemusic-like-lyrics/lyric':
+        specifier: ^0.3.0
+        version: 0.3.0
       '@primeuix/themes':
         specifier: ^1.2.5
         version: 1.2.5
@@ -56,6 +59,9 @@ importers:
         version: 3.1.1(typescript@5.9.3)
 
 packages:
+
+  '@applemusic-like-lyrics/lyric@0.3.0':
+    resolution: {integrity: sha512-ZGyBheZZfqjQmGnEUciNKCARwkqIP39ONZirJE+NOQjQ47TYlZz4tlLBRH/uRfq5qviYyJ1S9Q+pZxlYoyHWVw==}
 
   '@babel/helper-string-parser@7.27.1':
     resolution: {integrity: sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA==}
@@ -988,6 +994,8 @@ packages:
     hasBin: true
 
 snapshots:
+
+  '@applemusic-like-lyrics/lyric@0.3.0': {}
 
   '@babel/helper-string-parser@7.27.1': {}
 

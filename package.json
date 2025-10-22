@@ -15,6 +15,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@applemusic-like-lyrics/lyric": "^0.3.0",
     "@primeuix/themes": "^1.2.5",
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
