@@ -1,17 +1,57 @@
 import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 
+//test
+const line: LyricLine = {
+  startTime: 0,
+  endTime: 3000,
+  words: [],
+  ignoreInTiming: false,
+  bookmarked: false,
+  comments: [],
+  translatedLyric: '',
+  romanLyric: '',
+  isBG: false,
+  isDuet: false,
+}
+const word1: LyricWord = {
+  startTime: 0,
+  endTime: 1000,
+  word: 'Hello',
+  parentLine: line,
+  placeholderBeat: 0,
+  currentPlaceholderBeat: 0,
+  bookmarked: false,
+  comments: [],
+}
+const word2: LyricWord = {
+  startTime: 1200,
+  endTime: 2000,
+  word: ' ',
+  parentLine: line,
+  placeholderBeat: 0,
+  currentPlaceholderBeat: 0,
+  bookmarked: false,
+  comments: [],
+}
+const word3: LyricWord = {
+  startTime: 2300,
+  endTime: 3000,
+  word: 'world!',
+  parentLine: line,
+  placeholderBeat: 0,
+  currentPlaceholderBeat: 0,
+  bookmarked: false,
+  comments: [],
+}
+line.words.push(word1, word2, word3)
+
 export const useCoreStore = defineStore('core', () => {
   const metadata = reactive<TTMLMetadata[]>([])
-  const lyricLines = reactive<LyricLine[]>([])
+  const lyricLines = reactive<LyricLine[]>([line])
   const comments = reactive<Comment[]>([])
   return { metadata, lyricLines, comments }
 })
-
-import type {
-  LyricLine as AMLLLyricLine,
-  LyricWord as AMLLLyricWord,
-} from '@applemusic-like-lyrics/lyric'
 
 export interface TTMLMetadata {
   key: string
@@ -30,7 +70,20 @@ export interface Comment {
   target: LyricLine | LyricWord
 }
 /** 歌词行 */
-export interface LyricLine extends AMLLLyricLine {
+export interface LyricLine {
+  /** 该行的翻译 */
+  translatedLyric: string
+  /** 该行的音译 */
+  romanLyric: string
+  /** 该行是否为背景歌词行 */
+  isBG: boolean
+  /** 该行是否为对唱歌词行（即歌词行靠右对齐） */
+  isDuet: boolean
+  /** 该行的开始时间 并不总是等于第一个单词的开始时间 */
+  startTime: number
+  /** 该行的结束时间 并不总是等于最后一个单词的开始时间 */
+  endTime: number
+  /** 该行的所有单词  */
   words: LyricWord[]
   /** 在时轴上忽略 */
   ignoreInTiming: boolean
@@ -40,7 +93,13 @@ export interface LyricLine extends AMLLLyricLine {
   comments: Comment[]
 }
 /** 单词 */
-export interface LyricWord extends AMLLLyricWord {
+export interface LyricWord {
+  /** 单词的起始时间 */
+  startTime: number
+  /** 单词的结束时间 */
+  endTime: number
+  /** 单词 */
+  word: string
   /** 所在行 */
   parentLine: LyricLine
   /** 占位拍，用于日语多音节汉字时轴 */

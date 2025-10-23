@@ -1,13 +1,14 @@
 :root:root {
-  --mainfont:
-    'HarmonyOS Sans SC', MiSans, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans CJK SC',
+  --font-main:
+    'HarmonyOS Sans SC', MiSans, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei',
     'WenQuanYi Micro Hei', sans-serif;
-  --monospacefont:
+  --font-monospace:
     'JetBrains Mono', 'Sarasa Term SC', 'Iosevka', 'Fira Code', 'Source Code Pro', monospace;
   --p-border-radius-md: 5px;
   --p-border-radius-lg: 6px;
   --p-border-radius-xl: 6px;
   user-select: none;
+  font-family: var(--font-main);
 }
 
 ::selection {
@@ -15,11 +16,11 @@
 }
 
 .monospace {
-  font-family: var(--monospacefont);
+  font-family: var(--font-monospace);
 }
 .timeinput.timeinput,
 .durationinput input {
-  font-family: var(--monospacefont);
+  font-family: var(--font-monospace);
   width: 9ch;
   box-sizing: content-box;
 }

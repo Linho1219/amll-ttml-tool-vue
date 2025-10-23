@@ -5,7 +5,7 @@
         icon="pi pi-sliders-v"
         severity="secondary"
       />
-      <Button icon="pi pi-play" />
+      <Button icon="pi pi-caret-right" />
       <div style="flex: 1"></div>
       <Button icon="pi pi-chart-bar" severity="secondary" />
     </template>
