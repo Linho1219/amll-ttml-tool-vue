@@ -2,55 +2,61 @@ import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 
 //test
-const line: LyricLine = {
+
+const newLine = (attrs: Partial<LyricLine> = {}) => ({
   startTime: 0,
-  endTime: 3000,
+  endTime: 0,
   words: [],
   ignoreInTiming: false,
   bookmarked: false,
   comments: [],
-  translatedLyric: '你好，世界！',
+  translatedLyric: '',
   romanLyric: '',
   isBG: false,
   isDuet: false,
-}
-const word1: LyricWord = {
+  ...attrs,
+})
+const newWord = (parentLine: LyricLine, attrs: Partial<LyricWord> = {}) => ({
+  startTime: 0,
+  endTime: 0,
+  word: '',
+  placeholdingBeat: 0,
+  currentplaceholdingBeat: 0,
+  bookmarked: false,
+  comments: [],
+  ...attrs,
+  parentLine,
+})
+
+const line: LyricLine = newLine({
+  startTime: 0,
+  endTime: 3000,
+  translatedLyric: '你好，世界！',
+})
+const word1: LyricWord = newWord(line, {
   startTime: 0,
   endTime: 1000,
   word: 'Hello',
-  parentLine: line,
-  placeholderBeat: 0,
-  currentPlaceholderBeat: 0,
-  bookmarked: false,
-  comments: [],
-}
-const word2: LyricWord = {
+  bookmarked: true,
+})
+const word2: LyricWord = newWord(line, {
   startTime: 1200,
   endTime: 2000,
   word: ' ',
-  parentLine: line,
-  placeholderBeat: 0,
-  currentPlaceholderBeat: 0,
-  bookmarked: false,
-  comments: [],
-}
-const word3: LyricWord = {
+})
+const word3: LyricWord = newWord(line, {
   startTime: 2300,
   endTime: 3000,
   word: 'world!',
-  parentLine: line,
-  placeholderBeat: 0,
-  currentPlaceholderBeat: 0,
-  bookmarked: false,
-  comments: [],
-}
+  placeholdingBeat: 3,
+})
 line.words.push(word1, word2, word3)
 
 export const useCoreStore = defineStore('core', () => {
   const metadata = reactive<TTMLMetadata[]>([])
   const lyricLines = reactive<LyricLine[]>([line])
   const comments = reactive<Comment[]>([])
-  return { metadata, lyricLines, comments }
+  return { metadata, lyricLines, comments, newLine, newWord }
 })
 
 export interface TTMLMetadata {
@@ -103,9 +109,9 @@ export interface LyricWord {
   /** 所在行 */
   parentLine: LyricLine
   /** 占位拍，用于日语多音节汉字时轴 */
-  placeholderBeat: number
+  placeholdingBeat: number
   /** 当前占位拍 */
-  currentPlaceholderBeat: number
+  currentplaceholdingBeat: number
   /** 已添加书签 */
   bookmarked: boolean
   /** 批注 */

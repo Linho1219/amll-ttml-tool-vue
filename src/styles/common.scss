@@ -1,7 +1,7 @@
 :root:root {
   --font-main:
     'HarmonyOS Sans SC', MiSans, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei',
-    'WenQuanYi Micro Hei', sans-serif;
+    'WenQuanYi Micro Hei', 'JetBrains Mono', sans-serif;
   --font-monospace:
     'JetBrains Mono', 'Sarasa Term SC', 'Iosevka', 'Fira Code', 'Source Code Pro', monospace;
   --p-border-radius-md: 5px;
@@ -9,6 +9,7 @@
   --p-border-radius-xl: 6px;
   user-select: none;
   font-family: var(--font-main);
+  line-height: 1.2;
 }
 
 ::selection {

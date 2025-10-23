@@ -1,6 +1,6 @@
 <template>
-  <div class="lline" :class="{ selected: isSelected }" @click="onLineClick">
-    <div class="lline-drag">
+  <div class="lline" :class="{ selected: isSelected }" @mousedown="onLineSelect">
+    <div class="lline-head">
       <div class="lline-drag-indicator">
         <i class="lline-drag-icon pi pi-bars"></i>
       </div>
@@ -13,7 +13,7 @@
           :class="{ active: props.line.bookmarked }"
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
         />
-        <div class="lline-index">{{ props.index }}</div>
+        <div class="lline-index">{{ props.index + 1 }}</div>
         <div style="flex: 1"></div>
         <Button
           class="lline-tag lline-tag-duet"
@@ -72,7 +72,8 @@ const props = defineProps<{
 const runtimeStore = useRuntimeStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
-function onLineClick(e: MouseEvent) {
+function onLineSelect(e: MouseEvent) {
+  runtimeStore.selectedWords.clear()
   if (e.metaKey || e.ctrlKey) {
     if (isSelected.value) runtimeStore.selectedLines.delete(props.line)
     else runtimeStore.selectedLines.add(props.line)
@@ -93,19 +94,21 @@ function onLineClick(e: MouseEvent) {
   border-radius: 0.5rem;
   --l-border-color: var(--p-button-secondary-background);
   --l-bg-color: transparent;
+  opacity: 0.8;
   &:hover,
   &.selected {
     --l-bg-color: var(--p-content-background);
   }
   &.selected {
     --l-border-color: var(--p-button-secondary-hover-background);
+    opacity: 1;
   }
 }
-.lline-drag {
+.lline-head {
   display: flex;
   background-color: var(--l-border-color);
   color: var(--p-button-secondary-color);
-  cursor: grab;
+  cursor: move;
 }
 .lline-drag-indicator {
   width: 1.2rem;
@@ -168,12 +171,13 @@ function onLineClick(e: MouseEvent) {
 }
 .lline-content {
   flex: 1;
-  display: flex;;
+  display: flex;
   &.content-view {
     padding: 0.5rem;
     flex-wrap: wrap;
     row-gap: 0.5rem;
     column-gap: 0.3rem;
+    align-content: flex-start;
   }
 }
 </style>

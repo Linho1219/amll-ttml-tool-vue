@@ -1,7 +1,7 @@
 <template>
   <div
     class="content"
-    @click.self="(runtimeStore.selectedLines.clear(), runtimeStore.selectedWords.clear())"
+    @mousedown.self="(runtimeStore.selectedLines.clear(), runtimeStore.selectedWords.clear())"
   >
     <LineShell
       v-for="(line, lineIndex) in coreStore.lyricLines"
@@ -9,19 +9,33 @@
       :line="line"
       :index="lineIndex"
     >
-      <Word v-for="(word, wordIndex) in line.words" :word="word" :index="wordIndex" />
+      <template v-for="(word, wordIndex) in line.words">
+        <Word :word="word" :index="wordIndex" />
+      </template>
+      <Button icon="pi pi-plus" severity="secondary" @click="appendWord(line)" />
     </LineShell>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useCoreStore } from '@/stores/core'
+import { useCoreStore, type LyricLine } from '@/stores/core'
 import LineShell from './LineShell.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
+import { Button } from 'primevue'
+import { nextTick } from 'vue'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
+
+function appendWord(line: LyricLine) {
+  line.words.push(coreStore.newWord(line))
+  nextTick(() => {
+    const newWord = line.words.at(-1)
+    if (!newWord) return
+    runtimeStore.wordHooks.get(newWord)?.focusInput()
+  })
+}
 </script>
 
 <style lang="scss">

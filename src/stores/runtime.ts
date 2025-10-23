@@ -13,5 +13,26 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const isPreviewView = computed(() => currentView.value === View.Preview)
   const selectedLines = reactive(new Set<LyricLine>())
   const selectedWords = reactive(new Set<LyricWord>())
-  return { currentView, isContentView, isTimingView, isPreviewView, selectedLines, selectedWords }
+  const lineHooks = reactive(new Map<LyricLine, LineComponentActions>())
+  const wordHooks = reactive(new Map<LyricWord, WordComponentActions>())
+  return {
+    currentView,
+    isContentView,
+    isTimingView,
+    isPreviewView,
+    selectedLines,
+    selectedWords,
+    lineHooks,
+    wordHooks,
+  }
 })
+
+export interface LineComponentActions {
+  scrollTo: () => void
+  setHighlight: (highlight: boolean) => void
+}
+export interface WordComponentActions {
+  scrollTo: () => void
+  setHighlight: (highlight: boolean) => void
+  focusInput: () => void
+}
