@@ -63,7 +63,7 @@
           <InputNumber class="durationinput" size="small" />
         </div>
         <div class="vflex" style="gap: 0.5rem; width: 10rem">
-          <span style="text-align: center">空拍 0 / 0</span>
+          <span style="text-align: center">占位拍 0 / 0</span>
           <div class="hflex">
             <InputGroup>
               <InputNumber class="monospace" showButtons :min="0" size="small" />

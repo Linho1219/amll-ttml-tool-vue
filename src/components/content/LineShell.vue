@@ -36,8 +36,25 @@
       </div>
     </div>
     <div class="lline-inner">
-      <div class="lline-content"><slot></slot></div>
-      <div class="lline-secondary" v-if="runtimeStore.isContentView"></div>
+      <div
+        class="lline-content"
+        :class="{
+          'content-view': runtimeStore.isContentView,
+          'timing-view': runtimeStore.isTimingView,
+        }"
+      >
+        <slot></slot>
+      </div>
+      <div class="lline-secondary" v-if="runtimeStore.isContentView">
+        <FloatLabel variant="on">
+          <InputText fluid v-model="props.line.translatedLyric" />
+          <label for="on_label">行翻译</label>
+        </FloatLabel>
+        <FloatLabel variant="on">
+          <InputText fluid v-model="props.line.romanLyric" />
+          <label for="on_label">行音译</label>
+        </FloatLabel>
+      </div>
     </div>
   </div>
 </template>
@@ -45,7 +62,7 @@
 <script setup lang="ts">
 import type { LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
-import { Button } from 'primevue'
+import { Button, FloatLabel, InputText } from 'primevue'
 import { computed } from 'vue'
 
 const props = defineProps<{
@@ -88,13 +105,13 @@ function onLineClick(e: MouseEvent) {
   display: flex;
   background-color: var(--l-border-color);
   color: var(--p-button-secondary-color);
+  cursor: grab;
 }
 .lline-drag-indicator {
   width: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: right;
-  cursor: grab;
 }
 .lline-drag-icon {
   opacity: 0.5;
@@ -122,7 +139,6 @@ function onLineClick(e: MouseEvent) {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
 .lline-tag {
   opacity: 0.3;
   filter: saturate(0);
@@ -136,6 +152,28 @@ function onLineClick(e: MouseEvent) {
   &.active {
     opacity: 1 !important;
     filter: none;
+  }
+}
+
+.lline-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.lline-secondary {
+  display: flex;
+  padding: 0.8rem 0.5rem 0.5rem;
+  gap: 0.5rem;
+}
+.lline-content {
+  flex: 1;
+  display: flex;;
+  &.content-view {
+    padding: 0.5rem;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    column-gap: 0.3rem;
   }
 }
 </style>

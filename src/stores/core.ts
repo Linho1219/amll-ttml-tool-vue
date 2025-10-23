@@ -9,7 +9,7 @@ const line: LyricLine = {
   ignoreInTiming: false,
   bookmarked: false,
   comments: [],
-  translatedLyric: '',
+  translatedLyric: '你好，世界！',
   romanLyric: '',
   isBG: false,
   isDuet: false,

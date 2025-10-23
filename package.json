@@ -17,6 +17,7 @@
   "dependencies": {
     "@applemusic-like-lyrics/lyric": "^0.3.0",
     "@primeuix/themes": "^1.2.5",
+    "@vueuse/core": "^14.0.0",
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.4.1",
