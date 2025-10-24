@@ -1,5 +1,5 @@
 <template>
-  <div class="content" selection-root @mousedown.self="clearSelection">
+  <div class="content" selection-root @mousedown.self="handleMouseDown">
     <LineShell
       v-for="(line, lineIndex) in coreStore.lyricLines"
       :key="lineIndex"
@@ -21,18 +21,21 @@ import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
 import { Button } from 'primevue'
 import { nextTick } from 'vue'
-import { clearSelection } from '@/stores/selection'
+import { forceOutsideBlur } from '@/utils/selection'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 
 function appendWord(line: LyricLine) {
-  line.words.push(coreStore.newWord(line))
-  nextTick(() => {
-    const newWord = line.words.at(-1)
-    if (!newWord) return
-    runtimeStore.wordHooks.get(newWord)?.focusInput()
-  })
+  const newWord = coreStore.newWord(line)
+  line.words.push(newWord)
+  nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
+}
+function handleMouseDown(e: MouseEvent) {
+  if (e.ctrlKey || e.metaKey) return
+  forceOutsideBlur()
+  runtimeStore.selectedLines.clear()
+  runtimeStore.selectedWords.clear()
 }
 </script>
 

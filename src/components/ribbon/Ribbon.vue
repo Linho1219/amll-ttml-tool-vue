@@ -14,16 +14,6 @@
       <div class="hflex" style="align-items: center; gap: 1rem">
         <div class="kvgrid">
           <Checkbox
-            inputId="ribbon-bgline"
-            value="bgline"
-            size="small"
-            :disabled="lineSelectedEmpty"
-            :indeterminate="isBGIndeterminate"
-            v-model="isBGChecked"
-            binary
-          />
-          <label for="ribbon-bgline">背景行</label>
-          <Checkbox
             inputId="ribbon-duetline"
             value="duetline"
             size="small"
@@ -33,6 +23,16 @@
             binary
           />
           <label for="ribbon-duetline">对唱行</label>
+          <Checkbox
+            inputId="ribbon-bgline"
+            value="bgline"
+            size="small"
+            :disabled="lineSelectedEmpty"
+            :indeterminate="isBGIndeterminate"
+            v-model="isBGChecked"
+            binary
+          />
+          <label for="ribbon-bgline">背景行</label>
           <Checkbox
             inputId="ribbon-ignoretime"
             value="ignoretime"
@@ -115,8 +115,9 @@
                 placeholder="0"
                 :disabled="wordSelectedEmpty"
               />
-              <InputGroupAddon>
+              <InputGroupAddon class="placeholderbeat-applytoall-addon">
                 <Button
+                  class="placeholderbeat-applytoall"
                   icon="pi pi-angle-double-right"
                   severity="secondary"
                   variant="text"
@@ -287,3 +288,16 @@ const {
   duration: wordDuration,
 } = itemTimeInput(runtimeStore.selectedWords)
 </script>
+
+<style lang="scss" scoped>
+.placeholderbeat-applytoall-addon {
+  z-index: 1;
+  &:has(.placeholderbeat-applytoall:focus-visible) {
+    outline: var(--p-button-focus-ring-width) var(--p-button-focus-ring-style)
+      var(--p-button-secondary-focus-ring-color);
+    outline-offset: var(--p-button-focus-ring-offset);
+
+    box-shadow: var(--p-button-secondary-focus-ring-shadow);
+  }
+}
+</style>

@@ -1,6 +1,11 @@
 <template>
-  <div class="lword" ref="wordTop" :class="{ selected: isSelected }" @mousedown.stop>
-    <div class="lword-head" @mousedown.stop="onWordSelect">
+  <div class="lword" ref="wordTop" :class="{ selected: isSelected }" @mousedown.stop @click.stop>
+    <div
+      class="lword-head"
+      @mousedown="handleMousedown"
+      @click="handleClick"
+      @dblclick="handleDbClick"
+    >
       <i v-if="props.word.bookmarked" class="lword-head-bookmark pi pi-bookmark-fill"></i>
       <i v-else class="lword-head-bars pi pi-bars"></i>
       <div style="flex: 1">&#x200B;</div>
@@ -20,8 +25,8 @@
         class="lword-input"
         v-model="props.word.word"
         size="large"
-        @keydown="handleKeypress"
-        @focus="handleInputFocus"
+        @keydown="handleKeydown"
+        @focus="handleFocus"
       />
     </div>
   </div>
@@ -32,7 +37,8 @@ import InputText from '@/components/repack/InputText.vue'
 import { computed, nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
 import type { LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
-import { justSelect, toggleSelect } from '@/stores/selection'
+import { applyWordSelectToLine, forceOutsideBlur } from '@/utils/selection'
+import { digit2Sup } from '@/utils/toSupSub'
 const runtimeStore = useRuntimeStore()
 const props = defineProps<{
   word: LyricWord
@@ -40,19 +46,52 @@ const props = defineProps<{
 }>()
 
 // Input Element
-const wordInputComponent = useTemplateRef('wordInputComponent')
-const wordInputEl = shallowRef<HTMLInputElement | null | undefined>(null)
-const { focused } = useFocus(wordInputEl)
-onMounted(() => (wordInputEl.value = wordInputComponent.value?.input))
+const inputComponent = useTemplateRef('wordInputComponent')
+const inputEl = shallowRef<HTMLInputElement | null | undefined>(null)
+const { focused } = useFocus(inputEl)
+onMounted(() => (inputEl.value = inputComponent.value?.input))
 
 // Selection
 const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
-function onWordSelect(e?: MouseEvent) {
-  if (e?.metaKey || e?.ctrlKey) toggleSelect(props.word)
-  else justSelect(props.word)
+let leftForClick = false
+function handleMousedown(e: MouseEvent) {
+  leftForClick = false
+  if (e.ctrlKey || e.metaKey) {
+    forceOutsideBlur()
+    if (!runtimeStore.selectedWords.has(props.word)) {
+      runtimeStore.selectedWords.add(props.word)
+      applyWordSelectToLine(runtimeStore.selectedWords)
+    } else leftForClick = true
+  } else {
+    if (runtimeStore.selectedWords.has(props.word)) return
+    forceOutsideBlur()
+    runtimeStore.selectedWords.clear()
+    runtimeStore.selectedWords.add(props.word)
+    if (
+      runtimeStore.selectedLines.size !== 1 ||
+      !runtimeStore.selectedLines.has(props.word.parentLine)
+    ) {
+      runtimeStore.selectedLines.clear()
+      runtimeStore.selectedLines.add(props.word.parentLine)
+    }
+  }
 }
-function handleInputFocus() {
-  justSelect(props.word)
+function handleClick(e: MouseEvent) {
+  if (leftForClick && (e.ctrlKey || e.metaKey)) {
+    runtimeStore.selectedWords.delete(props.word)
+    applyWordSelectToLine(runtimeStore.selectedWords)
+  }
+  leftForClick = false
+}
+function handleDbClick() {
+  inputEl.value?.select()
+}
+function handleFocus(_e: FocusEvent) {
+  if (runtimeStore.selectedWords.has(props.word) && runtimeStore.selectedWords.size === 1) return
+  forceOutsideBlur()
+  runtimeStore.selectedWords.clear()
+  runtimeStore.selectedWords.add(props.word)
+  applyWordSelectToLine(runtimeStore.selectedWords)
 }
 
 // Placeholder and input width control
@@ -62,11 +101,7 @@ const placeholder = computed(() => {
   if (!word) return '/'
   if (word.match(/^\s+$/)) {
     if (word.length === 1) return '␣'
-    const upperCount = word.length
-      .toString()
-      .split('')
-      .map((num) => toSup[num])
-      .join('')
+    const upperCount = [...word.length.toString()].map(digit2Sup).join('')
     return `␣${upperCount}`
   }
 })
@@ -76,30 +111,40 @@ const widthController = computed(() => {
   if (word === ' ') return '␣'
   return placeholder.value || word
 })
-const toSup: Record<string, string> = {
-  '0': '⁰',
-  '1': '¹',
-  '2': '²',
-  '3': '³',
-  '4': '⁴',
-  '5': '⁵',
-  '6': '⁶',
-  '7': '⁷',
-  '8': '⁸',
-  '9': '⁹',
-}
 
 // Hotkeys
-function handleKeypress(event: KeyboardEvent) {
-  if (!focused.value) return
-  if (event.code === 'Backspace' && !props.word.word && props.index > 0) {
-    event.preventDefault()
-    props.word.parentLine.words.splice(props.index, 1)
-    const lastWord = props.word.parentLine.words[props.index - 1]
-    if (!lastWord) return
-    nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput())
-  }
+function handleKeydown(event: KeyboardEvent) {
   console.log(event.code)
+  if (!inputEl.value || !focused.value) return
+  const el = inputEl.value
+  switch (event.code) {
+    case 'Backspace':
+      if (props.word.word || props.index === 0) return
+      event.preventDefault()
+      props.word.parentLine.words.splice(props.index, 1)
+      const lastWord = props.word.parentLine.words[props.index - 1]
+      if (!lastWord) return
+      nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput(-1))
+      return
+    case 'Enter':
+      event.preventDefault()
+      el.blur()
+      return
+    case 'ArrowLeft':
+      if (el.selectionStart !== 0) return
+      event.preventDefault()
+      const prevWord = props.word.parentLine.words[props.index - 1]
+      if (!prevWord) return
+      runtimeStore.wordHooks.get(prevWord)?.focusInput(-1)
+      return
+    case 'ArrowRight':
+      if (el.selectionStart !== el.value.length) return
+      event.preventDefault()
+      const nextWord = props.word.parentLine.words[props.index + 1]
+      if (!nextWord) return
+      runtimeStore.wordHooks.get(nextWord)?.focusInput(1)
+      return
+  }
 }
 
 // Register hooks
@@ -110,10 +155,20 @@ onMounted(() => {
     setHighlight: (_highlight: boolean) => {
       // to do
     },
-    focusInput: () => {
+    focusInput: (position = 0) => {
       focused.value = true
-      wordInputEl.value?.select()
-      console.log(wordInputEl.value)
+      if (!inputEl.value) return
+      switch (position) {
+        case -1:
+          inputEl.value.setSelectionRange(inputEl.value.value.length, inputEl.value.value.length)
+          break
+        case 0:
+          inputEl.value.select()
+          break
+        case 1:
+          inputEl.value.setSelectionRange(0, 0)
+          break
+      }
     },
   })
 })
@@ -145,6 +200,7 @@ onUnmounted(() => {
 .lword-head-bookmark {
   font-size: 0.8rem;
   color: var(--p-button-text-warn-color);
+  transform: translateY(-0.05em);
   .lword.selected & {
     color: inherit;
   }

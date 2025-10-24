@@ -1,5 +1,10 @@
 <template>
-  <div class="lline" :class="{ selected: isSelected }" @mousedown="onLineSelect">
+  <div
+    class="lline"
+    :class="{ selected: isSelected }"
+    @mousedown="handleMouseDown"
+    @click="handleClick"
+  >
     <div class="lline-head">
       <div class="lline-drag-indicator">
         <i class="lline-drag-icon pi pi-bars"></i>
@@ -50,8 +55,9 @@
           <InputText
             fluid
             v-model="props.line.translatedLyric"
-            @focus="() => justSelect(props.line)"
+            @focus="handleFocus"
             @mousedown.stop
+            @click.stop
           />
           <label for="on_label">行翻译</label>
         </FloatLabel>
@@ -59,8 +65,9 @@
           <InputText
             fluid
             v-model="props.line.romanLyric"
-            @focus="() => justSelect(props.line)"
+            @focus="handleFocus"
             @mousedown.stop
+            @click.stop
           />
           <label for="on_label">行音译</label>
         </FloatLabel>
@@ -72,9 +79,9 @@
 <script setup lang="ts">
 import type { LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
+import { forceOutsideBlur } from '@/utils/selection'
 import { Button, FloatLabel, InputText } from 'primevue'
 import { computed } from 'vue'
-import { justSelect, toggleSelect } from '@/stores/selection'
 
 const props = defineProps<{
   line: LyricLine
@@ -83,9 +90,33 @@ const props = defineProps<{
 const runtimeStore = useRuntimeStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
-function onLineSelect(e: MouseEvent) {
-  if (e.metaKey || e.ctrlKey) toggleSelect(props.line)
-  else justSelect(props.line)
+function handleFocus() {
+  forceOutsideBlur()
+  runtimeStore.selectedWords.clear()
+  if (runtimeStore.selectedLines.has(props.line) && runtimeStore.selectedLines.size == 1) return
+  runtimeStore.selectedLines.clear()
+  runtimeStore.selectedLines.add(props.line)
+}
+let leftForClick = false
+function handleMouseDown(e: MouseEvent) {
+  leftForClick = false
+  runtimeStore.selectedWords.clear()
+  if (e.metaKey || e.ctrlKey) {
+    forceOutsideBlur()
+    if (!runtimeStore.selectedLines.has(props.line)) runtimeStore.selectedLines.add(props.line)
+    else leftForClick = true
+  } else {
+    if (runtimeStore.selectedLines.has(props.line)) return
+    forceOutsideBlur()
+    runtimeStore.selectedLines.clear()
+    runtimeStore.selectedLines.add(props.line)
+  }
+}
+function handleClick(e: MouseEvent) {
+  if (leftForClick && (e.ctrlKey || e.metaKey)) {
+    if (runtimeStore.selectedLines.has(props.line)) runtimeStore.selectedLines.delete(props.line)
+  }
+  leftForClick = false
 }
 </script>
 

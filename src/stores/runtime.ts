@@ -42,5 +42,5 @@ export interface LineComponentActions {
 export interface WordComponentActions {
   scrollTo: () => void
   setHighlight: (highlight: boolean) => void
-  focusInput: () => void
+  focusInput: (position?: -1 | 0 | 1) => void
 }

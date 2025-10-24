@@ -1,5 +1,3 @@
-import { computed, type Ref } from 'vue'
-
 export function str2ms(str: string): number | null {
   const match = str.match(/^(?:(\d+):)?(\d+)?(\.\d+)?$/)
   if (!match) return null
