@@ -47,11 +47,21 @@
       </div>
       <div class="lline-secondary" v-if="runtimeStore.isContentView">
         <FloatLabel variant="on">
-          <InputText fluid v-model="props.line.translatedLyric" />
+          <InputText
+            fluid
+            v-model="props.line.translatedLyric"
+            @focus="() => justSelect(props.line)"
+            @mousedown.stop
+          />
           <label for="on_label">行翻译</label>
         </FloatLabel>
         <FloatLabel variant="on">
-          <InputText fluid v-model="props.line.romanLyric" />
+          <InputText
+            fluid
+            v-model="props.line.romanLyric"
+            @focus="() => justSelect(props.line)"
+            @mousedown.stop
+          />
           <label for="on_label">行音译</label>
         </FloatLabel>
       </div>
@@ -64,6 +74,7 @@ import type { LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { Button, FloatLabel, InputText } from 'primevue'
 import { computed } from 'vue'
+import { justSelect, toggleSelect } from '@/stores/selection'
 
 const props = defineProps<{
   line: LyricLine
@@ -73,14 +84,8 @@ const runtimeStore = useRuntimeStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
 function onLineSelect(e: MouseEvent) {
-  runtimeStore.selectedWords.clear()
-  if (e.metaKey || e.ctrlKey) {
-    if (isSelected.value) runtimeStore.selectedLines.delete(props.line)
-    else runtimeStore.selectedLines.add(props.line)
-  } else {
-    runtimeStore.selectedLines.clear()
-    runtimeStore.selectedLines.add(props.line)
-  }
+  if (e.metaKey || e.ctrlKey) toggleSelect(props.line)
+  else justSelect(props.line)
 }
 </script>
 

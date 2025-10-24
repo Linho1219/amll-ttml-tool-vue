@@ -1,0 +1,53 @@
+<template>
+  <InputText
+    v-model="innerModel"
+    ref="inputComponent"
+    @focus="handleFocus"
+    @blur="handleBlur"
+    @keydown="handleKeydown"
+  />
+</template>
+<script setup lang="ts">
+import { InputText, type InputTextProps } from 'primevue'
+import { onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
+
+defineProps</* @vue-ignore */InputTextProps>()
+
+// expose input element
+const inputComponent = useTemplateRef<typeof InputText>('inputComponent')
+const inputEl = shallowRef<HTMLInputElement | null>(null)
+onMounted(() => (inputEl.value = (inputComponent.value as any).$el as HTMLInputElement))
+defineExpose({ input: inputEl })
+
+// better v-model handling with modifiers
+const [model, modifiers] = defineModel<string | null | undefined>()
+const innerModel = ref<string | null | undefined>(model.value)
+function processor(val: string | null | undefined) {
+  if (modifiers.trim) val = val?.trim()
+  return val
+}
+watch(innerModel, (val) => {
+  if (modifiers.lazy) return
+  model.value = processor(val)
+})
+const focused = ref(false)
+const handleFocus = () => {
+  focused.value = true
+}
+const handleBlur = () => {
+  focused.value = false
+  if (modifiers.lazy) {
+    model.value = processor(innerModel.value)
+    innerModel.value = model.value
+  }
+}
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === 'Enter' && modifiers.lazy) {
+    model.value = processor(innerModel.value)
+    innerModel.value = model.value
+  }
+}
+watch(model, (val) => {
+  if (!focused.value || !modifiers.lazy) innerModel.value = val
+})
+</script>

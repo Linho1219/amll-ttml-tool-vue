@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="content"
-    @mousedown.self="(runtimeStore.selectedLines.clear(), runtimeStore.selectedWords.clear())"
-  >
+  <div class="content" selection-root @mousedown.self="clearSelection">
     <LineShell
       v-for="(line, lineIndex) in coreStore.lyricLines"
       :key="lineIndex"
@@ -24,6 +21,7 @@ import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
 import { Button } from 'primevue'
 import { nextTick } from 'vue'
+import { clearSelection } from '@/stores/selection'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()

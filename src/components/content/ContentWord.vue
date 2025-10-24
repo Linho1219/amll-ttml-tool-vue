@@ -1,5 +1,5 @@
 <template>
-  <div class="lword" ref="wordTop" :class="{ selected: isSelected }" @mousedown.stop="">
+  <div class="lword" ref="wordTop" :class="{ selected: isSelected }" @mousedown.stop>
     <div class="lword-head" @mousedown.stop="onWordSelect">
       <i v-if="props.word.bookmarked" class="lword-head-bookmark pi pi-bookmark-fill"></i>
       <i v-else class="lword-head-bars pi pi-bars"></i>
@@ -28,10 +28,11 @@
 </template>
 <script setup lang="ts">
 import { useFocus } from '@vueuse/core'
-import { InputText } from 'primevue'
+import InputText from '@/components/repack/InputText.vue'
 import { computed, nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
 import type { LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
+import { justSelect, toggleSelect } from '@/stores/selection'
 const runtimeStore = useRuntimeStore()
 const props = defineProps<{
   word: LyricWord
@@ -39,29 +40,19 @@ const props = defineProps<{
 }>()
 
 // Input Element
-const wordInputComponent = useTemplateRef<typeof InputText>('wordInputComponent')
-const wordInputEl = shallowRef<HTMLInputElement | null>(null)
+const wordInputComponent = useTemplateRef('wordInputComponent')
+const wordInputEl = shallowRef<HTMLInputElement | null | undefined>(null)
 const { focused } = useFocus(wordInputEl)
-onMounted(() => (wordInputEl.value = (<any>wordInputComponent.value).$el as HTMLInputElement))
+onMounted(() => (wordInputEl.value = wordInputComponent.value?.input))
 
 // Selection
 const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
 function onWordSelect(e?: MouseEvent) {
-  if (e?.metaKey || e?.ctrlKey) toggleSelectMe()
-  else justSelectMe()
+  if (e?.metaKey || e?.ctrlKey) toggleSelect(props.word)
+  else justSelect(props.word)
 }
 function handleInputFocus() {
-  justSelectMe()
-}
-function justSelectMe() {
-  runtimeStore.selectedWords.clear()
-  runtimeStore.selectedWords.add(props.word)
-  runtimeStore.selectedLines.clear()
-  runtimeStore.selectedLines.add(props.word.parentLine)
-}
-function toggleSelectMe() {
-  if (isSelected.value) runtimeStore.selectedWords.delete(props.word)
-  else runtimeStore.selectedWords.add(props.word)
+  justSelect(props.word)
 }
 
 // Placeholder and input width control

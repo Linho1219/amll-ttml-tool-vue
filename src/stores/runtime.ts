@@ -15,6 +15,10 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const selectedWords = reactive(new Set<LyricWord>())
   const lineHooks = reactive(new Map<LyricLine, LineComponentActions>())
   const wordHooks = reactive(new Map<LyricWord, WordComponentActions>())
+  const globalLatency = ref(0)
+  const hltLineTimeConflicts = ref(false)
+  const hltWordTimeConflicts = ref(false)
+  const scrollWithPlayback = ref(true)
   return {
     currentView,
     isContentView,
@@ -24,6 +28,10 @@ export const useRuntimeStore = defineStore('runtime', () => {
     selectedWords,
     lineHooks,
     wordHooks,
+    globalLatency,
+    hltLineTimeConflicts,
+    hltWordTimeConflicts,
+    scrollWithPlayback,
   }
 })
 
