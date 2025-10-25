@@ -18,6 +18,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const selectedWords = reactive(new Set<LyricWord>())
   const isDragging = ref(false)
   const isDraggingCopy = ref(false)
+  const canDrop = ref(false)
   const isDraggingWord = computed(() => isDragging.value && selectedWords.size > 0)
   const isDraggingLine = computed(
     () => isDragging.value && selectedWords.size === 0 && selectedLines.size > 0,
@@ -42,6 +43,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     selectedWords,
     isDragging,
     isDraggingCopy,
+    canDrop,
     isDraggingWord,
     isDraggingLine,
     lineHooks,

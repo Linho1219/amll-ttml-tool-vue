@@ -7,7 +7,7 @@
       zerowidth: props.index === 0,
     }"
     @dragover.prevent="handleDragOver"
-    @dragleave="dragOver = false"
+    @dragleave="handleDragLeave"
     @drop="handleDrop"
   ></div>
 </template>
@@ -24,6 +24,7 @@ const props = defineProps<{ parent: LyricLine; index: number }>()
 function handleDragOver(e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
   dragOver.value = true
+  runtimeStore.canDrop = true
   if (!e.dataTransfer) return
   if (e.ctrlKey || e.metaKey) {
     e.dataTransfer.dropEffect = 'copy'
@@ -33,9 +34,14 @@ function handleDragOver(e: DragEvent) {
     runtimeStore.isDraggingCopy = false
   }
 }
+function handleDragLeave() {
+  dragOver.value = false
+  runtimeStore.canDrop = false
+}
 function handleDrop(e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
   dragOver.value = false
+  runtimeStore.canDrop = false
   const pendingWords = [...runtimeStore.selectedWords].sort((a, b) => {
     if (a.parentLine === b.parentLine) {
       const parentWords = a.parentLine.words

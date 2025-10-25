@@ -12,7 +12,7 @@
     >
       <i v-if="props.word.bookmarked" class="lword-head-bookmark pi pi-bookmark-fill"></i>
       <i v-else class="lword-head-bars pi pi-bars"></i>
-      <div style="flex: 1">&#x200B;</div>
+      <div style="flex: 1">&ZeroWidthSpace;</div>
       <div v-if="props.word.placeholdingBeat" class="lword-head-placeholding-beat">
         {{ props.word.placeholdingBeat }}
       </div>
@@ -100,6 +100,7 @@ function handleFocus(_e: FocusEvent) {
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
   runtimeStore.isDragging = true
+  runtimeStore.canDrop = false
   if (!e.dataTransfer) return
   e.dataTransfer.effectAllowed = 'copyMove'
   e.dataTransfer.setDragImage(dragGhostEl.value!, 0, 0)
