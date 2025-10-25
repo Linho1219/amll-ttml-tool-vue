@@ -10,6 +10,7 @@
         <Button icon="pi pi-plus" severity="secondary" @click="appendWord(line)" />
       </LineShell>
     </template>
+    <DragGhost v-if="runtimeStore.isDragging" />
   </div>
 </template>
 
@@ -22,6 +23,7 @@ import { Button } from 'primevue'
 import { nextTick } from 'vue'
 import { forceOutsideBlur } from '@/utils/selection'
 import WordInsertIndicator from './WordInsertIndicator.vue'
+import DragGhost from './DragGhost.vue'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
