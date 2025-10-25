@@ -1,10 +1,14 @@
 <template>
   <div class="lword" ref="wordTop" :class="{ selected: isSelected }" @mousedown.stop @click.stop>
+    <div class="lword-drag-ghost" ref="dragGhostEl"></div>
     <div
       class="lword-head"
+      draggable="true"
       @mousedown="handleMousedown"
       @click="handleClick"
       @dblclick="handleDbClick"
+      @dragstart="handleDragStart"
+      @dragend="handleDragEnd"
     >
       <i v-if="props.word.bookmarked" class="lword-head-bookmark pi pi-bookmark-fill"></i>
       <i v-else class="lword-head-bars pi pi-bars"></i>
@@ -93,6 +97,17 @@ function handleFocus(_e: FocusEvent) {
   runtimeStore.selectedWords.add(props.word)
   applyWordSelectToLine(runtimeStore.selectedWords)
 }
+const dragGhostEl = useTemplateRef('dragGhostEl')
+function handleDragStart(e: DragEvent) {
+  runtimeStore.isDragging = true
+  if (!e.dataTransfer) return
+  e.dataTransfer.effectAllowed = 'copyMove'
+  e.dataTransfer.setDragImage(dragGhostEl.value!, 0, 0)
+}
+function handleDragEnd(_e: DragEvent) {
+  runtimeStore.isDragging = false
+  runtimeStore.isDraggingCopy = false
+}
 
 // Placeholder and input width control
 const placeholder = computed(() => {
@@ -121,10 +136,10 @@ function handleKeydown(event: KeyboardEvent) {
     case 'Backspace':
       if (props.word.word || props.index === 0) return
       event.preventDefault()
-      props.word.parentLine.words.splice(props.index, 1)
       const lastWord = props.word.parentLine.words[props.index - 1]
       if (!lastWord) return
       nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput(-1))
+      props.word.parentLine.words.splice(props.index, 1)
       return
     case 'Enter':
       event.preventDefault()
@@ -177,10 +192,11 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .lword {
   --p-inputtext-lg-font-size: 1.3rem;
   --w-bg-color: var(--l-border-color);
+  position: relative;
   &.selected {
     --w-bg-color: var(--p-primary-color);
     color: var(--p-primary-contrast-color);
@@ -244,7 +260,7 @@ onUnmounted(() => {
   right: 0;
   top: 0;
 }
-.lword-input {
+.lword-input.lword-input {
   background: transparent;
   transition: none;
   border-top-left-radius: 0;
@@ -256,5 +272,12 @@ onUnmounted(() => {
 .lword-input-placeholder {
   color: var(--p-inputtext-placeholder-color);
   font-weight: 300;
+}
+.lword-drag-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
 }
 </style>

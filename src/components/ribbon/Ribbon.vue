@@ -289,7 +289,7 @@ const {
 } = itemTimeInput(runtimeStore.selectedWords)
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .placeholderbeat-applytoall-addon {
   z-index: 1;
   &:has(.placeholderbeat-applytoall:focus-visible) {

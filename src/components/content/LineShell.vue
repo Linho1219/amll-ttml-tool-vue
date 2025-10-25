@@ -120,7 +120,7 @@ function handleClick(e: MouseEvent) {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .lline {
   // min-height: 10rem;
   display: flex;
@@ -212,7 +212,6 @@ function handleClick(e: MouseEvent) {
     padding: 0.5rem;
     flex-wrap: wrap;
     row-gap: 0.5rem;
-    column-gap: 0.3rem;
     align-content: flex-start;
   }
 }
