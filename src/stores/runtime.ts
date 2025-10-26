@@ -34,7 +34,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const globalLatency = ref(0)
   const hltLineTimeConflicts = ref(false)
   const hltWordTimeConflicts = ref(false)
-  const scrollWithPlayback = ref(true)
+  const scrollWithPlayback = ref(false)
 
   return {
     currentView,

@@ -173,9 +173,7 @@ function handleDragEnd(_e: DragEvent) {
   --l-border-color: var(--p-button-secondary-background);
   --l-bg-color: transparent;
   opacity: 0.8;
-  transition:
-    transform 0.2s,
-    opacity 0.2s;
+  transition: transform 0.2s;
   &:hover,
   &.selected {
     --l-bg-color: var(--p-content-background);

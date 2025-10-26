@@ -187,9 +187,11 @@ function handleKeydown(event: KeyboardEvent) {
     case 'Backspace':
       if (props.word.word || props.index === 0) return
       event.preventDefault()
-      const lastWord = props.word.parentLine.words[props.index - 1]
-      if (!lastWord) return
-      nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput(-1))
+      nextTick(() => {
+        const lastWord = props.word.parentLine.words[props.index - 1]
+        if (!lastWord) return
+        runtimeStore.wordHooks.get(lastWord)?.focusInput(-1)
+      })
       props.word.parentLine.words.splice(props.index, 1)
       return
     case 'Enter':
@@ -199,16 +201,20 @@ function handleKeydown(event: KeyboardEvent) {
     case 'ArrowLeft':
       if (el.selectionStart !== 0) return
       event.preventDefault()
-      const prevWord = props.word.parentLine.words[props.index - 1]
-      if (!prevWord) return
-      runtimeStore.wordHooks.get(prevWord)?.focusInput(-1)
+      nextTick(() => {
+        const prevWord = props.word.parentLine.words[props.index - 1]
+        if (!prevWord) return
+        runtimeStore.wordHooks.get(prevWord)?.focusInput(-1)
+      })
       return
     case 'ArrowRight':
       if (el.selectionStart !== el.value.length) return
       event.preventDefault()
-      const nextWord = props.word.parentLine.words[props.index + 1]
-      if (!nextWord) return
-      runtimeStore.wordHooks.get(nextWord)?.focusInput(1)
+      nextTick(() => {
+        const nextWord = props.word.parentLine.words[props.index + 1]
+        if (!nextWord) return
+        runtimeStore.wordHooks.get(nextWord)?.focusInput(1)
+      })
       return
   }
 }

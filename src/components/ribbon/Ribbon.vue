@@ -104,7 +104,12 @@
           />
         </div>
         <div class="vflex" style="gap: 0.5rem; width: 10rem">
-          <span style="text-align: center">占位拍 0 / 0</span>
+          <span style="text-align: center">
+            占位拍
+            <span style="font-family: var(--font-monospace)"
+              >{{ currPhBeatInput ?? 'N' }}/{{ phBeatInput ?? 'A' }}</span
+            >
+          </span>
           <div class="hflex">
             <InputGroup>
               <InputNumber
@@ -114,6 +119,7 @@
                 size="small"
                 placeholder="0"
                 :disabled="wordSelectedEmpty"
+                v-model="phBeatInput"
               />
               <InputGroupAddon class="placeholderbeat-applytoall-addon">
                 <Button
@@ -123,12 +129,20 @@
                   variant="text"
                   size="small"
                   fluid
-                  :disabled="wordSelectedEmpty"
+                  :disabled="wordSelectedEmpty || !phBeatApplyToAllEnabled"
+                  @click="phBeatApplyToAll"
                 />
               </InputGroupAddon>
             </InputGroup>
           </div>
-          <Slider :step="20" style="margin: 0.5rem" :disabled="wordSelectedEmpty" />
+          <Slider
+            :step="1"
+            style="margin: 0.5rem"
+            :disabled="wordSelectedEmpty"
+            :min="0"
+            :max="phBeatInput"
+            v-model="currPhBeatInput"
+          />
         </div>
       </div>
     </RibbonGroup>
@@ -287,6 +301,44 @@ const {
   endTime: wordEndTime,
   duration: wordDuration,
 } = itemTimeInput(runtimeStore.selectedWords)
+
+function placeholdingBeatInputs() {
+  const setOnlyOne = computed(() => runtimeStore.selectedWords.size === 1)
+  const setFirstItem = computed(() => runtimeStore.selectedWords.values().next().value)
+  const numericComputed = (key: 'placeholdingBeat' | 'currentplaceholdingBeat') =>
+    computed<number | undefined>({
+      get() {
+        if (!setFirstItem.value) return undefined
+        const firstValue = setFirstItem.value[key]
+        if (setOnlyOne.value) return firstValue
+        for (const item of runtimeStore.selectedWords)
+          if (item[key] !== firstValue) return undefined
+        return firstValue
+      },
+      set(value) {
+        if (typeof value !== 'number') value = 0
+        runtimeStore.selectedWords.forEach((item) => (item[key] = value))
+      },
+    })
+
+  const phBeatInput = numericComputed('placeholdingBeat')
+  const currPhBeatInput = numericComputed('currentplaceholdingBeat')
+  const phBeatApplyToAllEnabled = computed(() => {
+    return typeof phBeatInput.value === 'number' && typeof currPhBeatInput.value === 'number'
+  })
+  const phBeatApplyToAll = () => {
+    if (typeof phBeatInput.value !== 'number' || typeof currPhBeatInput.value !== 'number') return
+    coreStore.lyricLines.forEach((line) => {
+      line.words.forEach((word) => {
+        if (word.word !== setFirstItem.value?.word) return
+        word.placeholdingBeat = phBeatInput.value!
+      })
+    })
+  }
+  return { phBeatInput, currPhBeatInput, phBeatApplyToAllEnabled, phBeatApplyToAll }
+}
+const { phBeatInput, currPhBeatInput, phBeatApplyToAllEnabled, phBeatApplyToAll } =
+  placeholdingBeatInputs()
 </script>
 
 <style lang="scss">
