@@ -1,5 +1,5 @@
 <template>
-  <div class="content" selection-root @mousedown.self="handleMouseDown">
+  <div class="content" selection-root @mousedown.self="handleMouseDown" @dragover="handleDragOver">
     <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line">
       <LineShell :line="line" :index="lineIndex">
         <WordInsertIndicator :index="0" :parent="line" />
@@ -36,8 +36,20 @@ function appendWord(line: LyricLine) {
 function handleMouseDown(e: MouseEvent) {
   if (e.ctrlKey || e.metaKey) return
   forceOutsideBlur()
+  runtimeStore.lastTouchedLine = runtimeStore.lastTouchedWord = null
   runtimeStore.selectedLines.clear()
   runtimeStore.selectedWords.clear()
+}
+function handleDragOver(e: DragEvent) {
+  if (!runtimeStore.isDragging) return
+  if (!e.dataTransfer) return
+  if (e.ctrlKey || e.metaKey) {
+    e.dataTransfer.dropEffect = 'copy'
+    runtimeStore.isDraggingCopy = true
+  } else {
+    e.dataTransfer.dropEffect = 'move'
+    runtimeStore.isDraggingCopy = false
+  }
 }
 </script>
 

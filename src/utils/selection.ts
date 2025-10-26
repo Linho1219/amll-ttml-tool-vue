@@ -19,3 +19,8 @@ export function applyWordSelectToLine(words: Set<LyricWord>) {
   runtimeStore.selectedLines.clear()
   parentLines.forEach((line) => runtimeStore.selectedLines.add(line))
 }
+
+export function sortIndex(a: number, b: number): [number, number] {
+  if (a < 0 || b < 0) throw new Error('Indices must be non-negative')
+  return a < b ? [a, b] : [b, a]
+}

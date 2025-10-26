@@ -21,18 +21,10 @@ const coreStore = useCoreStore()
 const dragOver = ref(false)
 const props = defineProps<{ parent: LyricLine; index: number }>()
 
-function handleDragOver(e: DragEvent) {
+function handleDragOver(_e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
   dragOver.value = true
   runtimeStore.canDrop = true
-  if (!e.dataTransfer) return
-  if (e.ctrlKey || e.metaKey) {
-    e.dataTransfer.dropEffect = 'copy'
-    runtimeStore.isDraggingCopy = true
-  } else {
-    e.dataTransfer.dropEffect = 'move'
-    runtimeStore.isDraggingCopy = false
-  }
 }
 function handleDragLeave() {
   dragOver.value = false
@@ -57,6 +49,8 @@ function handleDrop(e: DragEvent) {
     props.parent.words.splice(props.index, 0, ...duplicatedWords)
     runtimeStore.selectedWords.clear()
     duplicatedWords.forEach((word) => runtimeStore.selectedWords.add(word))
+    runtimeStore.lastTouchedLine = props.parent
+    runtimeStore.lastTouchedWord = duplicatedWords[duplicatedWords.length - 1]!
   } else {
     const placeholder = newWord(props.parent, { word: '%placeholder' })
     props.parent.words.splice(props.index, 0, placeholder)

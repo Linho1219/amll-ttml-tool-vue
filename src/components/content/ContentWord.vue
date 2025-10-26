@@ -1,5 +1,14 @@
 <template>
-  <div class="lword" ref="wordTop" :class="{ selected: isSelected }" @mousedown.stop @click.stop>
+  <div
+    class="lword"
+    ref="wordTop"
+    :class="{
+      selected: isSelected,
+      removing: isSelected && runtimeStore.isDragging && !runtimeStore.isDraggingCopy,
+    }"
+    @mousedown.stop
+    @click.stop
+  >
     <div class="lword-drag-ghost" ref="dragGhostEl"></div>
     <div
       class="lword-head"
@@ -39,11 +48,12 @@
 import { useFocus } from '@vueuse/core'
 import InputText from '@/components/repack/InputText.vue'
 import { computed, nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
-import type { LyricWord } from '@/stores/core'
+import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
-import { applyWordSelectToLine, forceOutsideBlur } from '@/utils/selection'
+import { applyWordSelectToLine, forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { digit2Sup } from '@/utils/toSupSub'
 const runtimeStore = useRuntimeStore()
+const coreStore = useCoreStore()
 const props = defineProps<{
   word: LyricWord
   index: number
@@ -62,13 +72,42 @@ function handleMousedown(e: MouseEvent) {
   leftForClick = false
   if (e.ctrlKey || e.metaKey) {
     forceOutsideBlur()
+    runtimeStore.lastTouchedLine = props.word.parentLine
+    runtimeStore.lastTouchedWord = props.word
     if (!runtimeStore.selectedWords.has(props.word)) {
       runtimeStore.selectedWords.add(props.word)
       applyWordSelectToLine(runtimeStore.selectedWords)
     } else leftForClick = true
+  } else if (e.shiftKey && runtimeStore.lastTouchedWord) {
+    forceOutsideBlur()
+    const lastTouchedWord = runtimeStore.lastTouchedWord
+    runtimeStore.lastTouchedLine = props.word.parentLine
+    runtimeStore.lastTouchedWord = props.word
+    if (lastTouchedWord.parentLine !== props.word.parentLine) {
+      runtimeStore.selectedWords.clear()
+      runtimeStore.selectedLines.clear()
+      const [start, end] = sortIndex(
+        coreStore.lyricLines.indexOf(lastTouchedWord.parentLine),
+        coreStore.lyricLines.indexOf(props.word.parentLine),
+      )
+      coreStore.lyricLines
+        .slice(start, end + 1)
+        .forEach((line) => runtimeStore.selectedLines.add(line))
+    } else {
+      const [start, end] = sortIndex(
+        lastTouchedWord.parentLine.words.indexOf(lastTouchedWord),
+        props.index,
+      )
+      const affectedWords = props.word.parentLine.words.slice(start, end + 1)
+      if (runtimeStore.selectedWords.has(props.word))
+        affectedWords.forEach((w) => runtimeStore.selectedWords.delete(w))
+      else affectedWords.forEach((w) => runtimeStore.selectedWords.add(w))
+    }
   } else {
     if (runtimeStore.selectedWords.has(props.word)) return
     forceOutsideBlur()
+    runtimeStore.lastTouchedLine = props.word.parentLine
+    runtimeStore.lastTouchedWord = props.word
     runtimeStore.selectedWords.clear()
     runtimeStore.selectedWords.add(props.word)
     if (
@@ -93,17 +132,28 @@ function handleDbClick() {
 function handleFocus(_e: FocusEvent) {
   if (runtimeStore.selectedWords.has(props.word) && runtimeStore.selectedWords.size === 1) return
   forceOutsideBlur()
+  runtimeStore.lastTouchedLine = props.word.parentLine
+  runtimeStore.lastTouchedWord = props.word
   runtimeStore.selectedWords.clear()
   runtimeStore.selectedWords.add(props.word)
   applyWordSelectToLine(runtimeStore.selectedWords)
 }
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
+  runtimeStore.lastTouchedLine = props.word.parentLine
+  runtimeStore.lastTouchedWord = props.word
   runtimeStore.isDragging = true
   runtimeStore.canDrop = false
   if (!e.dataTransfer) return
-  e.dataTransfer.effectAllowed = 'copyMove'
   e.dataTransfer.setDragImage(dragGhostEl.value!, 0, 0)
+  e.dataTransfer.effectAllowed = 'copyMove'
+  if (e.ctrlKey || e.metaKey) {
+    e.dataTransfer.dropEffect = 'copy'
+    runtimeStore.isDraggingCopy = true
+  } else {
+    e.dataTransfer.dropEffect = 'move'
+    runtimeStore.isDraggingCopy = false
+  }
 }
 function handleDragEnd(_e: DragEvent) {
   runtimeStore.isDragging = false
@@ -198,9 +248,16 @@ onUnmounted(() => {
   --p-inputtext-lg-font-size: 1.3rem;
   --w-bg-color: var(--l-border-color);
   position: relative;
+  transition:
+    transform 0.1s,
+    opacity 0.1s;
   &.selected {
     --w-bg-color: var(--p-primary-color);
     color: var(--p-primary-contrast-color);
+  }
+  &.removing {
+    opacity: 0.5;
+    transform: scale(0.9);
   }
 }
 .lword-head {

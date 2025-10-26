@@ -77,9 +77,9 @@
 </template>
 
 <script setup lang="ts">
-import type { LyricLine } from '@/stores/core'
+import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
-import { forceOutsideBlur } from '@/utils/selection'
+import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { Button, FloatLabel, InputText } from 'primevue'
 import { computed } from 'vue'
 
@@ -88,10 +88,13 @@ const props = defineProps<{
   index: number
 }>()
 const runtimeStore = useRuntimeStore()
+const coreStore = useCoreStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
 function handleFocus() {
   forceOutsideBlur()
+  runtimeStore.lastTouchedLine = props.line
+  runtimeStore.lastTouchedWord = null
   runtimeStore.selectedWords.clear()
   if (runtimeStore.selectedLines.has(props.line) && runtimeStore.selectedLines.size == 1) return
   runtimeStore.selectedLines.clear()
@@ -100,22 +103,34 @@ function handleFocus() {
 let leftForClick = false
 function handleMouseDown(e: MouseEvent) {
   leftForClick = false
+  runtimeStore.lastTouchedWord = null
+  forceOutsideBlur()
   runtimeStore.selectedWords.clear()
   if (e.metaKey || e.ctrlKey) {
-    forceOutsideBlur()
-    if (!runtimeStore.selectedLines.has(props.line)) runtimeStore.selectedLines.add(props.line)
-    else leftForClick = true
+    runtimeStore.lastTouchedLine = props.line
+    if (!runtimeStore.selectedLines.has(props.line)) {
+      runtimeStore.selectedLines.add(props.line)
+    } else leftForClick = true
+  } else if (e.shiftKey && runtimeStore.lastTouchedLine) {
+    const lastTouchedLine = runtimeStore.lastTouchedLine
+    runtimeStore.lastTouchedLine = props.line
+    const lines = coreStore.lyricLines
+    const [start, end] = sortIndex(lines.indexOf(lastTouchedLine), props.index)
+    const affectedLines = lines.slice(start, end + 1)
+    if (runtimeStore.selectedLines.has(props.line))
+      affectedLines.forEach((line) => runtimeStore.selectedLines.delete(line))
+    else affectedLines.forEach((line) => runtimeStore.selectedLines.add(line))
   } else {
+    runtimeStore.lastTouchedLine = props.line
     if (runtimeStore.selectedLines.has(props.line)) return
-    forceOutsideBlur()
     runtimeStore.selectedLines.clear()
     runtimeStore.selectedLines.add(props.line)
+    runtimeStore.lastTouchedLine = props.line
   }
 }
 function handleClick(e: MouseEvent) {
-  if (leftForClick && (e.ctrlKey || e.metaKey)) {
+  if (leftForClick && (e.ctrlKey || e.metaKey))
     if (runtimeStore.selectedLines.has(props.line)) runtimeStore.selectedLines.delete(props.line)
-  }
   leftForClick = false
 }
 </script>

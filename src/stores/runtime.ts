@@ -16,6 +16,8 @@ export const useRuntimeStore = defineStore('runtime', () => {
   // Selection & drag
   const selectedLines = reactive(new Set<LyricLine>())
   const selectedWords = reactive(new Set<LyricWord>())
+  const lastTouchedLine = ref<LyricLine | null>(null)
+  const lastTouchedWord = ref<LyricWord | null>(null)
   const isDragging = ref(false)
   const isDraggingCopy = ref(false)
   const canDrop = ref(false)
@@ -41,6 +43,8 @@ export const useRuntimeStore = defineStore('runtime', () => {
     isPreviewView,
     selectedLines,
     selectedWords,
+    lastTouchedLine,
+    lastTouchedWord,
     isDragging,
     isDraggingCopy,
     canDrop,
