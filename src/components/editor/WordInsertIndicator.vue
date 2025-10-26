@@ -3,7 +3,8 @@
     class="winsert-indicator"
     :class="{
       dragging: runtimeStore.isDraggingWord,
-      dragover: dragOver,
+      dragover,
+      floatup,
       zerowidth: props.index === 0,
     }"
     @dragover.prevent="handleDragOver"
@@ -15,48 +16,48 @@
 <script setup lang="ts">
 import { newWord, useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
-import { ref } from 'vue'
+import { sortWords } from '@/utils/selection'
+import { ref, watch } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
-const dragOver = ref(false)
+const dragover = ref(false)
 const props = defineProps<{ parent: LyricLine; index: number }>()
+
+const floatup = ref(false)
+watch(
+  () => runtimeStore.isDraggingWord,
+  (val) => setTimeout(() => (floatup.value = val), 200),
+)
 
 function handleDragOver(_e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
-  dragOver.value = true
+  dragover.value = true
   runtimeStore.canDrop = true
 }
 function handleDragLeave() {
-  dragOver.value = false
+  dragover.value = false
   runtimeStore.canDrop = false
 }
 function handleDrop(e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
-  dragOver.value = false
+  dragover.value = false
   runtimeStore.canDrop = false
-  const pendingWords = [...runtimeStore.selectedWords].sort((a, b) => {
-    if (a.parentLine === b.parentLine) {
-      const parentWords = a.parentLine.words
-      return parentWords.indexOf(a) - parentWords.indexOf(b)
-    } else {
-      const parentAIndex = coreStore.lyricLines.indexOf(a.parentLine)
-      const parentBIndex = coreStore.lyricLines.indexOf(b.parentLine)
-      return parentAIndex - parentBIndex
-    }
-  })
+  const pendingWords = sortWords(...runtimeStore.selectedWords)
+  runtimeStore.selectedLines.clear()
+  runtimeStore.selectedLines.add(props.parent)
   if (e.ctrlKey || e.metaKey) {
-    const duplicatedWords = pendingWords.map((word) => coreStore.newWord(word.parentLine, word))
+    const duplicatedWords = pendingWords.map((word) => coreStore.newWord(props.parent, word))
     props.parent.words.splice(props.index, 0, ...duplicatedWords)
     runtimeStore.selectedWords.clear()
     duplicatedWords.forEach((word) => runtimeStore.selectedWords.add(word))
     runtimeStore.lastTouchedLine = props.parent
     runtimeStore.lastTouchedWord = duplicatedWords[duplicatedWords.length - 1]!
   } else {
-    const placeholder = newWord(props.parent, { word: '%placeholder' })
+    const placeholder = newWord(props.parent)
     props.parent.words.splice(props.index, 0, placeholder)
     pendingWords.forEach((word) => {
-      const parentWords = word.parentLine.words
-      parentWords.splice(parentWords.indexOf(word), 1)
+      word.parentLine.words.splice(word.parentLine.words.indexOf(word), 1)
+      word.parentLine = props.parent
     })
     const insertIndex = props.parent.words.indexOf(placeholder)
     props.parent.words.splice(insertIndex, 1, ...pendingWords)
@@ -70,9 +71,12 @@ function handleDrop(e: DragEvent) {
   width: 0.5rem;
   position: relative;
   &.dragging {
-    z-index: 1;
     margin: -0.1rem -0.5rem;
     padding: 0.1rem 0.5rem;
+    z-index: -1;
+  }
+  &.floatup {
+    z-index: 1;
   }
   &.dragover {
     &::after {

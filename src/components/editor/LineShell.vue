@@ -1,11 +1,17 @@
 <template>
   <div
     class="lline"
-    :class="{ selected: isSelected }"
+    :class="{
+      selected: isSelected,
+      removing: isSelected && runtimeStore.isDraggingLine && !runtimeStore.isDraggingCopy,
+    }"
     @mousedown="handleMouseDown"
     @click="handleClick"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd"
   >
-    <div class="lline-head">
+    <div class="lline-drag-ghost" ref="dragGhostEl"></div>
+    <div class="lline-head" draggable="true">
       <div class="lline-drag-indicator">
         <i class="lline-drag-icon pi pi-bars"></i>
       </div>
@@ -81,7 +87,7 @@ import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { Button, FloatLabel, InputText } from 'primevue'
-import { computed } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 
 const props = defineProps<{
   line: LyricLine
@@ -133,6 +139,27 @@ function handleClick(e: MouseEvent) {
     if (runtimeStore.selectedLines.has(props.line)) runtimeStore.selectedLines.delete(props.line)
   leftForClick = false
 }
+const dragGhostEl = useTemplateRef('dragGhostEl')
+function handleDragStart(e: DragEvent) {
+  runtimeStore.lastTouchedLine = props.line
+  runtimeStore.lastTouchedWord = null
+  runtimeStore.isDragging = true
+  runtimeStore.canDrop = false
+  if (!e.dataTransfer) return
+  e.dataTransfer.setDragImage(dragGhostEl.value!, 0, 0)
+  e.dataTransfer.effectAllowed = 'copyMove'
+  if (e.ctrlKey || e.metaKey) {
+    e.dataTransfer.dropEffect = 'copy'
+    runtimeStore.isDraggingCopy = true
+  } else {
+    e.dataTransfer.dropEffect = 'move'
+    runtimeStore.isDraggingCopy = false
+  }
+}
+function handleDragEnd(_e: DragEvent) {
+  runtimeStore.isDragging = false
+  runtimeStore.isDraggingCopy = false
+}
 </script>
 
 <style lang="scss">
@@ -146,6 +173,9 @@ function handleClick(e: MouseEvent) {
   --l-border-color: var(--p-button-secondary-background);
   --l-bg-color: transparent;
   opacity: 0.8;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
   &:hover,
   &.selected {
     --l-bg-color: var(--p-content-background);
@@ -153,6 +183,10 @@ function handleClick(e: MouseEvent) {
   &.selected {
     --l-border-color: var(--p-button-secondary-hover-background);
     opacity: 1;
+  }
+  &.removing {
+    opacity: 0.5;
+    transform: scale(0.98);
   }
 }
 .lline-head {
@@ -229,5 +263,12 @@ function handleClick(e: MouseEvent) {
     row-gap: 0.5rem;
     align-content: flex-start;
   }
+}
+.lline-drag-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
 }
 </style>

@@ -6,11 +6,17 @@
 
 :root {
   --font-main:
-    'HarmonyOS Sans SC', MiSans, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei',
-    'WenQuanYi Micro Hei', 'JetBrains Mono', sans-serif;
+    'HarmonyOS Sans SC', MiSans, 'Sarasa UI SC', 'PingFang SC', 'Noto Sans CJK SC',
+    'Noto Sans S Chinese', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'JetBrains Mono', sans-serif;
   --font-monospace:
     'JetBrains Mono', 'Sarasa Term SC', 'Iosevka', 'Fira Code', 'Source Code Pro', monospace;
   user-select: none;
+  background-color: white;
+  @media (prefers-color-scheme: dark) {
+    & {
+      background-color: #121212;
+    }
+  }
 }
 
 :root,

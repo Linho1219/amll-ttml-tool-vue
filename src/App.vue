@@ -4,7 +4,7 @@ import '@/styles/common.scss'
 import '@/styles/ribbon.scss'
 import Titlebar from './components/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
-import Content from './components/content/Content.vue'
+import Content from './components/editor/Editor.vue'
 import Player from './components/audio/Player.vue'
 import { useRuntimeStore } from './stores/runtime'
 const runtimeStore = useRuntimeStore()

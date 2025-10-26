@@ -1,17 +1,26 @@
 <template>
-  <div class="content" selection-root @mousedown.self="handleMouseDown" @dragover="handleDragOver">
-    <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line">
-      <LineShell :line="line" :index="lineIndex">
-        <WordInsertIndicator :index="0" :parent="line" />
-        <template v-for="(word, wordIndex) in line.words" :key="word">
-          <Word :word="word" :index="wordIndex" />
-          <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
-        </template>
-        <Button icon="pi pi-plus" severity="secondary" @click="appendWord(line)" />
-      </LineShell>
-    </template>
-    <DragGhost v-if="runtimeStore.isDragging" />
+  <div class="editor-shell" @mousedown.self="handleMouseDown" @dragover="handleDragOver">
+    <div class="editor" selection-root>
+      <LineInsertIndicator :index="0" />
+      <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line">
+        <LineShell :line="line" :index="lineIndex">
+          <WordInsertIndicator :index="0" :parent="line" />
+          <template v-for="(word, wordIndex) in line.words" :key="word">
+            <Word :word="word" :index="wordIndex" />
+            <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
+          </template>
+          <Button
+            class="add-word-button"
+            icon="pi pi-plus"
+            severity="secondary"
+            @click="appendWord(line)"
+          />
+        </LineShell>
+        <LineInsertIndicator :index="lineIndex + 1" />
+      </template>
+    </div>
   </div>
+  <DragGhost v-if="runtimeStore.isDragging" />
 </template>
 
 <script setup lang="ts">
@@ -23,6 +32,7 @@ import { Button } from 'primevue'
 import { nextTick } from 'vue'
 import { forceOutsideBlur } from '@/utils/selection'
 import WordInsertIndicator from './WordInsertIndicator.vue'
+import LineInsertIndicator from './LineInsertIndicator.vue'
 import DragGhost from './DragGhost.vue'
 
 const coreStore = useCoreStore()
@@ -54,10 +64,17 @@ function handleDragOver(e: DragEvent) {
 </script>
 
 <style lang="scss">
-.content {
+.editor-shell {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  --content-word-height: 4.8rem;
+}
+.editor {
   display: flex;
   flex-direction: column;
+}
+.add-word-button {
+  height: var(--content-word-height);
 }
 </style>

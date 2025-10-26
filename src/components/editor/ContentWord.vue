@@ -245,6 +245,9 @@ onUnmounted(() => {
 
 <style lang="scss">
 .lword {
+  height: var(--content-word-height);
+  display: flex;
+  flex-direction: column;
   --p-inputtext-lg-font-size: 1.3rem;
   --w-bg-color: var(--l-border-color);
   position: relative;
@@ -261,8 +264,9 @@ onUnmounted(() => {
   }
 }
 .lword-head {
+  flex: 1;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   padding: 0.2rem;
   font-size: 1rem;
   cursor: move;
@@ -274,7 +278,6 @@ onUnmounted(() => {
 .lword-head-bookmark {
   font-size: 0.8rem;
   color: var(--p-button-text-warn-color);
-  transform: translateY(-0.05em);
   .lword.selected & {
     color: inherit;
   }
