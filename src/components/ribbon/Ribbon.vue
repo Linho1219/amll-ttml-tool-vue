@@ -191,7 +191,13 @@
       </div>
     </RibbonGroup>
     <RibbonGroup label="标记" more>
-      <Button icon="pi pi-bookmark" label="添加书签" size="small" severity="secondary" />
+      <Button
+        icon="pi pi-bookmark"
+        :label="bookmarkAdd ? '添加书签' : '移除书签'"
+        size="small"
+        severity="secondary"
+        @click="bookmarkClick"
+      />
       <Button icon="pi pi-comment" label="添加批注" size="small" severity="secondary" />
       <Button icon="pi pi-eraser" label="移除全部" size="small" severity="secondary" />
     </RibbonGroup>
@@ -339,6 +345,15 @@ function placeholdingBeatInputs() {
 }
 const { phBeatInput, currPhBeatInput, phBeatApplyToAllEnabled, phBeatApplyToAll } =
   placeholdingBeatInputs()
+
+const focusingSet = computed(() =>
+  runtimeStore.selectedWords.size > 0 ? runtimeStore.selectedWords : runtimeStore.selectedLines,
+)
+const bookmarkAdd = computed(() => [...focusingSet.value].some((item) => !item.bookmarked))
+function bookmarkClick() {
+  if (bookmarkAdd.value) focusingSet.value.forEach((item) => (item.bookmarked = true))
+  else focusingSet.value.forEach((item) => (item.bookmarked = false))
+}
 </script>
 
 <style lang="scss">
