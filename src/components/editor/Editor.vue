@@ -1,5 +1,10 @@
 <template>
-  <div class="editor-shell" @mousedown.self="handleMouseDown" @dragover="handleDragOver">
+  <div
+    class="editor-shell"
+    @mousedown.self="handleMouseDown"
+    @dragover="handleDragOver"
+    @contextmenu="handleContext"
+  >
     <div class="editor" selection-root>
       <LineInsertIndicator :index="0" />
       <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line">
@@ -19,6 +24,7 @@
         <LineInsertIndicator :index="lineIndex + 1" />
       </template>
     </div>
+    <ContextMenu ref="menu" :model="contextMenuItems" />
   </div>
   <DragGhost v-if="runtimeStore.isDragging" />
 </template>
@@ -28,12 +34,13 @@ import { useCoreStore, type LyricLine } from '@/stores/core'
 import LineShell from './LineShell.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
-import { Button } from 'primevue'
-import { nextTick } from 'vue'
+import { Button, ContextMenu } from 'primevue'
+import { nextTick, ref, useTemplateRef } from 'vue'
 import { forceOutsideBlur } from '@/utils/selection'
 import WordInsertIndicator from './WordInsertIndicator.vue'
 import LineInsertIndicator from './LineInsertIndicator.vue'
 import DragGhost from './DragGhost.vue'
+import type { MenuItem } from 'primevue/menuitem'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
@@ -61,6 +68,29 @@ function handleDragOver(e: DragEvent) {
     runtimeStore.isDraggingCopy = false
   }
 }
+
+const menu = useTemplateRef('menu')
+const closeContext = () => menu.value?.hide()
+function handleContext(e: MouseEvent) {
+  if (runtimeStore.closeContext && runtimeStore.closeContext !== closeContext)
+    runtimeStore.closeContext()
+  if (!runtimeStore.isContentView) return
+  menu.value?.show(e)
+  runtimeStore.closeContext = closeContext
+}
+const contextMenuItems = ref<MenuItem[]>([
+  {
+    label: '插入新行',
+    icon: 'pi pi-plus',
+    command: () => {
+      const newLine = coreStore.newLine()
+      coreStore.lyricLines.push(newLine)
+      runtimeStore.selectedLines.clear()
+      runtimeStore.selectedWords.clear()
+      runtimeStore.selectedLines.add(newLine)
+    },
+  },
+])
 </script>
 
 <style lang="scss">

@@ -30,6 +30,9 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const lineHooks = reactive(new Map<LyricLine, LineComponentActions>())
   const wordHooks = reactive(new Map<LyricWord, WordComponentActions>())
 
+  // Context menu hook
+  const closeContext = ref<null | (() => void)>(null)
+
   // Options
   const globalLatency = ref(0)
   const hltLineTimeConflicts = ref(false)
@@ -52,6 +55,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     isDraggingLine,
     lineHooks,
     wordHooks,
+    closeContext,
     globalLatency,
     hltLineTimeConflicts,
     hltWordTimeConflicts,

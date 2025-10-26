@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { newWord, useCoreStore, type LyricLine } from '@/stores/core'
+import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { sortWords } from '@/utils/selection'
 import { ref, watch } from 'vue'
@@ -53,7 +53,7 @@ function handleDrop(e: DragEvent) {
     runtimeStore.lastTouchedLine = props.parent
     runtimeStore.lastTouchedWord = duplicatedWords[duplicatedWords.length - 1]!
   } else {
-    const placeholder = newWord(props.parent)
+    const placeholder = coreStore.newWord(props.parent)
     props.parent.words.splice(props.index, 0, placeholder)
     pendingWords.forEach((word) => {
       word.parentLine.words.splice(word.parentLine.words.indexOf(word), 1)

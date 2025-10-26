@@ -12,7 +12,7 @@
   ></div>
 </template>
 <script setup lang="ts">
-import { newWord, newLine, useCoreStore, type LyricLine } from '@/stores/core'
+import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { sortLines, sortWords } from '@/utils/selection'
 import { ref, watch } from 'vue'
@@ -52,7 +52,7 @@ function handleDrop(e: DragEvent) {
       runtimeStore.lastTouchedLine = duplicatedLines[duplicatedLines.length - 1]!
       runtimeStore.lastTouchedWord = null
     } else {
-      const placeholder = newLine()
+      const placeholder = coreStore.newLine()
       coreStore.lyricLines.splice(props.index, 0, placeholder)
       pendingLines.forEach((line) => {
         coreStore.lyricLines.splice(coreStore.lyricLines.indexOf(line), 1)

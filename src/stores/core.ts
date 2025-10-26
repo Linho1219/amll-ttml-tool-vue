@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 //test
 
-export const newLine = (attrs: Partial<LyricLine> = {}) => ({
+const newLine = (attrs: Partial<LyricLine> = {}) => ({
   startTime: 0,
   endTime: 0,
   words: [],
@@ -16,7 +16,7 @@ export const newLine = (attrs: Partial<LyricLine> = {}) => ({
   isDuet: false,
   ...attrs,
 })
-export const newWord = (parentLine: LyricLine, attrs: Partial<LyricWord> = {}) => ({
+const newWord = (parentLine: LyricLine, attrs: Partial<LyricWord> = {}) => ({
   startTime: 0,
   endTime: 0,
   word: '',

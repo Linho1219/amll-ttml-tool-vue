@@ -9,6 +9,7 @@
     @click="handleClick"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
+    @contextmenu="handleContext"
   >
     <div class="lline-drag-ghost" ref="dragGhostEl"></div>
     <div class="lline-head" draggable="true">
@@ -79,6 +80,7 @@
         </FloatLabel>
       </div>
     </div>
+    <ContextMenu ref="menu" :model="contextMenuItems" />
   </div>
 </template>
 
@@ -86,8 +88,9 @@
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { forceOutsideBlur, sortIndex } from '@/utils/selection'
-import { Button, FloatLabel, InputText } from 'primevue'
-import { computed, useTemplateRef } from 'vue'
+import { Button, ContextMenu, FloatLabel, InputText } from 'primevue'
+import type { MenuItem } from 'primevue/menuitem'
+import { computed, ref, useTemplateRef } from 'vue'
 
 const props = defineProps<{
   line: LyricLine
@@ -160,6 +163,59 @@ function handleDragEnd(_e: DragEvent) {
   runtimeStore.isDragging = false
   runtimeStore.isDraggingCopy = false
 }
+
+const menu = useTemplateRef('menu')
+const closeContext = () => menu.value?.hide()
+function handleContext(e: MouseEvent) {
+  if (runtimeStore.closeContext && runtimeStore.closeContext !== closeContext)
+    runtimeStore.closeContext()
+  if (!runtimeStore.isContentView) return
+  menu.value?.show(e)
+  runtimeStore.closeContext = closeContext
+}
+const contextMenuItems: MenuItem[] = [
+  {
+    label: '在前插入新行',
+    icon: 'pi pi-arrow-up',
+    command: () => {
+      const newLine = coreStore.newLine()
+      runtimeStore.selectedLines.clear()
+      runtimeStore.selectedWords.clear()
+      runtimeStore.selectedLines.add(newLine)
+      coreStore.lyricLines.splice(props.index, 0, newLine)
+    },
+  },
+  {
+    label: '在后插入新行',
+    icon: 'pi pi-arrow-down',
+    command: () => {
+      const newLine = coreStore.newLine()
+      runtimeStore.selectedLines.clear()
+      runtimeStore.selectedWords.clear()
+      runtimeStore.selectedLines.add(newLine)
+      coreStore.lyricLines.splice(props.index + 1, 0, newLine)
+    },
+  },
+  {
+    label: '复制行',
+    icon: 'pi pi-clone',
+    command: () => {
+      const duplicate = coreStore.newLine(props.line)
+      duplicate.words = props.line.words.map((word) => coreStore.newWord(duplicate, word))
+      coreStore.lyricLines.splice(props.index, 0, duplicate)
+    },
+  },
+  {
+    label: '合并行',
+    icon: 'pi pi-sign-in',
+    command: () => {},
+  },
+  {
+    label: '删除行',
+    icon: 'pi pi-trash',
+    command: () => coreStore.lyricLines.splice(props.index, 1),
+  },
+]
 </script>
 
 <style lang="scss">
