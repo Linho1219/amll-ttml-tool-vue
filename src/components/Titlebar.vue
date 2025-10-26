@@ -23,7 +23,7 @@
 import { View } from '@/stores/runtime'
 import { Button, SelectButton, SplitButton } from 'primevue'
 import { useRuntimeStore } from '@/stores/runtime'
-import { computed } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 
 const runtimeStore = useRuntimeStore()
 const viewOptions = [
@@ -31,11 +31,11 @@ const viewOptions = [
   { name: '时轴', value: View.Timing },
   { name: '预览', value: View.Preview },
 ]
-const viewHandler = computed({
-  get: () => viewOptions.find((v) => v.value === runtimeStore.currentView),
-  set: (val: (typeof viewOptions)[number]) => {
-    runtimeStore.currentView = val.value
-  },
+const stateToView = () => viewOptions.find((v) => v.value === runtimeStore.currentView)!
+const viewHandler = ref<(typeof viewOptions)[number] | null>(stateToView())
+watch(viewHandler, (value) => {
+  if (!value) nextTick(() => (viewHandler.value = stateToView()))
+  else runtimeStore.currentView = value.value
 })
 </script>
 
