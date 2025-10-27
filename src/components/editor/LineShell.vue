@@ -175,7 +175,7 @@ function handleContext(e: MouseEvent) {
 }
 const contextMenuItems: MenuItem[] = [
   {
-    label: '在前插入新行',
+    label: '在前插入行',
     icon: 'pi pi-arrow-up',
     command: () => {
       const newLine = coreStore.newLine()
@@ -186,7 +186,7 @@ const contextMenuItems: MenuItem[] = [
     },
   },
   {
-    label: '在后插入新行',
+    label: '在后插入行',
     icon: 'pi pi-arrow-down',
     command: () => {
       const newLine = coreStore.newLine()

@@ -8,6 +8,7 @@
     }"
     @mousedown.stop
     @click.stop
+    @contextmenu="handleContext"
   >
     <div class="lword-drag-ghost" ref="dragGhostEl"></div>
     <div
@@ -43,6 +44,7 @@
         @compositionend="handleCompositionEnd"
       />
     </div>
+    <ContextMenu ref="menu" :model="contextMenuItems" />
   </div>
 </template>
 <script setup lang="ts">
@@ -53,6 +55,8 @@ import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { applyWordSelectToLine, forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { digit2Sup } from '@/utils/toSupSub'
+import { ContextMenu } from 'primevue'
+import type { MenuItem } from 'primevue/menuitem'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 const props = defineProps<{
@@ -160,6 +164,50 @@ function handleDragEnd(_e: DragEvent) {
   runtimeStore.isDragging = false
   runtimeStore.isDraggingCopy = false
 }
+const menu = useTemplateRef('menu')
+const closeContext = () => menu.value?.hide()
+function handleContext(e: MouseEvent) {
+  if (runtimeStore.closeContext && runtimeStore.closeContext !== closeContext)
+    runtimeStore.closeContext()
+  if (!runtimeStore.isContentView) return
+  menu.value?.show(e)
+  runtimeStore.closeContext = closeContext
+}
+const contextMenuItems: MenuItem[] = [
+  {
+    label: '在前插入词',
+    icon: 'pi pi-arrow-left',
+    command: () => {
+      const newWord = coreStore.newWord(props.word.parentLine)
+      props.word.parentLine.words.splice(props.index, 0, newWord)
+      nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
+    },
+  },
+  {
+    label: '在后插入词',
+    icon: 'pi pi-arrow-right',
+    command: () => {
+      const newWord = coreStore.newWord(props.word.parentLine)
+      props.word.parentLine.words.splice(props.index + 1, 0, newWord)
+      nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
+    },
+  },
+  {
+    label: '合并单词',
+    icon: 'pi pi-sign-in',
+    command: () => {},
+  },
+  {
+    label: '在此拆分行',
+    icon: 'pi pi-code',
+    command: () => {},
+  },
+  {
+    label: '删除单词',
+    icon: 'pi pi-trash',
+    command: () => props.word.parentLine.words.splice(props.index, 1),
+  },
+]
 
 // Placeholder and input width control
 const placeholder = computed(() => {
