@@ -37,11 +37,10 @@ const word1: LyricWord = newWord(line, {
   startTime: 0,
   endTime: 1000,
   word: 'Hello',
-  bookmarked: true,
 })
 const word2: LyricWord = newWord(line, {
-  startTime: 1200,
-  endTime: 2000,
+  startTime: 0,
+  endTime: 0,
   word: ' ',
 })
 const word3: LyricWord = newWord(line, {

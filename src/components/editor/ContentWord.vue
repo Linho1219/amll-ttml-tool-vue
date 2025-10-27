@@ -181,19 +181,25 @@ const widthController = computed(() => {
 
 // Hotkeys
 function handleKeydown(event: KeyboardEvent) {
-  console.log(event.key, event.code)
   if (!inputEl.value || !focused.value) return
   const el = inputEl.value
   switch (event.code) {
     case 'Backspace':
       // Combine with previous word
-      if (props.index === 0) return
+      if (
+        props.index === 0 ||
+        inputEl.value.selectionStart !== 0 ||
+        inputEl.value.selectionEnd !== 0
+      )
+        return
       event.preventDefault()
       const lastWord = props.word.parentLine.words[props.index - 1]
       if (!lastWord) return
       const cursorPos = lastWord.word.length
       lastWord.word += props.word.word
-      lastWord.endTime = props.word.endTime
+      if (props.word.startTime && props.word.endTime) {
+        lastWord.endTime = props.word.endTime
+      }
       nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput(cursorPos))
       props.word.parentLine.words.splice(props.index, 1)
       return
@@ -265,8 +271,8 @@ onMounted(() => {
       if (!inputEl.value) return
       if (position === undefined || Number.isNaN(position)) inputEl.value.select()
       else if (position < 0) {
-        const length = inputEl.value.value.length
-        const cursor = length + position - 1
+        const length = props.word.word.length
+        const cursor = length + position + 1
         inputEl.value.setSelectionRange(cursor, cursor)
       } else inputEl.value.setSelectionRange(position, position)
     },
