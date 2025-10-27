@@ -11,7 +11,7 @@
         <LineShell :line="line" :index="lineIndex">
           <WordInsertIndicator :index="0" :parent="line" />
           <template v-for="(word, wordIndex) in line.words" :key="word">
-            <Word :word="word" :index="wordIndex" />
+            <Word :word="word" :index="wordIndex" :line-index="lineIndex" />
             <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
           </template>
           <Button

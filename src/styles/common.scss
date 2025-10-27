@@ -53,15 +53,8 @@ input {
 }
 
 .p-contextmenu.p-contextmenu {
-  &-enter-from,
-  &-leave-to {
-    opacity: 0;
-    transform: translateX(-0.3rem);
-  }
   &-enter-active,
   &-leave-active {
-    transition:
-      opacity 0.1s,
-      transform 0.05s;
+    transition: none;
   }
 }

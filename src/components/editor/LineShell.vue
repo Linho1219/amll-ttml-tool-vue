@@ -167,6 +167,7 @@ function handleDragEnd(_e: DragEvent) {
 const menu = useTemplateRef('menu')
 const closeContext = () => menu.value?.hide()
 function handleContext(e: MouseEvent) {
+  handleFocus()
   if (runtimeStore.closeContext && runtimeStore.closeContext !== closeContext)
     runtimeStore.closeContext()
   if (!runtimeStore.isContentView) return
@@ -197,18 +198,13 @@ const contextMenuItems: MenuItem[] = [
     },
   },
   {
-    label: '复制行',
+    label: '克隆行',
     icon: 'pi pi-clone',
     command: () => {
       const duplicate = coreStore.newLine(props.line)
       duplicate.words = props.line.words.map((word) => coreStore.newWord(duplicate, word))
       coreStore.lyricLines.splice(props.index, 0, duplicate)
     },
-  },
-  {
-    label: '合并行',
-    icon: 'pi pi-sign-in',
-    command: () => {},
   },
   {
     label: '删除行',

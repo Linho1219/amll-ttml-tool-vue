@@ -62,6 +62,7 @@ const coreStore = useCoreStore()
 const props = defineProps<{
   word: LyricWord
   index: number
+  lineIndex: number
 }>()
 
 // Input Element
@@ -93,7 +94,7 @@ function handleMousedown(e: MouseEvent) {
       runtimeStore.selectedLines.clear()
       const [start, end] = sortIndex(
         coreStore.lyricLines.indexOf(lastTouchedWord.parentLine),
-        coreStore.lyricLines.indexOf(props.word.parentLine),
+        props.lineIndex,
       )
       coreStore.lyricLines
         .slice(start, end + 1)
@@ -167,6 +168,7 @@ function handleDragEnd(_e: DragEvent) {
 const menu = useTemplateRef('menu')
 const closeContext = () => menu.value?.hide()
 function handleContext(e: MouseEvent) {
+  handleFocus(e)
   if (runtimeStore.closeContext && runtimeStore.closeContext !== closeContext)
     runtimeStore.closeContext()
   if (!runtimeStore.isContentView) return
@@ -193,14 +195,19 @@ const contextMenuItems: MenuItem[] = [
     },
   },
   {
-    label: '合并单词',
-    icon: 'pi pi-sign-in',
-    command: () => {},
-  },
-  {
     label: '在此拆分行',
     icon: 'pi pi-code',
-    command: () => {},
+    command: () => {
+      const newLine = coreStore.newLine(props.word.parentLine)
+      const wordsToMove = props.word.parentLine.words.splice(props.index)
+      wordsToMove.forEach((word) => (word.parentLine = newLine))
+      newLine.words = wordsToMove
+      coreStore.lyricLines.splice(props.lineIndex + 1, 0, newLine)
+      nextTick(() => {
+        runtimeStore.selectedLines.clear()
+        runtimeStore.selectedLines.add(newLine)
+      })
+    },
   },
   {
     label: '删除单词',
