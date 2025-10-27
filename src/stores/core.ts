@@ -1,4 +1,4 @@
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 //test
@@ -52,10 +52,11 @@ const word3: LyricWord = newWord(line, {
 line.words.push(word1, word2, word3)
 
 export const useCoreStore = defineStore('core', () => {
+  const createdAt = ref(Date.now())
   const metadata = reactive<TTMLMetadata[]>([])
   const lyricLines = reactive<LyricLine[]>([line])
   const comments = reactive<Comment[]>([])
-  return { metadata, lyricLines, comments, newLine, newWord }
+  return { createdAt, metadata, lyricLines, comments, newLine, newWord }
 })
 
 export interface TTMLMetadata {

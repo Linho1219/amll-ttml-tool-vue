@@ -1,10 +1,21 @@
 <template>
   <div class="titlebar">
     <div class="leftbar">
-      <Button label="打开" icon="pi pi-folder-open" severity="secondary" />
+      <Button
+        label="打开"
+        icon="pi pi-folder-open"
+        severity="secondary"
+        @click="(e) => openMenu?.toggle(e)"
+      />
+      <Menu ref="openMenu" :model="openMenuItems" popup />
       <Button icon="pi pi-cog" variant="text" severity="secondary" />
-      <Button icon="pi pi-undo" variant="text" severity="secondary" />
-      <Button icon="pi pi-refresh" variant="text" severity="secondary" disabled />
+      <Button icon="pi pi-undo" variant="text" severity="secondary" @click="editHistory.undo()" />
+      <Button
+        icon="pi pi-refresh"
+        variant="text"
+        severity="secondary"
+        @click="editHistory.redo()"
+      />
     </div>
     <div class="centerbar">
       <SelectButton v-model="viewHandler" :options="viewOptions" optionLabel="name" size="large" />
@@ -14,6 +25,7 @@
         label="保存"
         icon="pi pi-save"
         :model="[{ label: '另存为', icon: 'pi pi-file-export' }]"
+        @click="handleSaveClick"
       />
     </div>
   </div>
@@ -21,11 +33,16 @@
 
 <script setup lang="ts">
 import { View } from '@/stores/runtime'
-import { Button, SelectButton, SplitButton } from 'primevue'
+import { Button, Menu, SelectButton, SplitButton } from 'primevue'
 import { useRuntimeStore } from '@/stores/runtime'
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
+import type { MenuItem } from 'primevue/menuitem'
+import { exportToNativeFormat } from '@/stores/port/native'
+import editHistory from '@/dataTransfer/editHistory'
 
 const runtimeStore = useRuntimeStore()
+
+// Middle view selector
 const viewOptions = [
   { name: '内容', value: View.Content },
   { name: '时轴', value: View.Timing },
@@ -36,6 +53,49 @@ const viewHandler = ref<(typeof viewOptions)[number] | null>(stateToView())
 watch(viewHandler, (value) => {
   if (!value) nextTick(() => (viewHandler.value = stateToView()))
   else runtimeStore.currentView = value.value
+})
+
+// File open
+const openMenu = useTemplateRef('openMenu')
+const openMenuItems: MenuItem[] = [
+  {
+    label: '现有项目',
+    icon: 'pi pi-file',
+    command: () => {},
+  },
+  {
+    label: '从歌词文件导入',
+    icon: 'pi pi-file-arrow-up',
+    command: () => {},
+  },
+  {
+    label: '从纯文本导入',
+    icon: 'pi pi-align-left',
+    command: () => {},
+  },
+  { separator: true },
+  {
+    label: '空项目',
+    icon: 'pi pi-ban',
+    command: () => {},
+  },
+]
+
+// File save
+function handleSaveClick() {
+  console.log(exportToNativeFormat())
+}
+
+//test
+const a = reactive({ foo: 1, bar: 2 })
+watch(a, (val) => console.log('changed', val.foo, val.bar), { deep: true })
+onMounted(() => {
+  a.foo = 2
+  a.foo = 3
+  a.bar = 4
+  nextTick(() => {
+    a.bar = 5
+  })
 })
 </script>
 

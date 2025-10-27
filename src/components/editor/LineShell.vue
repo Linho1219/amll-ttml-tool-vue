@@ -61,7 +61,7 @@
         <FloatLabel variant="on">
           <InputText
             fluid
-            v-model="props.line.translatedLyric"
+            v-model.lazy="props.line.translatedLyric"
             @focus="handleFocus"
             @mousedown.stop
             @click.stop
@@ -71,7 +71,7 @@
         <FloatLabel variant="on">
           <InputText
             fluid
-            v-model="props.line.romanLyric"
+            v-model.lazy="props.line.romanLyric"
             @focus="handleFocus"
             @mousedown.stop
             @click.stop
@@ -88,9 +88,10 @@
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { forceOutsideBlur, sortIndex } from '@/utils/selection'
-import { Button, ContextMenu, FloatLabel, InputText } from 'primevue'
+import { Button, ContextMenu, FloatLabel } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
 import { computed, ref, useTemplateRef } from 'vue'
+import InputText from '../repack/InputText.vue'
 
 const props = defineProps<{
   line: LyricLine

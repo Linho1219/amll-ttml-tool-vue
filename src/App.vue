@@ -8,6 +8,8 @@ import Content from './components/editor/Editor.vue'
 import Player from './components/audio/Player.vue'
 import { useRuntimeStore } from './stores/runtime'
 const runtimeStore = useRuntimeStore()
+import editHistory from './dataTransfer/editHistory'
+editHistory.init()
 </script>
 
 <template>

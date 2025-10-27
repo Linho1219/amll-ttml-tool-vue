@@ -37,11 +37,12 @@
       <InputText
         ref="wordInputComponent"
         class="lword-input"
-        v-model="props.word.word"
+        v-model="inputModel"
         size="large"
         @keydown="handleKeydown"
         @focus="handleFocus"
         @compositionend="handleCompositionEnd"
+        @blur="props.word.word = inputModel"
       />
     </div>
     <ContextMenu ref="menu" :model="contextMenuItems" />
@@ -50,8 +51,17 @@
 <script setup lang="ts">
 import { useFocus } from '@vueuse/core'
 import InputText from '@/components/repack/InputText.vue'
-import { computed, nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
-import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+  watch,
+} from 'vue'
+import { useCoreStore, type LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { applyWordSelectToLine, forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { digit2Sup } from '@/utils/toSupSub'
@@ -70,6 +80,11 @@ const inputComponent = useTemplateRef('wordInputComponent')
 const inputEl = shallowRef<HTMLInputElement | null | undefined>(null)
 const { focused } = useFocus(inputEl)
 onMounted(() => (inputEl.value = inputComponent.value?.input))
+const inputModel = ref(props.word.word)
+watch(
+  () => props.word.word,
+  (val) => (inputModel.value = val),
+)
 
 // Selection
 const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
@@ -219,7 +234,7 @@ const contextMenuItems: MenuItem[] = [
 // Placeholder and input width control
 const placeholder = computed(() => {
   if (focused.value) return ''
-  const word = props.word.word
+  const word = inputModel.value
   if (!word) return '/'
   if (word.match(/^\s+$/)) {
     if (word.length === 1) return '␣'
@@ -228,7 +243,7 @@ const placeholder = computed(() => {
   }
 })
 const widthController = computed(() => {
-  const word = props.word.word
+  const word = inputModel.value
   if (!word) return '/'
   if (word === ' ') return '␣'
   return placeholder.value || word
@@ -241,17 +256,12 @@ function handleKeydown(event: KeyboardEvent) {
   switch (event.code) {
     case 'Backspace':
       // Combine with previous word
-      if (
-        props.index === 0 ||
-        inputEl.value.selectionStart !== 0 ||
-        inputEl.value.selectionEnd !== 0
-      )
-        return
+      if (props.index === 0 || el.selectionStart !== 0 || el.selectionEnd !== 0) return
       event.preventDefault()
       const lastWord = props.word.parentLine.words[props.index - 1]
       if (!lastWord) return
       const cursorPos = lastWord.word.length
-      lastWord.word += props.word.word
+      lastWord.word += el.value
       if (props.word.startTime && props.word.endTime) {
         lastWord.endTime = props.word.endTime
       }
@@ -289,7 +299,7 @@ function handleKeydown(event: KeyboardEvent) {
       event.preventDefault()
       // preventDefault won't work with IME!
       // handle later in compositionend
-      const breakIndex = inputEl.value.selectionStart || 0
+      const breakIndex = el.selectionStart || 0
       const totDuration = props.word.endTime - props.word.startTime
       const breakTime = props.word.startTime + (totDuration * breakIndex) / (el.value.length || 1)
       const newWord = coreStore.newWord(props.word.parentLine, {
