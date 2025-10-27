@@ -71,8 +71,8 @@ function handleDrop(e: DragEvent) {
   width: 0.5rem;
   position: relative;
   &.dragging {
-    margin: -0.1rem -0.5rem;
-    padding: 0.1rem 0.5rem;
+    margin: -0.1rem -0.8rem;
+    padding: 0.1rem 0.8rem;
     z-index: -1;
   }
   &.floatup {
