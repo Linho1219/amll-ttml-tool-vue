@@ -1,4 +1,6 @@
 # amll-ttml-tool-vue
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FLinho1219%2Famll-ttml-tool-vue.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FLinho1219%2Famll-ttml-tool-vue?ref=badge_shield)
+
 
 This template should help get you started developing with Vue 3 in Vite.
 
@@ -40,3 +42,7 @@ pnpm dev
 ```sh
 pnpm build
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FLinho1219%2Famll-ttml-tool-vue.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FLinho1219%2Famll-ttml-tool-vue?ref=badge_large)
