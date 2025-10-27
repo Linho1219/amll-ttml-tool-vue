@@ -40,6 +40,7 @@
         size="large"
         @keydown="handleKeydown"
         @focus="handleFocus"
+        @compositionend="handleCompositionEnd"
       />
     </div>
   </div>
@@ -180,25 +181,29 @@ const widthController = computed(() => {
 
 // Hotkeys
 function handleKeydown(event: KeyboardEvent) {
-  console.log(event.code)
+  console.log(event.key, event.code)
   if (!inputEl.value || !focused.value) return
   const el = inputEl.value
   switch (event.code) {
     case 'Backspace':
-      if (props.word.word || props.index === 0) return
+      // Combine with previous word
+      if (props.index === 0) return
       event.preventDefault()
-      nextTick(() => {
-        const lastWord = props.word.parentLine.words[props.index - 1]
-        if (!lastWord) return
-        runtimeStore.wordHooks.get(lastWord)?.focusInput(-1)
-      })
+      const lastWord = props.word.parentLine.words[props.index - 1]
+      if (!lastWord) return
+      const cursorPos = lastWord.word.length
+      lastWord.word += props.word.word
+      lastWord.endTime = props.word.endTime
+      nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput(cursorPos))
       props.word.parentLine.words.splice(props.index, 1)
       return
     case 'Enter':
+      // Blur input
       event.preventDefault()
       el.blur()
       return
     case 'ArrowLeft':
+      // If at start, focus previous word
       if (el.selectionStart !== 0) return
       event.preventDefault()
       nextTick(() => {
@@ -208,14 +213,42 @@ function handleKeydown(event: KeyboardEvent) {
       })
       return
     case 'ArrowRight':
+      // If at end, focus next word
       if (el.selectionStart !== el.value.length) return
       event.preventDefault()
       nextTick(() => {
         const nextWord = props.word.parentLine.words[props.index + 1]
         if (!nextWord) return
-        runtimeStore.wordHooks.get(nextWord)?.focusInput(1)
+        runtimeStore.wordHooks.get(nextWord)?.focusInput(0)
       })
       return
+    case 'Backquote':
+      // Break word at cursor
+      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return
+      event.preventDefault()
+      // preventDefault won't work with IME!
+      // handle later in compositionend
+      const breakIndex = inputEl.value.selectionStart || 0
+      const totDuration = props.word.endTime - props.word.startTime
+      const breakTime = props.word.startTime + (totDuration * breakIndex) / (el.value.length || 1)
+      const newWord = coreStore.newWord(props.word.parentLine, {
+        word: el.value.slice(breakIndex),
+        startTime: breakTime,
+        endTime: props.word.endTime,
+      })
+      props.word.endTime = breakTime
+      props.word.word = el.value.slice(0, breakIndex)
+      props.word.parentLine.words.splice(props.index + 1, 0, newWord)
+      nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput(0))
+      return
+  }
+}
+function handleCompositionEnd(_e: CompositionEvent) {
+  const pos = inputEl.value?.selectionStart || 0
+  const lastChar = props.word.word.charAt(pos - 1)
+  if (lastChar === '·') {
+    props.word.word = props.word.word.slice(0, pos - 1) + props.word.word.slice(pos)
+    nextTick(() => inputEl.value?.setSelectionRange(pos - 1, pos - 1))
   }
 }
 
@@ -227,20 +260,15 @@ onMounted(() => {
     setHighlight: (_highlight: boolean) => {
       // to do
     },
-    focusInput: (position = 0) => {
+    focusInput: (position = undefined) => {
       focused.value = true
       if (!inputEl.value) return
-      switch (position) {
-        case -1:
-          inputEl.value.setSelectionRange(inputEl.value.value.length, inputEl.value.value.length)
-          break
-        case 0:
-          inputEl.value.select()
-          break
-        case 1:
-          inputEl.value.setSelectionRange(0, 0)
-          break
-      }
+      if (position === undefined || Number.isNaN(position)) inputEl.value.select()
+      else if (position < 0) {
+        const length = inputEl.value.value.length
+        const cursor = length + position - 1
+        inputEl.value.setSelectionRange(cursor, cursor)
+      } else inputEl.value.setSelectionRange(position, position)
     },
   })
 })

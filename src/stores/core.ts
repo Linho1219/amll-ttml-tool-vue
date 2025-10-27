@@ -104,7 +104,7 @@ export interface LyricWord {
   startTime: number
   /** 单词的结束时间 */
   endTime: number
-  /** 单词 */
+  /** 词内容 */
   word: string
   /** 所在行 */
   parentLine: LyricLine
