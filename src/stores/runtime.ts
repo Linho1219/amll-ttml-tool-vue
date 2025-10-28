@@ -48,6 +48,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     selectedLines: selectedLines as ReadonlySet<LyricLine>,
     selectedWords: selectedWords as ReadonlySet<LyricWord>,
     clearSelection,
+    clearWordSelection,
     selectLine,
     selectWord,
     applyWordSelectToLine,
@@ -78,8 +79,11 @@ export const useRuntimeStore = defineStore('runtime', () => {
     selectedLines.clear()
     selectedWords.clear()
   }
+  function clearWordSelection() {
+    selectedWords.clear()
+  }
   function selectWord(...words: LyricWord[]) {
-    clearSelection()
+    clearWordSelection()
     words.forEach((word) => selectedWords.add(word))
     applyWordSelectToLine()
   }
@@ -93,6 +97,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
   }
   function addLineToSelection(...lines: LyricLine[]) {
     lines.forEach((line) => selectedLines.add(line))
+    clearWordSelection()
   }
   function removeWordFromSelection(...words: LyricWord[]) {
     words.forEach((word) => selectedWords.delete(word))
@@ -100,6 +105,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
   }
   function removeLineFromSelection(...lines: LyricLine[]) {
     lines.forEach((line) => selectedLines.delete(line))
+    clearWordSelection()
   }
   function applyWordSelectToLine() {
     selectedLines.clear()

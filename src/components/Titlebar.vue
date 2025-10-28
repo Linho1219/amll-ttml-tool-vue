@@ -9,12 +9,19 @@
       />
       <Menu ref="openMenu" :model="openMenuItems" popup />
       <Button icon="pi pi-cog" variant="text" severity="secondary" />
-      <Button icon="pi pi-undo" variant="text" severity="secondary" @click="editHistory.undo()" />
+      <Button
+        icon="pi pi-undo"
+        variant="text"
+        severity="secondary"
+        @click="editHistory.undo()"
+        :disabled="!editHistory.undoable.value"
+      />
       <Button
         icon="pi pi-refresh"
         variant="text"
         severity="secondary"
         @click="editHistory.redo()"
+        :disabled="!editHistory.redoable.value"
       />
     </div>
     <div class="centerbar">
@@ -54,6 +61,10 @@ watch(viewHandler, (value) => {
   if (!value) nextTick(() => (viewHandler.value = stateToView()))
   else runtimeStore.currentView = value.value
 })
+watch(
+  () => runtimeStore.currentView,
+  () => (viewHandler.value = stateToView()),
+)
 
 // File open
 const openMenu = useTemplateRef('openMenu')

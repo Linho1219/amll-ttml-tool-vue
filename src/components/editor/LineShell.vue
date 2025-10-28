@@ -127,6 +127,7 @@ function handleMouseDown(e: MouseEvent) {
       affectedLines.forEach((line) => runtimeStore.removeLineFromSelection(line))
     else affectedLines.forEach((line) => runtimeStore.addLineToSelection(line))
   } else {
+    runtimeStore.clearWordSelection()
     if (isSelected.value) return
     runtimeStore.selectLine(props.line)
   }

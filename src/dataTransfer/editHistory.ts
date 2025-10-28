@@ -1,4 +1,4 @@
-import { toRaw, watch } from 'vue'
+import { computed, reactive, toRaw, watch } from 'vue'
 import {
   useCoreStore,
   type Comment,
@@ -27,30 +27,35 @@ interface Snapshot {
 }
 
 const snapshotList = new Map<number, Snapshot>()
-let head = 0
-let tail = 0
-let current = 0
+const state = reactive({
+  head: -1,
+  current: -1,
+  tail: 0,
+})
+const redoable = computed(() => state.current < state.head)
+const undoable = computed(() => state.current > state.tail)
 const maxLength = 50
 let stopRecording = false
 
 let shutdownHook: (() => void) | null = null
 
 function init() {
-  head = current = -1
-  tail = 0
+  state.head = state.current = -1
+  state.tail = 0
+  stopRecording = false
   snapshotList.clear()
+  take()
   const coreStore = useCoreStore()
   shutdownHook = watch(
     coreStore,
     () => {
       if (!stopRecording) take()
     },
-    { deep: true, immediate: true },
+    { deep: true },
   )
 }
 
 function take() {
-  console.log('take', head, tail, current)
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
 
@@ -70,11 +75,11 @@ function take() {
       lastTouchedWord: toRaw(runtimeStore.lastTouchedWord),
     },
   })
-  snapshotList.set(++current, snapshot)
-  if (current < head) for (let i = head; i > current; --i) snapshotList.delete(i)
-  head = current
-  if (snapshotList.size > maxLength) snapshotList.delete(tail++)
-  console.log('take-done', head, tail, current)
+  snapshotList.set(++state.current, snapshot)
+  if (state.current < state.head)
+    for (let i = state.head; i > state.current; --i) snapshotList.delete(i)
+  state.head = state.current
+  if (snapshotList.size > maxLength) snapshotList.delete(state.tail++)
 }
 
 function wayback(snapshot: Snapshot) {
@@ -95,24 +100,20 @@ function wayback(snapshot: Snapshot) {
 }
 
 function undo() {
-  console.log('undo', head, tail, current)
-  if (current <= tail) return null
-  const snapshot = cloneDeep(snapshotList.get(--current)!)
+  if (!undoable.value) return null
+  const snapshot = cloneDeep(snapshotList.get(--state.current)!)
   wayback(snapshot)
-  console.log('undo-done', head, tail, current)
 }
 
 function redo() {
-  console.log('redo', head, tail, current)
-  if (current >= head) return null
-  const snapshot = cloneDeep(snapshotList.get(++current)!)
+  if (!redoable.value) return null
+  const snapshot = cloneDeep(snapshotList.get(++state.current)!)
   wayback(snapshot)
-  console.log('redo-done', head, tail, current)
 }
 
 function clear() {
-  head = current = -1
-  tail = 0
+  state.head = state.current = -1
+  state.tail = 0
   snapshotList.clear()
   take()
 }
@@ -124,4 +125,14 @@ function shutdown() {
   }
 }
 
-export default { init, take, undo, redo, clear, shutdown }
+export default {
+  init,
+  take,
+  undo,
+  redo,
+  clear,
+  shutdown,
+  redoable,
+  undoable,
+  state: state as Readonly<typeof state>,
+}
