@@ -223,7 +223,7 @@ const wordSelectedEmpty = computed(() => runtimeStore.selectedWords.size === 0)
 type BooleanKeys<T> = {
   [K in keyof T]: T[K] extends boolean ? K : never
 }[keyof T]
-function attrCheckbox<T extends Object>(itemSet: Set<T>, attr: BooleanKeys<T>) {
+function attrCheckbox<T extends Object>(itemSet: ReadonlySet<T>, attr: BooleanKeys<T>) {
   const indeterminate = ref(true)
   const checked = computed<boolean>({
     get() {
@@ -260,7 +260,7 @@ const { checked: isDuetChecked, indeterminate: isDuetIndeterminate } = attrCheck
   'isDuet',
 )
 
-function itemTimeInput<T extends { startTime: number; endTime: number }>(itemSet: Set<T>) {
+function itemTimeInput<T extends { startTime: number; endTime: number }>(itemSet: ReadonlySet<T>) {
   const setOnlyOne = computed(() => itemSet.size === 1)
   const setFirstItem = computed(() => itemSet.values().next().value)
   const getTimeComputed = (timeKey: 'startTime' | 'endTime') =>

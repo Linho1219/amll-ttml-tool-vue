@@ -3,20 +3,19 @@ import { defineStore } from 'pinia'
 
 //test
 
-const newLine = (attrs: Partial<LyricLine> = {}) => ({
+const newLine = (attrs: Partial<LyricLine> = {}): LyricLine => ({
   startTime: 0,
   endTime: 0,
   words: [],
   ignoreInTiming: false,
   bookmarked: false,
-  comments: [],
   translatedLyric: '',
   romanLyric: '',
   isBG: false,
   isDuet: false,
   ...attrs,
 })
-const newWord = (parentLine: LyricLine, attrs: Partial<LyricWord> = {}) => ({
+const newWord = (attrs: Partial<LyricWord> = {}): LyricWord => ({
   startTime: 0,
   endTime: 0,
   word: '',
@@ -25,7 +24,6 @@ const newWord = (parentLine: LyricLine, attrs: Partial<LyricWord> = {}) => ({
   bookmarked: false,
   comments: [],
   ...attrs,
-  parentLine,
 })
 
 const line: LyricLine = newLine({
@@ -33,17 +31,17 @@ const line: LyricLine = newLine({
   endTime: 3000,
   translatedLyric: '你好，世界！',
 })
-const word1: LyricWord = newWord(line, {
+const word1: LyricWord = newWord({
   startTime: 0,
   endTime: 1000,
   word: 'Hello',
 })
-const word2: LyricWord = newWord(line, {
+const word2: LyricWord = newWord({
   startTime: 0,
   endTime: 0,
   word: ' ',
 })
-const word3: LyricWord = newWord(line, {
+const word3: LyricWord = newWord({
   startTime: 2300,
   endTime: 3000,
   word: 'world!',
@@ -56,7 +54,41 @@ export const useCoreStore = defineStore('core', () => {
   const metadata = reactive<TTMLMetadata[]>([])
   const lyricLines = reactive<LyricLine[]>([line])
   const comments = reactive<Comment[]>([])
-  return { createdAt, metadata, lyricLines, comments, newLine, newWord }
+  return {
+    createdAt,
+    metadata,
+    lyricLines,
+    comments,
+    newLine,
+    newWord,
+    deleteLine,
+    deleteWord,
+    deleteWordFromLine,
+  }
+
+  function deleteLine(...lines: LyricLine[]) {
+    const lineSet = new Set(lines)
+    const filtered = lyricLines.filter((line) => !lineSet.has(line))
+    if (filtered.length === lyricLines.length) return
+    lyricLines.length = 0
+    lyricLines.push(...filtered)
+  }
+  function deleteWord(...words: LyricWord[]) {
+    const wordSet = new Set(words)
+    for (const line of lyricLines) {
+      const filtered = line.words.filter((word) => !wordSet.has(word))
+      if (filtered.length === line.words.length) continue
+      line.words.length = 0
+      line.words.push(...filtered)
+    }
+  }
+  function deleteWordFromLine(line: LyricLine, ...words: LyricWord[]) {
+    const wordSet = new Set(words)
+    const filtered = line.words.filter((word) => !wordSet.has(word))
+    if (filtered.length === line.words.length) return
+    line.words.length = 0
+    line.words.push(...filtered)
+  }
 })
 
 export interface TTMLMetadata {
@@ -95,8 +127,6 @@ export interface LyricLine {
   ignoreInTiming: boolean
   /** 已添加书签 */
   bookmarked: boolean
-  /** 批注 */
-  comments: Comment[]
 }
 /** 单词 */
 export interface LyricWord {
@@ -106,8 +136,6 @@ export interface LyricWord {
   endTime: number
   /** 词内容 */
   word: string
-  /** 所在行 */
-  parentLine: LyricLine
   /** 占位拍，用于日语多音节汉字时轴 */
   placeholdingBeat: number
   /** 当前占位拍 */

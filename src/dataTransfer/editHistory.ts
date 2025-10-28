@@ -19,8 +19,8 @@ interface Snapshot {
   }
   runtime: {
     currentView: View
-    selectedLines: Set<LyricLine>
-    selectedWords: Set<LyricWord>
+    selectedLines: ReadonlySet<LyricLine>
+    selectedWords: ReadonlySet<LyricWord>
     lastTouchedLine: LyricLine | null
     lastTouchedWord: LyricWord | null
   }
@@ -86,10 +86,9 @@ function wayback(snapshot: Snapshot) {
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshot.core.lyricLines)
   coreStore.comments.splice(0, coreStore.comments.length, ...snapshot.core.comments)
   runtimeStore.currentView = snapshot.runtime.currentView
-  runtimeStore.selectedLines.clear()
-  snapshot.runtime.selectedLines.forEach((line) => runtimeStore.selectedLines.add(line))
-  runtimeStore.selectedWords.clear()
-  snapshot.runtime.selectedWords.forEach((word) => runtimeStore.selectedWords.add(word))
+  if (snapshot.runtime.selectedWords.size)
+    runtimeStore.selectWord(...snapshot.runtime.selectedWords)
+  else runtimeStore.selectLine(...snapshot.runtime.selectedLines)
   runtimeStore.lastTouchedLine = snapshot.runtime.lastTouchedLine
   runtimeStore.lastTouchedWord = snapshot.runtime.lastTouchedWord
   setTimeout(() => (stopRecording = false), 0)

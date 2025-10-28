@@ -1,6 +1,6 @@
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch, type Ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { LyricLine, LyricWord } from './core'
+import { useCoreStore, type LyricLine, type LyricWord } from './core'
 export enum View {
   Content,
   Timing,
@@ -16,6 +16,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
   // Selection & drag
   const selectedLines = reactive(new Set<LyricLine>())
   const selectedWords = reactive(new Set<LyricWord>())
+
   const lastTouchedLine = ref<LyricLine | null>(null)
   const lastTouchedWord = ref<LyricWord | null>(null)
   const isDragging = ref(false)
@@ -44,10 +45,21 @@ export const useRuntimeStore = defineStore('runtime', () => {
     isContentView,
     isTimingView,
     isPreviewView,
-    selectedLines,
-    selectedWords,
-    lastTouchedLine,
-    lastTouchedWord,
+    selectedLines: selectedLines as ReadonlySet<LyricLine>,
+    selectedWords: selectedWords as ReadonlySet<LyricWord>,
+    clearSelection,
+    selectLine,
+    selectWord,
+    applyWordSelectToLine,
+    addWordToSelection,
+    addLineToSelection,
+    removeWordFromSelection,
+    removeLineFromSelection,
+    lastTouchedLine: lastTouchedLine as Readonly<Ref<LyricLine | null>>,
+    lastTouchedWord: lastTouchedWord as Readonly<Ref<LyricWord | null>>,
+    touchLineWord,
+    touchLineOnly,
+    touchClear,
     isDragging,
     isDraggingCopy,
     canDrop,
@@ -60,6 +72,53 @@ export const useRuntimeStore = defineStore('runtime', () => {
     hltLineTimeConflicts,
     hltWordTimeConflicts,
     scrollWithPlayback,
+  }
+
+  function clearSelection() {
+    selectedLines.clear()
+    selectedWords.clear()
+  }
+  function selectWord(...words: LyricWord[]) {
+    clearSelection()
+    words.forEach((word) => selectedWords.add(word))
+    applyWordSelectToLine()
+  }
+  function selectLine(...lines: LyricLine[]) {
+    clearSelection()
+    lines.forEach((line) => selectedLines.add(line))
+  }
+  function addWordToSelection(...words: LyricWord[]) {
+    words.forEach((word) => selectedWords.add(word))
+    applyWordSelectToLine()
+  }
+  function addLineToSelection(...lines: LyricLine[]) {
+    lines.forEach((line) => selectedLines.add(line))
+  }
+  function removeWordFromSelection(...words: LyricWord[]) {
+    words.forEach((word) => selectedWords.delete(word))
+    applyWordSelectToLine()
+  }
+  function removeLineFromSelection(...lines: LyricLine[]) {
+    lines.forEach((line) => selectedLines.delete(line))
+  }
+  function applyWordSelectToLine() {
+    selectedLines.clear()
+    if (selectedWords.size === 0) return
+    const coreStore = useCoreStore()
+    for (const line of coreStore.lyricLines)
+      for (const word of line.words) if (selectedWords.has(word)) selectedLines.add(line)
+  }
+  function touchLineWord(line: LyricLine, word: LyricWord) {
+    lastTouchedLine.value = line
+    lastTouchedWord.value = word
+  }
+  function touchLineOnly(line: LyricLine) {
+    lastTouchedLine.value = line
+    lastTouchedWord.value = null
+  }
+  function touchClear() {
+    lastTouchedLine.value = null
+    lastTouchedWord.value = null
   }
 })
 

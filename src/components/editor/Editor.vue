@@ -11,7 +11,7 @@
         <LineShell :line="line" :index="lineIndex">
           <WordInsertIndicator :index="0" :parent="line" />
           <template v-for="(word, wordIndex) in line.words" :key="word">
-            <Word :word="word" :index="wordIndex" :line-index="lineIndex" />
+            <Word :word="word" :index="wordIndex" :parent="line" :line-index="lineIndex" />
             <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
           </template>
           <Button
@@ -54,8 +54,7 @@ function handleMouseDown(e: MouseEvent) {
   if (e.ctrlKey || e.metaKey) return
   forceOutsideBlur()
   runtimeStore.lastTouchedLine = runtimeStore.lastTouchedWord = null
-  runtimeStore.selectedLines.clear()
-  runtimeStore.selectedWords.clear()
+  runtimeStore.clearSelection()
 }
 function handleDragOver(e: DragEvent) {
   if (!runtimeStore.isDragging) return
@@ -85,9 +84,7 @@ const contextMenuItems = ref<MenuItem[]>([
     command: () => {
       const newLine = coreStore.newLine()
       coreStore.lyricLines.push(newLine)
-      runtimeStore.selectedLines.clear()
-      runtimeStore.selectedWords.clear()
-      runtimeStore.selectedLines.add(newLine)
+      runtimeStore.selectLine(newLine)
     },
   },
 ])

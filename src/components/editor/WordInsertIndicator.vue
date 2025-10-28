@@ -43,24 +43,18 @@ function handleDrop(e: DragEvent) {
   dragover.value = false
   runtimeStore.canDrop = false
   const pendingWords = sortWords(...runtimeStore.selectedWords)
-  runtimeStore.selectedLines.clear()
-  runtimeStore.selectedLines.add(props.parent)
   if (e.ctrlKey || e.metaKey) {
-    const duplicatedWords = pendingWords.map((word) => coreStore.newWord(props.parent, word))
+    const duplicatedWords = pendingWords.map(coreStore.newWord)
     props.parent.words.splice(props.index, 0, ...duplicatedWords)
-    runtimeStore.selectedWords.clear()
-    duplicatedWords.forEach((word) => runtimeStore.selectedWords.add(word))
-    runtimeStore.lastTouchedLine = props.parent
-    runtimeStore.lastTouchedWord = duplicatedWords[duplicatedWords.length - 1]!
+    runtimeStore.selectWord(...duplicatedWords)
+    runtimeStore.touchLineWord(props.parent, duplicatedWords.at(-1)!)
   } else {
     const placeholder = coreStore.newWord(props.parent)
     props.parent.words.splice(props.index, 0, placeholder)
-    pendingWords.forEach((word) => {
-      word.parentLine.words.splice(word.parentLine.words.indexOf(word), 1)
-      word.parentLine = props.parent
-    })
+    coreStore.deleteWord(...pendingWords)
     const insertIndex = props.parent.words.indexOf(placeholder)
     props.parent.words.splice(insertIndex, 1, ...pendingWords)
+    runtimeStore.applyWordSelectToLine()
   }
 }
 </script>

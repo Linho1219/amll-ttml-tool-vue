@@ -61,9 +61,9 @@ import {
   useTemplateRef,
   watch,
 } from 'vue'
-import { useCoreStore, type LyricWord } from '@/stores/core'
-import { useRuntimeStore } from '@/stores/runtime'
-import { applyWordSelectToLine, forceOutsideBlur, sortIndex } from '@/utils/selection'
+import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
+import { useRuntimeStore, type WordComponentActions } from '@/stores/runtime'
+import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { digit2Sup } from '@/utils/toSupSub'
 import { ContextMenu } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
@@ -72,6 +72,7 @@ const coreStore = useCoreStore()
 const props = defineProps<{
   word: LyricWord
   index: number
+  parent: LyricLine
   lineIndex: number
 }>()
 
@@ -85,84 +86,58 @@ watch(
   () => props.word.word,
   (val) => (inputModel.value = val),
 )
+watch(inputModel, (val) => {
+  if (!focused.value) props.word.word = val
+})
 
 // Selection
+const touch = () => {
+  forceOutsideBlur()
+  runtimeStore.touchLineWord(props.parent, props.word)
+}
 const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
 let leftForClick = false
 function handleMousedown(e: MouseEvent) {
   leftForClick = false
   if (e.ctrlKey || e.metaKey) {
-    forceOutsideBlur()
-    runtimeStore.lastTouchedLine = props.word.parentLine
-    runtimeStore.lastTouchedWord = props.word
-    if (!runtimeStore.selectedWords.has(props.word)) {
-      runtimeStore.selectedWords.add(props.word)
-      applyWordSelectToLine(runtimeStore.selectedWords)
+    touch()
+    if (!isSelected.value) {
+      runtimeStore.addWordToSelection(props.word)
     } else leftForClick = true
   } else if (e.shiftKey && runtimeStore.lastTouchedWord) {
-    forceOutsideBlur()
-    const lastTouchedWord = runtimeStore.lastTouchedWord
-    runtimeStore.lastTouchedLine = props.word.parentLine
-    runtimeStore.lastTouchedWord = props.word
-    if (lastTouchedWord.parentLine !== props.word.parentLine) {
-      runtimeStore.selectedWords.clear()
-      runtimeStore.selectedLines.clear()
-      const [start, end] = sortIndex(
-        coreStore.lyricLines.indexOf(lastTouchedWord.parentLine),
-        props.lineIndex,
-      )
-      coreStore.lyricLines
-        .slice(start, end + 1)
-        .forEach((line) => runtimeStore.selectedLines.add(line))
+    const { lastTouchedWord, lastTouchedLine } = runtimeStore
+    touch()
+    if (!lastTouchedLine || !lastTouchedWord) return
+    if (lastTouchedLine !== props.parent) {
+      const [start, end] = sortIndex(coreStore.lyricLines.indexOf(lastTouchedLine), props.lineIndex)
+      runtimeStore.selectLine(...coreStore.lyricLines.slice(start, end + 1))
     } else {
-      const [start, end] = sortIndex(
-        lastTouchedWord.parentLine.words.indexOf(lastTouchedWord),
-        props.index,
-      )
-      const affectedWords = props.word.parentLine.words.slice(start, end + 1)
-      if (runtimeStore.selectedWords.has(props.word))
-        affectedWords.forEach((w) => runtimeStore.selectedWords.delete(w))
-      else affectedWords.forEach((w) => runtimeStore.selectedWords.add(w))
+      const [start, end] = sortIndex(lastTouchedLine.words.indexOf(lastTouchedWord), props.index)
+      const affectedWords = props.parent.words.slice(start, end + 1)
+      if (isSelected.value) runtimeStore.removeWordFromSelection(...affectedWords)
+      else runtimeStore.addWordToSelection(...affectedWords)
     }
   } else {
-    if (runtimeStore.selectedWords.has(props.word)) return
-    forceOutsideBlur()
-    runtimeStore.lastTouchedLine = props.word.parentLine
-    runtimeStore.lastTouchedWord = props.word
-    runtimeStore.selectedWords.clear()
-    runtimeStore.selectedWords.add(props.word)
-    if (
-      runtimeStore.selectedLines.size !== 1 ||
-      !runtimeStore.selectedLines.has(props.word.parentLine)
-    ) {
-      runtimeStore.selectedLines.clear()
-      runtimeStore.selectedLines.add(props.word.parentLine)
-    }
+    if (isSelected.value) return
+    touch()
+    runtimeStore.selectWord(props.word)
   }
 }
 function handleClick(e: MouseEvent) {
-  if (leftForClick && (e.ctrlKey || e.metaKey)) {
-    runtimeStore.selectedWords.delete(props.word)
-    applyWordSelectToLine(runtimeStore.selectedWords)
-  }
+  if (leftForClick && (e.ctrlKey || e.metaKey)) runtimeStore.removeWordFromSelection(props.word)
   leftForClick = false
 }
 function handleDbClick() {
   inputEl.value?.select()
 }
 function handleFocus(_e: FocusEvent) {
-  if (runtimeStore.selectedWords.has(props.word) && runtimeStore.selectedWords.size === 1) return
-  forceOutsideBlur()
-  runtimeStore.lastTouchedLine = props.word.parentLine
-  runtimeStore.lastTouchedWord = props.word
-  runtimeStore.selectedWords.clear()
-  runtimeStore.selectedWords.add(props.word)
-  applyWordSelectToLine(runtimeStore.selectedWords)
+  if (isSelected.value && runtimeStore.selectedWords.size === 1) return
+  touch()
+  runtimeStore.selectWord(props.word)
 }
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
-  runtimeStore.lastTouchedLine = props.word.parentLine
-  runtimeStore.lastTouchedWord = props.word
+  touch()
   runtimeStore.isDragging = true
   runtimeStore.canDrop = false
   if (!e.dataTransfer) return
@@ -180,6 +155,8 @@ function handleDragEnd(_e: DragEvent) {
   runtimeStore.isDragging = false
   runtimeStore.isDraggingCopy = false
 }
+
+// Context menu
 const menu = useTemplateRef('menu')
 const closeContext = () => menu.value?.hide()
 function handleContext(e: MouseEvent) {
@@ -195,8 +172,8 @@ const contextMenuItems: MenuItem[] = [
     label: '在前插入词',
     icon: 'pi pi-arrow-left',
     command: () => {
-      const newWord = coreStore.newWord(props.word.parentLine)
-      props.word.parentLine.words.splice(props.index, 0, newWord)
+      const newWord = coreStore.newWord()
+      props.parent.words.splice(props.index, 0, newWord)
       nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
     },
   },
@@ -204,8 +181,8 @@ const contextMenuItems: MenuItem[] = [
     label: '在后插入词',
     icon: 'pi pi-arrow-right',
     command: () => {
-      const newWord = coreStore.newWord(props.word.parentLine)
-      props.word.parentLine.words.splice(props.index + 1, 0, newWord)
+      const newWord = coreStore.newWord()
+      props.parent.words.splice(props.index + 1, 0, newWord)
       nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
     },
   },
@@ -213,21 +190,17 @@ const contextMenuItems: MenuItem[] = [
     label: '在此拆分行',
     icon: 'pi pi-code',
     command: () => {
-      const newLine = coreStore.newLine(props.word.parentLine)
-      const wordsToMove = props.word.parentLine.words.splice(props.index)
-      wordsToMove.forEach((word) => (word.parentLine = newLine))
-      newLine.words = wordsToMove
+      const wordsToMove = props.parent.words.splice(props.index)
+      if (wordsToMove.length === 0) return
+      const newLine = coreStore.newLine({ ...props.parent, words: wordsToMove })
       coreStore.lyricLines.splice(props.lineIndex + 1, 0, newLine)
-      nextTick(() => {
-        runtimeStore.selectedLines.clear()
-        runtimeStore.selectedLines.add(newLine)
-      })
+      runtimeStore.selectWord(wordsToMove[0]!)
     },
   },
   {
     label: '删除单词',
     icon: 'pi pi-trash',
-    command: () => props.word.parentLine.words.splice(props.index, 1),
+    command: () => props.parent.words.splice(props.index, 1),
   },
 ]
 
@@ -254,46 +227,47 @@ function handleKeydown(event: KeyboardEvent) {
   if (!inputEl.value || !focused.value) return
   const el = inputEl.value
   switch (event.code) {
-    case 'Backspace':
+    case 'Backspace': {
       // Combine with previous word
       if (props.index === 0 || el.selectionStart !== 0 || el.selectionEnd !== 0) return
       event.preventDefault()
-      const lastWord = props.word.parentLine.words[props.index - 1]
-      if (!lastWord) return
-      const cursorPos = lastWord.word.length
-      lastWord.word += el.value
+      const prevWord = props.parent.words[props.index - 1]
+      if (!prevWord) return
+      const cursorPos = prevWord.word.length
+      prevWord.word += el.value
       if (props.word.startTime && props.word.endTime) {
-        lastWord.endTime = props.word.endTime
+        prevWord.endTime = props.word.endTime
       }
-      nextTick(() => runtimeStore.wordHooks.get(lastWord)?.focusInput(cursorPos))
-      props.word.parentLine.words.splice(props.index, 1)
+      props.parent.words.splice(props.index, 1)
+      nextTick(() => runtimeStore.wordHooks.get(prevWord)?.focusInput(cursorPos))
       return
-    case 'Enter':
+    }
+    case 'Enter': {
       // Blur input
       event.preventDefault()
       el.blur()
       return
-    case 'ArrowLeft':
+    }
+    case 'ArrowLeft': {
       // If at start, focus previous word
-      if (el.selectionStart !== 0) return
+      if (el.selectionStart !== 0 || props.index === 0) return
       event.preventDefault()
-      nextTick(() => {
-        const prevWord = props.word.parentLine.words[props.index - 1]
-        if (!prevWord) return
-        runtimeStore.wordHooks.get(prevWord)?.focusInput(-1)
-      })
+      const prevWord = props.parent.words[props.index - 1]
+      if (!prevWord) return
+      nextTick(() => runtimeStore.wordHooks.get(prevWord)?.focusInput(-1))
       return
-    case 'ArrowRight':
+    }
+    case 'ArrowRight': {
       // If at end, focus next word
-      if (el.selectionStart !== el.value.length) return
+      if (el.selectionStart !== el.value.length || props.index === props.parent.words.length - 1)
+        return
       event.preventDefault()
-      nextTick(() => {
-        const nextWord = props.word.parentLine.words[props.index + 1]
-        if (!nextWord) return
-        runtimeStore.wordHooks.get(nextWord)?.focusInput(0)
-      })
+      const nextWord = props.parent.words[props.index + 1]
+      if (!nextWord) return
+      nextTick(() => runtimeStore.wordHooks.get(nextWord)?.focusInput(0))
       return
-    case 'Backquote':
+    }
+    case 'Backquote': {
       // Break word at cursor
       if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return
       event.preventDefault()
@@ -302,49 +276,51 @@ function handleKeydown(event: KeyboardEvent) {
       const breakIndex = el.selectionStart || 0
       const totDuration = props.word.endTime - props.word.startTime
       const breakTime = props.word.startTime + (totDuration * breakIndex) / (el.value.length || 1)
-      const newWord = coreStore.newWord(props.word.parentLine, {
+      const newWord = coreStore.newWord({
         word: el.value.slice(breakIndex),
         startTime: breakTime,
         endTime: props.word.endTime,
       })
       props.word.endTime = breakTime
       props.word.word = el.value.slice(0, breakIndex)
-      props.word.parentLine.words.splice(props.index + 1, 0, newWord)
+      props.parent.words.splice(props.index + 1, 0, newWord)
       nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput(0))
       return
+    }
   }
 }
 function handleCompositionEnd(_e: CompositionEvent) {
   const pos = inputEl.value?.selectionStart || 0
-  const lastChar = props.word.word.charAt(pos - 1)
+  const lastChar = inputModel.value.charAt(pos - 1)
   if (lastChar === '·') {
-    props.word.word = props.word.word.slice(0, pos - 1) + props.word.word.slice(pos)
+    inputModel.value = inputModel.value.slice(0, pos - 1) + inputModel.value.slice(pos)
     nextTick(() => inputEl.value?.setSelectionRange(pos - 1, pos - 1))
   }
 }
 
 // Register hooks
 const wordTop = useTemplateRef('wordTop')
+const hooks: WordComponentActions = {
+  scrollTo: () => wordTop.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+  setHighlight: (_highlight: boolean) => {
+    // to do
+  },
+  focusInput: (position = undefined) => {
+    focused.value = true
+    if (!inputEl.value) return
+    if (position === undefined || Number.isNaN(position)) inputEl.value.select()
+    else if (position < 0) {
+      const length = props.word.word.length
+      const cursor = length + position + 1
+      inputEl.value.setSelectionRange(cursor, cursor)
+    } else inputEl.value.setSelectionRange(position, position)
+  },
+}
 onMounted(() => {
-  runtimeStore.wordHooks.set(props.word, {
-    scrollTo: () => wordTop.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
-    setHighlight: (_highlight: boolean) => {
-      // to do
-    },
-    focusInput: (position = undefined) => {
-      focused.value = true
-      if (!inputEl.value) return
-      if (position === undefined || Number.isNaN(position)) inputEl.value.select()
-      else if (position < 0) {
-        const length = props.word.word.length
-        const cursor = length + position + 1
-        inputEl.value.setSelectionRange(cursor, cursor)
-      } else inputEl.value.setSelectionRange(position, position)
-    },
-  })
+  runtimeStore.wordHooks.set(props.word, hooks)
 })
 onUnmounted(() => {
-  runtimeStore.wordHooks.delete(props.word)
+  if (runtimeStore.wordHooks.get(props.word) === hooks) runtimeStore.wordHooks.delete(props.word)
 })
 </script>
 

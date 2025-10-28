@@ -42,47 +42,34 @@ function handleDrop(e: DragEvent) {
     const pendingLines = sortLines(...runtimeStore.selectedLines)
     if (e.ctrlKey || e.metaKey) {
       const duplicatedLines = pendingLines.map((oldLine) => {
-        const newLine = coreStore.newLine(oldLine)
-        newLine.words = oldLine.words.map((oldWord) => coreStore.newWord(newLine, oldWord))
+        const newLine = coreStore.newLine({
+          ...oldLine,
+          words: oldLine.words.map(coreStore.newWord),
+        })
         return newLine
       })
       coreStore.lyricLines.splice(props.index, 0, ...duplicatedLines)
-      runtimeStore.selectedLines.clear()
-      duplicatedLines.forEach((line) => runtimeStore.selectedLines.add(line))
-      runtimeStore.lastTouchedLine = duplicatedLines[duplicatedLines.length - 1]!
-      runtimeStore.lastTouchedWord = null
+      runtimeStore.selectLine(...duplicatedLines)
+      runtimeStore.touchLineOnly(duplicatedLines.at(-1)!)
     } else {
       const placeholder = coreStore.newLine()
       coreStore.lyricLines.splice(props.index, 0, placeholder)
-      pendingLines.forEach((line) => {
-        coreStore.lyricLines.splice(coreStore.lyricLines.indexOf(line), 1)
-      })
+      coreStore.deleteLine(...pendingLines)
       const insertIndex = coreStore.lyricLines.indexOf(placeholder)
       coreStore.lyricLines.splice(insertIndex, 1, ...pendingLines)
+      runtimeStore.applyWordSelectToLine()
     }
   }
   if (runtimeStore.isDraggingWord) {
     const pendingWords = sortWords(...runtimeStore.selectedWords)
-    if (e.ctrlKey || e.metaKey) {
-      const newLine = coreStore.newLine()
-      newLine.words = pendingWords.map((word) => coreStore.newWord(newLine, word))
-      coreStore.lyricLines.splice(props.index, 0, newLine)
-      runtimeStore.selectedWords.clear()
-      newLine.words.forEach((word) => runtimeStore.selectedWords.add(word))
-      runtimeStore.selectedLines.clear()
-      runtimeStore.selectedLines.add(newLine)
-      runtimeStore.lastTouchedLine = newLine
-      runtimeStore.lastTouchedWord = newLine.words[newLine.words.length - 1]!
-    } else {
-      pendingWords.forEach((word) =>
-        word.parentLine.words.splice(word.parentLine.words.indexOf(word), 1),
-      )
-      const newLine = coreStore.newLine({ words: pendingWords })
-      pendingWords.forEach((word) => (word.parentLine = newLine))
-      coreStore.lyricLines.splice(props.index, 0, newLine)
-      runtimeStore.selectedLines.clear()
-      runtimeStore.selectedLines.add(newLine)
-    }
+    const isCopy = e.ctrlKey || e.metaKey
+    const newLine = coreStore.newLine({ words: pendingWords })
+    if (isCopy) newLine.words = pendingWords.map(coreStore.newWord)
+    else coreStore.deleteWord(...pendingWords)
+    coreStore.lyricLines.splice(props.index, 0, newLine)
+    if (isCopy) runtimeStore.selectWord(...newLine.words)
+    else runtimeStore.applyWordSelectToLine()
+    runtimeStore.touchLineWord(newLine, newLine.words.at(-1)!)
   }
 }
 </script>

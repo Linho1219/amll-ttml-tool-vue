@@ -101,25 +101,21 @@ const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
+const touch = () => runtimeStore.touchLineOnly(props.line)
 function handleFocus() {
   forceOutsideBlur()
-  runtimeStore.lastTouchedLine = props.line
-  runtimeStore.lastTouchedWord = null
-  runtimeStore.selectedWords.clear()
-  if (runtimeStore.selectedLines.has(props.line) && runtimeStore.selectedLines.size == 1) return
-  runtimeStore.selectedLines.clear()
-  runtimeStore.selectedLines.add(props.line)
+  touch()
+  runtimeStore.selectLine(props.line)
 }
 let leftForClick = false
 function handleMouseDown(e: MouseEvent) {
   leftForClick = false
-  runtimeStore.lastTouchedWord = null
   forceOutsideBlur()
-  runtimeStore.selectedWords.clear()
+  touch()
   if (e.metaKey || e.ctrlKey) {
     runtimeStore.lastTouchedLine = props.line
-    if (!runtimeStore.selectedLines.has(props.line)) {
-      runtimeStore.selectedLines.add(props.line)
+    if (!isSelected.value) {
+      runtimeStore.addLineToSelection(props.line)
     } else leftForClick = true
   } else if (e.shiftKey && runtimeStore.lastTouchedLine) {
     const lastTouchedLine = runtimeStore.lastTouchedLine
@@ -127,26 +123,22 @@ function handleMouseDown(e: MouseEvent) {
     const lines = coreStore.lyricLines
     const [start, end] = sortIndex(lines.indexOf(lastTouchedLine), props.index)
     const affectedLines = lines.slice(start, end + 1)
-    if (runtimeStore.selectedLines.has(props.line))
-      affectedLines.forEach((line) => runtimeStore.selectedLines.delete(line))
-    else affectedLines.forEach((line) => runtimeStore.selectedLines.add(line))
+    if (isSelected.value)
+      affectedLines.forEach((line) => runtimeStore.removeLineFromSelection(line))
+    else affectedLines.forEach((line) => runtimeStore.addLineToSelection(line))
   } else {
-    runtimeStore.lastTouchedLine = props.line
-    if (runtimeStore.selectedLines.has(props.line)) return
-    runtimeStore.selectedLines.clear()
-    runtimeStore.selectedLines.add(props.line)
-    runtimeStore.lastTouchedLine = props.line
+    if (isSelected.value) return
+    runtimeStore.selectLine(props.line)
   }
 }
 function handleClick(e: MouseEvent) {
   if (leftForClick && (e.ctrlKey || e.metaKey))
-    if (runtimeStore.selectedLines.has(props.line)) runtimeStore.selectedLines.delete(props.line)
+    if (isSelected.value) runtimeStore.removeLineFromSelection(props.line)
   leftForClick = false
 }
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
-  runtimeStore.lastTouchedLine = props.line
-  runtimeStore.lastTouchedWord = null
+  runtimeStore.touchLineOnly(props.line)
   runtimeStore.isDragging = true
   runtimeStore.canDrop = false
   if (!e.dataTransfer) return
@@ -181,10 +173,8 @@ const contextMenuItems: MenuItem[] = [
     icon: 'pi pi-arrow-up',
     command: () => {
       const newLine = coreStore.newLine()
-      runtimeStore.selectedLines.clear()
-      runtimeStore.selectedWords.clear()
-      runtimeStore.selectedLines.add(newLine)
       coreStore.lyricLines.splice(props.index, 0, newLine)
+      runtimeStore.selectLine(newLine)
     },
   },
   {
@@ -192,18 +182,18 @@ const contextMenuItems: MenuItem[] = [
     icon: 'pi pi-arrow-down',
     command: () => {
       const newLine = coreStore.newLine()
-      runtimeStore.selectedLines.clear()
-      runtimeStore.selectedWords.clear()
-      runtimeStore.selectedLines.add(newLine)
       coreStore.lyricLines.splice(props.index + 1, 0, newLine)
+      runtimeStore.selectLine(newLine)
     },
   },
   {
     label: '克隆行',
     icon: 'pi pi-clone',
     command: () => {
-      const duplicate = coreStore.newLine(props.line)
-      duplicate.words = props.line.words.map((word) => coreStore.newWord(duplicate, word))
+      const duplicate = coreStore.newLine({
+        ...props.line,
+        words: props.line.words.map(coreStore.newWord),
+      })
       coreStore.lyricLines.splice(props.index, 0, duplicate)
     },
   },
