@@ -44,8 +44,8 @@ import { Button, Menu, SelectButton, SplitButton } from 'primevue'
 import { useRuntimeStore } from '@/stores/runtime'
 import { nextTick, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import type { MenuItem } from 'primevue/menuitem'
-import { stringifyNative } from '@/stores/port/native'
-import editHistory from '@/dataTransfer/editHistory'
+import { stringifyNative } from '@/port/native'
+import editHistory from '@/stores/editHistory'
 
 const runtimeStore = useRuntimeStore()
 

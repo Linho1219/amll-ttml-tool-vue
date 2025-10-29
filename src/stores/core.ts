@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 
 //test
@@ -22,7 +22,7 @@ const newWord = (attrs: Partial<LyricWord> = {}): LyricWord => ({
   placeholdingBeat: 0,
   currentplaceholdingBeat: 0,
   bookmarked: false,
-  comments: [],
+  // comments: [],
   ...attrs,
 })
 
@@ -50,15 +50,15 @@ const word3: LyricWord = newWord({
 line.words.push(word1, word2, word3)
 
 export const useCoreStore = defineStore('core', () => {
-  const createdAt = ref(Date.now())
+  // const createdAt = ref(Date.now())
   const metadata = reactive<Metadata>(new Map())
   const lyricLines = reactive<LyricLine[]>([line])
-  const comments = reactive<Comment[]>([])
+  // const comments = reactive<Comment[]>([])
   return {
-    createdAt,
+    // createdAt,
     metadata,
     lyricLines,
-    comments,
+    // comments,
     newLine,
     newWord,
     deleteLine,
@@ -96,16 +96,16 @@ export type MetadataKey = string
 export type Metadata = Map<MetadataKey, string[]>
 
 /** 批注 */
-export interface Comment {
-  /** 创建时间 */
-  createTime: number
-  /** 上次编辑时间 */
-  lastEditTime: number
-  /** 内容 */
-  content: string
-  /** 目标行或词 */
-  target: LyricLine | LyricWord
-}
+// export interface Comment {
+//   /** 创建时间 */
+//   createTime: number
+//   /** 上次编辑时间 */
+//   lastEditTime: number
+//   /** 内容 */
+//   content: string
+//   /** 目标行或词 */
+//   target: LyricLine | LyricWord
+// }
 /** 歌词行 */
 export interface LyricLine {
   /** 该行的翻译 */
@@ -141,6 +141,6 @@ export interface LyricWord {
   currentplaceholdingBeat: number
   /** 已添加书签 */
   bookmarked: boolean
-  /** 批注 */
-  comments: Comment[]
+  // /** 批注 */
+  // comments: Comment[]
 }

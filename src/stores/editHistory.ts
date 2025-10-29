@@ -1,21 +1,18 @@
 import { computed, nextTick, reactive, toRaw, watch } from 'vue'
 import {
   useCoreStore,
-  type Comment,
   type LyricLine,
   type LyricWord,
   type Metadata,
-} from '../stores/core'
-import { useRuntimeStore, type View } from '../stores/runtime'
+} from './core'
+import { useRuntimeStore, type View } from './runtime'
 import cloneDeep from 'lodash-es/cloneDeep'
 
 interface Snapshot {
   timestamp: number
   core: {
-    createdAt: number
     metadata: Metadata
     lyricLines: LyricLine[]
-    comments: Comment[]
   }
   runtime: {
     currentView: View
@@ -62,10 +59,8 @@ function take() {
   const snapshot: Snapshot = cloneDeep({
     timestamp: Date.now(),
     core: {
-      createdAt: coreStore.createdAt,
       metadata: toRaw(coreStore.metadata),
       lyricLines: toRaw(coreStore.lyricLines),
-      comments: toRaw(coreStore.comments),
     },
     runtime: {
       currentView: toRaw(runtimeStore.currentView),
@@ -86,11 +81,9 @@ function wayback(snapshot: Snapshot) {
   stopRecording = true
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
-  coreStore.createdAt = snapshot.core.createdAt
   coreStore.metadata.clear()
   snapshot.core.metadata.forEach((value, key) => coreStore.metadata.set(key, value))
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshot.core.lyricLines)
-  coreStore.comments.splice(0, coreStore.comments.length, ...snapshot.core.comments)
   runtimeStore.currentView = snapshot.runtime.currentView
   if (snapshot.runtime.selectedWords.size)
     runtimeStore.selectWord(...snapshot.runtime.selectedWords)
