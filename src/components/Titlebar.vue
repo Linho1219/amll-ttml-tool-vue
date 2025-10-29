@@ -96,18 +96,6 @@ const openMenuItems: MenuItem[] = [
 function handleSaveClick() {
   console.log(exportToNativeFormat())
 }
-
-//test
-const a = reactive({ foo: 1, bar: 2 })
-watch(a, (val) => console.log('changed', val.foo, val.bar), { deep: true })
-onMounted(() => {
-  a.foo = 2
-  a.foo = 3
-  a.bar = 4
-  nextTick(() => {
-    a.bar = 5
-  })
-})
 </script>
 
 <style lang="scss">

@@ -48,6 +48,7 @@ const runtimeStore = useRuntimeStore()
 function appendWord(line: LyricLine) {
   const newWord = coreStore.newWord(line)
   line.words.push(newWord)
+  runtimeStore.selectWord(newWord)
   nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
 }
 function handleMouseDown(e: MouseEvent) {

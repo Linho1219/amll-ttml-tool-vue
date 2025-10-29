@@ -1,4 +1,4 @@
-import { computed, reactive, toRaw, watch } from 'vue'
+import { computed, nextTick, reactive, toRaw, watch } from 'vue'
 import {
   useCoreStore,
   type Comment,
@@ -49,7 +49,7 @@ function init() {
   shutdownHook = watch(
     coreStore,
     () => {
-      if (!stopRecording) take()
+      if (!stopRecording) nextTick(() => take())
     },
     { deep: true },
   )

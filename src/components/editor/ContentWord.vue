@@ -174,6 +174,7 @@ const contextMenuItems: MenuItem[] = [
     command: () => {
       const newWord = coreStore.newWord()
       props.parent.words.splice(props.index, 0, newWord)
+      runtimeStore.selectWord(newWord)
       nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
     },
   },
@@ -183,6 +184,7 @@ const contextMenuItems: MenuItem[] = [
     command: () => {
       const newWord = coreStore.newWord()
       props.parent.words.splice(props.index + 1, 0, newWord)
+      runtimeStore.selectWord(newWord)
       nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
     },
   },
@@ -239,6 +241,7 @@ function handleKeydown(event: KeyboardEvent) {
         prevWord.endTime = props.word.endTime
       }
       props.parent.words.splice(props.index, 1)
+      runtimeStore.selectWord(prevWord)
       nextTick(() => runtimeStore.wordHooks.get(prevWord)?.focusInput(cursorPos))
       return
     }
@@ -284,6 +287,7 @@ function handleKeydown(event: KeyboardEvent) {
       props.word.endTime = breakTime
       props.word.word = el.value.slice(0, breakIndex)
       props.parent.words.splice(props.index + 1, 0, newWord)
+      runtimeStore.selectWord(newWord)
       nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput(0))
       return
     }
