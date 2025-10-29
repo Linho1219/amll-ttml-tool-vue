@@ -104,6 +104,7 @@ export function parseTTML(ttmlString: string): Persist {
             word: textContent,
             startTime: safeStr2ms(spanAttrs.get('begin')),
             endTime: safeStr2ms(spanAttrs.get('end')),
+            placeholdingBeat: Number(spanAttrs.get('amll:empty-beat') || '0') || 0,
           })
           line.words.push(word)
         }
@@ -189,6 +190,7 @@ export function stringifyTTML(data: Persist) {
       applyAttrToEl(span, {
         begin: ms2str(word.startTime),
         end: ms2str(word.endTime),
+        'amll:empty-beat': word.placeholdingBeat.toString() || undefined,
       })
       span.appendChild(doc.createTextNode(content))
       parentNode.appendChild(span)
