@@ -57,7 +57,7 @@ function handleDrop(e: DragEvent) {
       coreStore.deleteLine(...pendingLines)
       const insertIndex = coreStore.lyricLines.indexOf(placeholder)
       coreStore.lyricLines.splice(insertIndex, 1, ...pendingLines)
-      runtimeStore.applyWordSelectToLine()
+      runtimeStore.selectLine(...pendingLines)
     }
   }
   if (runtimeStore.isDraggingWord) {
