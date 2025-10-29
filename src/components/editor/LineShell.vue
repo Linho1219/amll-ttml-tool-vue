@@ -33,8 +33,8 @@
           variant="text"
           size="small"
           icon="pi pi-align-right"
-          :class="{ active: props.line.isDuet }"
-          @click.stop="props.line.isDuet = !props.line.isDuet"
+          :class="{ active: props.line.duet }"
+          @click.stop="props.line.duet = !props.line.duet"
         />
         <Button
           class="lline-tag lline-tag-background"
@@ -42,8 +42,8 @@
           variant="text"
           size="small"
           icon="pi pi-expand"
-          :class="{ active: props.line.isBG }"
-          @click.stop="props.line.isBG = !props.line.isBG"
+          :class="{ active: props.line.background }"
+          @click.stop="props.line.background = !props.line.background"
         />
       </div>
     </div>

@@ -11,8 +11,8 @@ const newLine = (attrs: Partial<LyricLine> = {}): LyricLine => ({
   bookmarked: false,
   translatedLyric: '',
   romanLyric: '',
-  isBG: false,
-  isDuet: false,
+  background: false,
+  duet: false,
   ...attrs,
 })
 const newWord = (attrs: Partial<LyricWord> = {}): LyricWord => ({
@@ -51,7 +51,7 @@ line.words.push(word1, word2, word3)
 
 export const useCoreStore = defineStore('core', () => {
   const createdAt = ref(Date.now())
-  const metadata = reactive<TTMLMetadata[]>([])
+  const metadata = reactive<Metadata>(new Map())
   const lyricLines = reactive<LyricLine[]>([line])
   const comments = reactive<Comment[]>([])
   return {
@@ -91,10 +91,8 @@ export const useCoreStore = defineStore('core', () => {
   }
 })
 
-export interface TTMLMetadata {
-  key: string
-  value: string[]
-}
+export type MetadataKey = 'title' | 'artist' | 'album' | 'author' | 'lyricist' | 'version'
+export type Metadata = Map<MetadataKey, string[]>
 
 /** 批注 */
 export interface Comment {
@@ -114,9 +112,9 @@ export interface LyricLine {
   /** 该行的音译 */
   romanLyric: string
   /** 该行是否为背景歌词行 */
-  isBG: boolean
+  background: boolean
   /** 该行是否为对唱歌词行（即歌词行靠右对齐） */
-  isDuet: boolean
+  duet: boolean
   /** 该行的开始时间 并不总是等于第一个单词的开始时间 */
   startTime: number
   /** 该行的结束时间 并不总是等于最后一个单词的开始时间 */

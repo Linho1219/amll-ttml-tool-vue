@@ -4,7 +4,7 @@ import {
   type Comment,
   type LyricLine,
   type LyricWord,
-  type TTMLMetadata,
+  type Metadata,
 } from '../stores/core'
 import { useRuntimeStore, type View } from '../stores/runtime'
 import cloneDeep from 'lodash-es/cloneDeep'
@@ -13,7 +13,7 @@ interface Snapshot {
   timestamp: number
   core: {
     createdAt: number
-    metadata: TTMLMetadata[]
+    metadata: Metadata
     lyricLines: LyricLine[]
     comments: Comment[]
   }
@@ -87,7 +87,8 @@ function wayback(snapshot: Snapshot) {
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
   coreStore.createdAt = snapshot.core.createdAt
-  coreStore.metadata.splice(0, coreStore.metadata.length, ...snapshot.core.metadata)
+  coreStore.metadata.clear()
+  snapshot.core.metadata.forEach((value, key) => coreStore.metadata.set(key, value))
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshot.core.lyricLines)
   coreStore.comments.splice(0, coreStore.comments.length, ...snapshot.core.comments)
   runtimeStore.currentView = snapshot.runtime.currentView

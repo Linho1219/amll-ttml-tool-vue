@@ -18,8 +18,8 @@
             value="duetline"
             size="small"
             :disabled="lineSelectedEmpty"
-            :indeterminate="isDuetIndeterminate"
-            v-model="isDuetChecked"
+            :indeterminate="duetIndeterminate"
+            v-model="duetChecked"
             binary
           />
           <label for="ribbon-duetline">对唱行</label>
@@ -28,8 +28,8 @@
             value="bgline"
             size="small"
             :disabled="lineSelectedEmpty"
-            :indeterminate="isBGIndeterminate"
-            v-model="isBGChecked"
+            :indeterminate="backgroundIndeterminate"
+            v-model="backgroundChecked"
             binary
           />
           <label for="ribbon-bgline">背景行</label>
@@ -251,13 +251,13 @@ function attrCheckbox<T extends Object>(itemSet: ReadonlySet<T>, attr: BooleanKe
   })
   return { checked, indeterminate }
 }
-const { checked: isBGChecked, indeterminate: isBGIndeterminate } = attrCheckbox(
+const { checked: backgroundChecked, indeterminate: backgroundIndeterminate } = attrCheckbox(
   runtimeStore.selectedLines,
-  'isBG',
+  'background',
 )
-const { checked: isDuetChecked, indeterminate: isDuetIndeterminate } = attrCheckbox(
+const { checked: duetChecked, indeterminate: duetIndeterminate } = attrCheckbox(
   runtimeStore.selectedLines,
-  'isDuet',
+  'duet',
 )
 
 function itemTimeInput<T extends { startTime: number; endTime: number }>(itemSet: ReadonlySet<T>) {
