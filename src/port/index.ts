@@ -9,6 +9,7 @@ export interface Persist {
 }
 
 export function importPersist(data: Persist) {
+  editHistory.shutdown()
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
   runtimeStore.clearSelection()
@@ -18,7 +19,7 @@ export function importPersist(data: Persist) {
     coreStore.metadata.set(k, values)
   }
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...data.lyricLines)
-  editHistory.clear()
+  editHistory.init()
 }
 
 export function exportPersist(): Persist {
