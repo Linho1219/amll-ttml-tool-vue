@@ -44,7 +44,7 @@ import { Button, Menu, SelectButton, SplitButton } from 'primevue'
 import { useRuntimeStore } from '@/stores/runtime'
 import { nextTick, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import type { MenuItem } from 'primevue/menuitem'
-import { exportToNativeFormat } from '@/stores/port/native'
+import { stringifyNative } from '@/stores/port/native'
 import editHistory from '@/dataTransfer/editHistory'
 
 const runtimeStore = useRuntimeStore()
@@ -94,7 +94,7 @@ const openMenuItems: MenuItem[] = [
 
 // File save
 function handleSaveClick() {
-  console.log(exportToNativeFormat())
+  console.log(stringifyNative())
 }
 </script>
 

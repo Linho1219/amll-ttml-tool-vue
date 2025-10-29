@@ -90,8 +90,9 @@ export const useCoreStore = defineStore('core', () => {
     line.words.push(...filtered)
   }
 })
+export const coreCreate = { newLine, newWord }
 
-export type MetadataKey = 'title' | 'artist' | 'album' | 'author' | 'lyricist' | 'version'
+export type MetadataKey = string
 export type Metadata = Map<MetadataKey, string[]>
 
 /** 批注 */

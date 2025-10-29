@@ -5,7 +5,7 @@ import {
   type Metadata,
   type MetadataKey,
 } from '@/stores/core'
-import { useRuntimeStore } from '@/stores/runtime'
+import { useRuntimeStore } from '../../stores/runtime'
 import { parse, stringify } from 'flatted'
 
 interface NativeDataOutput {
@@ -16,7 +16,7 @@ interface NativeDataOutput {
   comments: Comment[]
 }
 
-export function exportToNativeFormat(): string {
+export function stringifyNative(): string {
   const coreStore = useCoreStore()
   const outputData: NativeDataOutput = {
     createdAt: coreStore.createdAt,
@@ -40,7 +40,7 @@ export function importFromNativeFormat(data: string): void {
   coreStore.metadata.clear()
   for (const key in inputData.metadata) {
     const k = key as MetadataKey
-    coreStore.metadata.set(k, inputData.metadata[k])
+    coreStore.metadata.set(k, inputData.metadata[k]!)
   }
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...inputData.lyricLines)
   coreStore.comments.splice(0, coreStore.comments.length, ...inputData.comments)
