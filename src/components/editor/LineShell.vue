@@ -65,6 +65,7 @@
             @focus="handleFocus"
             @mousedown.stop
             @click.stop
+            @dragstart.stop
           />
           <label for="on_label">行翻译</label>
         </FloatLabel>
@@ -75,6 +76,7 @@
             @focus="handleFocus"
             @mousedown.stop
             @click.stop
+            @dragstart.stop
           />
           <label for="on_label">行音译</label>
         </FloatLabel>
