@@ -1,11 +1,11 @@
 import { readonly, ref, watch } from 'vue'
-import { ms2str } from './timeModel'
 
 // use ms as time unit
 export function useAudioCtrl() {
   const audio = new Audio()
   let revokeUrlHook: (() => void) | null = null
   const activatedRef = ref(false)
+  const lengthRef = ref(0)
   function mount(src: Blob | File | string) {
     audio.pause()
     audio.currentTime = 0
@@ -20,14 +20,15 @@ export function useAudioCtrl() {
     }
     audio.src = src
     activatedRef.value = true
-    progressRef.value = ms2str(0)
+    progressRef.value = 0
+    audio.onloadedmetadata = () => (lengthRef.value = audio.duration * 1000)
   }
 
   const seek = (time: number) => (audio.currentTime = time / 1000)
   const getProgress = () => audio.currentTime * 1000
-  const progressRef = ref(ms2str(0))
+  const progressRef = ref(0)
   const maintainProgressRef = () => {
-    progressRef.value = ms2str(getProgress())
+    progressRef.value = getProgress()
     if (!audio.paused) requestAnimationFrame(maintainProgressRef)
   }
 
@@ -46,7 +47,7 @@ export function useAudioCtrl() {
   audio.onvolumechange = () => (volumeRef.value = audio.volume)
   watch(volumeRef, (v) => (audio.volume = v))
 
-  const playbackRateRef = ref(audio.playbackRate)
+  const playbackRateRef = ref(audio.playbackRate || 1)
   audio.onratechange = () => (playbackRateRef.value = audio.playbackRate)
   watch(playbackRateRef, (v) => (audio.playbackRate = v))
 
@@ -59,6 +60,7 @@ export function useAudioCtrl() {
     getProgress,
     /** Readonly: use `seek` to change */
     progressRef: readonly(progressRef),
+    lengthRef: readonly(lengthRef),
     playingRef,
     volumeRef,
     playbackRateRef,

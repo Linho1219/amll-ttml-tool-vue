@@ -35,6 +35,9 @@ importers:
       vue:
         specifier: ^3.5.22
         version: 3.5.22(typescript@5.9.3)
+      wavesurfer.js:
+        specifier: ^7.11.1
+        version: 7.11.1
     devDependencies:
       '@tsconfig/node22':
         specifier: ^22.0.2
@@ -1024,6 +1027,9 @@ packages:
       typescript:
         optional: true
 
+  wavesurfer.js@7.11.1:
+    resolution: {integrity: sha512-8Q+wwItpjJAlhQ7crQLtKwgfbqqczm5/wx+76K4PptP+MBAjB0OA78+A9OuLnULz/8GpAQ+fKM6s81DonEO0Sg==}
+
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
@@ -1824,6 +1830,8 @@ snapshots:
       '@vue/shared': 3.5.22
     optionalDependencies:
       typescript: 5.9.3
+
+  wavesurfer.js@7.11.1: {}
 
   which@2.0.2:
     dependencies:

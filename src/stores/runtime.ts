@@ -1,6 +1,7 @@
 import { computed, reactive, ref, watch, type Ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useCoreStore, type LyricLine, type LyricWord } from './core'
+import { useAudioCtrl } from '@/utils/audio'
 export enum View {
   Content,
   Timing,
@@ -40,6 +41,10 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const hltWordTimeConflicts = ref(false)
   const scrollWithPlayback = ref(false)
 
+  // Audio
+  const audio = useAudioCtrl()
+  const getAudio = () => audio
+
   return {
     currentView,
     isContentView,
@@ -73,6 +78,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     hltLineTimeConflicts,
     hltWordTimeConflicts,
     scrollWithPlayback,
+    getAudio,
   }
 
   function clearSelection() {

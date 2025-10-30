@@ -9,9 +9,14 @@
         @click="playingRef = !playingRef"
         :disabled="!activatedRef"
       />
-      <div style="flex: 1">
-        <PopoverPane :audio="audio" />
+      <div class="audio-progress monospace">
+        <div class="audio-progress-primary">{{ ms2str(progressRef) }}</div>
+        <div class="audio-progress-secondary">
+          <span class="audio-percentage-text">{{ percentageRef }}%</span>
+          <span class="audio-length-text">{{ ms2str(lengthRef) }}</span>
+        </div>
       </div>
+      <Waveform :audio="audio" :key="refresher" />
       <Button icon="pi pi-chart-bar" severity="secondary" />
     </template>
   </Card>
@@ -20,21 +25,35 @@
 <script setup lang="ts">
 import { useAudioCtrl } from '@/utils/audio'
 import { useFileDialog } from '@vueuse/core'
-import { Button, Card, InputGroup, InputGroupAddon, InputNumber, Popover } from 'primevue'
-import { useTemplateRef } from 'vue'
+import { Button, Card, Popover } from 'primevue'
+import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import PopoverPane from './Popover.vue'
+import { ms2str } from '@/utils/timeModel'
+import Waveform from './Waveform.vue'
+import { useRuntimeStore } from '@/stores/runtime'
 
-const audio = useAudioCtrl()
-const { progressRef, playingRef, volumeRef, activatedRef } = audio
+const audio = useRuntimeStore().getAudio()
+const { progressRef, lengthRef, playingRef, volumeRef, activatedRef, playbackRateRef } = audio
 const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
   accept: 'audio/*',
   multiple: false,
 })
 
+const refresher = ref(Symbol())
 onFileChange((files) => {
   const file = files?.[0]
   if (!file) return
   audio.mount(file)
+})
+audio.audioEl.onloadeddata = () => {
+  nextTick(() => {
+    refresher.value = Symbol()
+  })
+}
+
+const percentageRef = computed(() => {
+  if (lengthRef.value === 0) return 0
+  return Math.round((progressRef.value / lengthRef.value) * 100)
 })
 
 const popover = useTemplateRef('popover')
@@ -51,5 +70,27 @@ const tooglePopover = (e: MouseEvent) => popover.value?.toggle(e)
     display: flex;
     gap: 0.5rem;
   }
+}
+
+.audio-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  text-align: center;
+  padding: 0 0.3rem;
+  line-height: 1;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+}
+.audio-progress-primary {
+  font-size: 1.36em;
+}
+.audio-progress-secondary {
+  font-size: 0.9em;
+  opacity: 0.7;
+  display: flex;
+  width: 13.6ch;
+  justify-content: space-between;
 }
 </style>
