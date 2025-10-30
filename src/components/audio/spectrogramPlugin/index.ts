@@ -242,7 +242,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     }
   }
 
-  onInit() {
+  override onInit() {
     // Recreate DOM elements if they were destroyed
     if (!this.wrapper) {
       this.createWrapper()
@@ -276,7 +276,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     }
   }
 
-  public destroy() {
+  public override destroy() {
     this.unAll()
 
     // Clean up any direct event listeners (if they exist)
@@ -885,8 +885,8 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     const bgWidth = 55
     const getMaxY = frequenciesHeight || 512
     const labelIndex = 5 * (getMaxY / 256)
-    const freqStart = this.frequencyMin!
-    const step = (this.frequencyMax! - freqStart) / labelIndex
+    // const freqStart = this.frequencyMin!
+    // const step = (this.frequencyMax! - freqStart) / labelIndex
 
     // prepare canvas element for labels
     const ctx = this.labelsEl!.getContext('2d')!
@@ -905,10 +905,9 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
       ctx.fillStyle = bgFill
       ctx.fillRect(0, c * getMaxY, bgWidth, (1 + c) * getMaxY)
       ctx.fill()
-      let i
 
       // render labels
-      for (i = 0; i <= labelIndex; i++) {
+      for (let i = 0; i <= labelIndex; i++) {
         ctx.textAlign = textAlign
         ctx.textBaseline = 'middle'
 

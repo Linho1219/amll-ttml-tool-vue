@@ -51,7 +51,7 @@ onMounted(() => {
         noverlap: 512,
         frequencyMin: 1000,
         frequencyMax: 22050,
-        minFreqThresOfMaxMagnitude: 6000,
+        minFreqThresOfMaxMagnitude: 8000,
         gain: 9,
         logRatio: 0.3,
         noiseFloor: 2e-3,
