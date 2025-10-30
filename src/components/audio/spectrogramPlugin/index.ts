@@ -20,14 +20,13 @@
 
 // Modified by @Linho1219
 
-import colorMap from './colorMap.json'
+const COLOR_LUT: [number, number, number, number][] = Array.from({ length: 256 }, (_, i) =>
+  getIcyBlueColor(i / 255),
+)
 
 // Import centralized FFT functionality
-import FFT, {
+import {
   hzToScale,
-  scaleToHz,
-  createFilterBankForScale,
-  applyFilterBank,
   setupColorMap,
   freqType,
   unitType,
@@ -81,26 +80,12 @@ export type SpectrogramPluginOptions = {
   frequencyMax?: number
   /** Sample rate of the audio when using pre-computed spectrogram data. Required when using frequenciesDataUrl. */
   sampleRate?: number
-  /**
-   * Based on: https://manual.audacityteam.org/man/spectrogram_settings.html
-   * - Linear: Linear The linear vertical scale goes linearly from 0 kHz to 20 kHz frequency by default.
-   * - Logarithmic: This view is the same as the linear view except that the vertical scale is logarithmic.
-   * - Mel: The name Mel comes from the word melody to indicate that the scale is based on pitch comparisons. This is the default scale.
-   * - Bark: This is a psychoacoustical scale based on subjective measurements of loudness. It is related to, but somewhat less popular than, the Mel scale.
-   * - ERB: The Equivalent Rectangular Bandwidth scale or ERB is a measure used in psychoacoustics, which gives an approximation to the bandwidths of the filters in human hearing
-   */
-  scale?: 'linear' | 'logarithmic' | 'mel' | 'bark' | 'erb'
-  /**
-   * Increases / decreases the brightness of the display.
-   * For small signals where the display is mostly "blue" (dark) you can increase this value to see brighter colors and give more detail.
-   * If the display has too much "white", decrease this value.
-   * The default is 20dB and corresponds to a -20 dB signal at a particular frequency being displayed as "white". */
-  gainDB?: number
-  /**
-   * Affects the range of signal sizes that will be displayed as colors.
-   * The default is 80 dB and means that you will not see anything for signals 80 dB below the value set for "Gain".
-   */
-  rangeDB?: number
+  /** display gain */
+  gain?: number
+  /** noise floor level */
+  noiseFloor?: number
+  minFreqThresOfMaxMagnitude?: number
+  logRatio?: number
   /** Render a spectrogram for each channel independently when true. */
   splitChannels?: boolean
   /** URL with pre-computed spectrogram JSON data, the data must be a Uint8Array[][] **/
@@ -133,9 +118,10 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
   private alpha: SpectrogramPluginOptions['alpha']
   private frequencyMin: SpectrogramPluginOptions['frequencyMin']
   private frequencyMax: SpectrogramPluginOptions['frequencyMax']
-  private gainDB: SpectrogramPluginOptions['gainDB']
-  private rangeDB: SpectrogramPluginOptions['rangeDB']
-  private scale: SpectrogramPluginOptions['scale']
+  private gain: SpectrogramPluginOptions['gain']
+  private noiseFloor: SpectrogramPluginOptions['noiseFloor']
+  private minFreqThresOfMaxMagnitude: SpectrogramPluginOptions['minFreqThresOfMaxMagnitude']
+  private logRatio: SpectrogramPluginOptions['logRatio']
   private numMelFilters: number
   private numLogFilters: number
   private numBarkFilters: number
@@ -178,7 +164,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     }
 
     // Set up color map using shared utility
-    this.colorMap = setupColorMap(colorMap)
+    this.colorMap = setupColorMap(COLOR_LUT)
 
     this.fftSamples = options.fftSamples || 512
     this.height = options.height || 200
@@ -191,9 +177,10 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     this.frequencyMin = options.frequencyMin ?? 0
     this.frequencyMax = options.frequencyMax ?? 0
 
-    this.gainDB = options.gainDB ?? 20
-    this.rangeDB = options.rangeDB ?? 80
-    this.scale = options.scale || 'mel'
+    this.gain = options.gain ?? 8
+    this.noiseFloor = options.noiseFloor ?? 1e-3
+    this.minFreqThresOfMaxMagnitude = options.minFreqThresOfMaxMagnitude || options.frequencyMin
+    this.logRatio = options.logRatio || 0.3
 
     // Other values will currently cause a misalignment between labels and the spectrogram
     this.numMelFilters = this.fftSamples / 2
@@ -245,12 +232,12 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
       }
 
       this.worker.onerror = (error) => {
-        console.warn('Spectrogram worker error, falling back to main thread:', error)
+        console.warn('Spectrogram worker error')
         // Fallback to main thread calculation
         this.worker = null
       }
     } catch (error) {
-      console.warn('Failed to initialize worker, falling back to main thread:', error)
+      console.warn('Failed to initialize worker', error)
       this.worker = null
     }
   }
@@ -745,7 +732,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     this.fillImageDataQuality(data, segmentPixels, segmentWidth, bitmapHeight)
 
     // Calculate frequency scaling
-    const scale = this.scale!
+    const scale = 'linear'
     const rMin = hzToScale(freqMin, scale) / hzToScale(freqFrom, scale)
     const rMax = hzToScale(freqMax, scale) / hzToScale(freqFrom, scale)
     const rMax1 = Math.min(1, rMax)
@@ -848,9 +835,14 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
         windowFunc: this.windowFunc,
         alpha: this.alpha,
         noverlap,
-        scale: this.scale,
-        gainDB: this.gainDB,
-        rangeDB: this.rangeDB,
+        gain: this.gain,
+        noiseFloor: this.noiseFloor,
+        maxThresOfMaxMagnitude:
+          fftSamples -
+          fftSamples *
+            ((this.minFreqThresOfMaxMagnitude! - this.frequencyMin!) /
+              (this.frequencyMax! - this.frequencyMin!)),
+        logRatio: this.logRatio,
         splitChannels: this.options.splitChannels || false,
       },
     })
@@ -925,7 +917,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
           labelIndex,
           this.frequencyMin!,
           this.frequencyMax!,
-          this.scale!,
+          'linear',
         )
         const label = freqType(freq)
         const units = unitType(freq)
@@ -1041,6 +1033,75 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
       }
     }
   }
+}
+
+function hslToRgb(h: number, s: number, l: number): [number, number, number] {
+  if (s === 0) {
+    const gray = Math.round(l * 255)
+    return [gray, gray, gray]
+  }
+
+  const chroma = (1 - Math.abs(2 * l - 1)) * s
+  const hPrime = h / 60
+  const secondComponent = chroma * (1 - Math.abs((hPrime % 2) - 1))
+  const lightnessModifier = l - chroma / 2
+
+  let rPrime = 0,
+    gPrime = 0,
+    bPrime = 0
+  const hInt = Math.floor(hPrime)
+  switch (hInt) {
+    case 0:
+      rPrime = chroma
+      gPrime = secondComponent
+      bPrime = 0
+      break
+    case 1:
+      rPrime = secondComponent
+      gPrime = chroma
+      bPrime = 0
+      break
+    case 2:
+      rPrime = 0
+      gPrime = chroma
+      bPrime = secondComponent
+      break
+    case 3:
+      rPrime = 0
+      gPrime = secondComponent
+      bPrime = chroma
+      break
+    case 4:
+      rPrime = secondComponent
+      gPrime = 0
+      bPrime = chroma
+      break
+    case 5:
+      rPrime = chroma
+      gPrime = 0
+      bPrime = secondComponent
+      break
+    default:
+      rPrime = 0
+      gPrime = 0
+      bPrime = 0
+      break
+  }
+
+  const r = Math.round((rPrime + lightnessModifier) * 255)
+  const g = Math.round((gPrime + lightnessModifier) * 255)
+  const b = Math.round((bPrime + lightnessModifier) * 255)
+
+  return [r, g, b]
+}
+
+function getIcyBlueColor(value: number): [number, number, number, number] {
+  const v = Math.min(1, Math.max(0, value)) // clamp 0..1
+  const h = ((v * -128 + 191) % 256) * (360 / 255)
+  const s = Math.min(1, Math.max(0, (v * 128 + 127) / 255))
+  const l = Math.min(1, Math.max(0, (v * 255) / 255))
+  const [r, g, b] = hslToRgb(h, s, l)
+  return [r / 255, g / 255, b / 255, 1] // a = 255
 }
 
 export default SpectrogramPlugin

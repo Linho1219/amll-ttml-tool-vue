@@ -24,8 +24,10 @@ interface WorkerMessage {
     alpha?: number
     noverlap: number
     scale: 'linear' | 'logarithmic' | 'mel' | 'bark' | 'erb'
-    gainDB: number
-    rangeDB: number
+    gain: number
+    noiseFloor: number
+    maxThresOfMaxMagnitude: number
+    logRatio: number
     splitChannels: boolean
   }
 }
@@ -76,9 +78,10 @@ function calculateFrequencies(
     windowFunc,
     alpha,
     noverlap,
-    scale,
-    gainDB,
-    rangeDB,
+    gain,
+    noiseFloor,
+    maxThresOfMaxMagnitude,
+    logRatio,
     splitChannels,
   } = options
 
@@ -88,14 +91,8 @@ function calculateFrequencies(
 
   // Initialize FFT (reuse if possible for performance)
   if (!fft || fft.bufferSize !== fftSamples) {
-    fft = new (FFT as any)(fftSamples, sampleRate, windowFunc, alpha || 0.16) as {
-      calculateSpectrum(buffer: Float32Array): Float32Array
-    }
+    fft = new (FFT as any)(fftSamples, sampleRate, windowFunc, alpha || 0.16)
   }
-
-  // Create filter bank based on scale using centralized function
-  const numFilters = fftSamples / 2 // Same as main thread
-  const filterBank = createFilterBankForScale(scale, numFilters, fftSamples, sampleRate)
 
   // Calculate hop size
   let actualNoverlap = noverlap || Math.max(0, Math.round(fftSamples * 0.5))
@@ -112,28 +109,27 @@ function calculateFrequencies(
 
     for (let sample = startSample; sample + fftSamples < endSample; sample += hopSize) {
       const segment = channelData.slice(sample, sample + fftSamples)
-      let spectrum = fft.calculateSpectrum(segment)
-
-      // Apply filter bank if specified (same as main thread)
-      if (filterBank) {
-        spectrum = applyFilterBank(spectrum, filterBank)
-      }
+      let spectrum = fft.calculateSpectrum(segment) as Float32Array
 
       // Convert to uint8 color indices
       const freqBins = new Uint8Array(spectrum.length)
-      const gainPlusRange = gainDB + rangeDB
-
+      const maxMagnitude = Math.max(noiseFloor, ...spectrum.slice(0, maxThresOfMaxMagnitude))
+      const colorIndices = spectrum.map((magnitude) => {
+        const normalized = magnitude / maxMagnitude
+        const logVal = Math.log10(normalized * 9 + 1)
+        return Math.round(Math.min(1, logVal * gain) * 255)
+      })
       for (let j = 0; j < spectrum.length; j++) {
-        const magnitude = spectrum[j] > 1e-12 ? spectrum[j] : 1e-12
-        const valueDB = 20 * Math.log10(magnitude)
-
-        if (valueDB < -gainPlusRange) {
-          freqBins[j] = 0
-        } else if (valueDB > -gainDB) {
-          freqBins[j] = 255
-        } else {
-          freqBins[j] = Math.round(((valueDB + gainDB) / rangeDB) * 255)
-        }
+        const linearIndex = j
+        const logIndex = Math.exp((j * Math.log(spectrum.length)) / spectrum.length) - 1
+        const blendedIndex = linearIndex * (1 - logRatio) + logIndex * logRatio
+        const flooredIndex = Math.floor(blendedIndex)
+        const ceiledIndex = Math.min(spectrum.length - 1, Math.ceil(blendedIndex))
+        const weight = blendedIndex - flooredIndex
+        // Linear interpolation
+        freqBins[j] = Math.round(
+          colorIndices[flooredIndex]! * (1 - weight) + colorIndices[ceiledIndex]! * weight,
+        )
       }
       channelFreq.push(freqBins)
     }
