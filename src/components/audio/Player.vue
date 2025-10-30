@@ -1,23 +1,30 @@
 <template>
   <Card class="player">
     <template #content>
-      <Button icon="pi pi-upload" severity="secondary" @click="() => handleSelectFile()" />
-      <Button icon="pi pi-sliders-v" severity="secondary" @click="tooglePopover" />
-      <Popover ref="popover"> </Popover>
-      <Button
-        :icon="playingRef ? 'pi pi-pause' : 'pi pi-play'"
-        @click="playingRef = !playingRef"
-        :disabled="!activatedRef"
-      />
-      <div class="audio-progress monospace">
-        <div class="audio-progress-primary">{{ ms2str(progressRef) }}</div>
-        <div class="audio-progress-secondary">
-          <span class="audio-percentage-text">{{ percentageRef }}%</span>
-          <span class="audio-length-text">{{ ms2str(lengthRef) }}</span>
+      <Spectrogram v-if="showSpectrogram" :key="refresher" />
+      <div class="player-toolbar">
+        <Button icon="pi pi-upload" severity="secondary" @click="() => handleSelectFile()" />
+        <Button icon="pi pi-sliders-v" severity="secondary" @click="tooglePopover" />
+        <Popover ref="popover"> </Popover>
+        <Button
+          :icon="playingRef ? 'pi pi-pause' : 'pi pi-play'"
+          @click="playingRef = !playingRef"
+          :disabled="!activatedRef"
+        />
+        <div class="audio-progress monospace">
+          <div class="audio-progress-primary">{{ ms2str(progressRef) }}</div>
+          <div class="audio-progress-secondary">
+            <span class="audio-percentage-text">{{ percentageRef }}%</span>
+            <span class="audio-length-text">{{ ms2str(lengthRef) }}</span>
+          </div>
         </div>
+        <Waveform :audio="audio" :key="refresher" />
+        <Button
+          icon="pi pi-chart-bar"
+          :severity="showSpectrogram ? 'primary' : 'secondary'"
+          @click="showSpectrogram = !showSpectrogram"
+        />
       </div>
-      <Waveform :audio="audio" :key="refresher" />
-      <Button icon="pi pi-chart-bar" severity="secondary" />
     </template>
   </Card>
 </template>
@@ -28,6 +35,7 @@ import { useFileDialog } from '@vueuse/core'
 import { Button, Card, Popover } from 'primevue'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
 import PopoverPane from './Popover.vue'
+import Spectrogram from './Spectrogram.vue'
 import { ms2str } from '@/utils/timeModel'
 import Waveform from './Waveform.vue'
 import { useRuntimeStore } from '@/stores/runtime'
@@ -58,17 +66,20 @@ const percentageRef = computed(() => {
 
 const popover = useTemplateRef('popover')
 const tooglePopover = (e: MouseEvent) => popover.value?.toggle(e)
+
+const showSpectrogram = ref(false)
 </script>
 
 <style lang="scss">
 .player {
   border: 1px solid color-mix(in srgb, var(--p-zinc-600), transparent 85%);
   .p-card-body {
-    padding: 0.5rem;
+    padding: 0;
   }
-  .p-card-content {
+  .player-toolbar {
     display: flex;
     gap: 0.5rem;
+    padding: 0.5rem;
   }
 }
 

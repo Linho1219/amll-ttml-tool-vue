@@ -40,10 +40,12 @@ onUnmounted(() => {
   flex: 1;
   background-color: var(--p-button-secondary-background);
   border-radius: var(--p-border-radius-md);
-  overflow: hidden;
   cursor: text;
   ::part(canvases) {
     opacity: 0.3;
+  }
+  ::part(wrapper) {
+    overflow: hidden;
   }
   ::part(progress) {
     background-color: color-mix(in srgb, var(--p-primary-color), transparent 70%);
