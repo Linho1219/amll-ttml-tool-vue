@@ -23,6 +23,8 @@ onMounted(() => {
     hideScrollbar: true,
     waveColor: primaryColor.value,
     progressColor: primaryColor.value,
+    cursorWidth: 0,
+    barHeight: 0.8,
     plugins: [
       HoverPlugin.create({
         formatTimeCallback: (v) => ms2str(v * 1000),
@@ -52,7 +54,8 @@ onUnmounted(() => {
     opacity: 0.6;
   }
   ::part(cursor) {
-    display: none;
+    // display: none;
+    box-shadow: var(--p-primary-color) 0 0 0 1px;
   }
   ::part(hover) {
     display: flex;

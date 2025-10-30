@@ -21,6 +21,7 @@ export function useAudioCtrl() {
     audio.src = src
     activatedRef.value = true
     progressRef.value = 0
+    playingRef.value = false
     audio.onloadedmetadata = () => (lengthRef.value = audio.duration * 1000)
   }
 
