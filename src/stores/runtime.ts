@@ -28,8 +28,8 @@ export const useRuntimeStore = defineStore('runtime', () => {
   )
 
   // Component hooks
-  const lineHooks = reactive(new Map<LyricLine, LineComponentActions>())
-  const wordHooks = reactive(new Map<LyricWord, WordComponentActions>())
+  const lineHooks = reactive(new WeakMap<LyricLine, LineComponentActions>())
+  const wordHooks = reactive(new WeakMap<LyricWord, WordComponentActions>())
 
   // Context menu hook
   const closeContext = ref<null | (() => void)>(null)

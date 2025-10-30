@@ -7,20 +7,22 @@
   >
     <div class="editor" selection-root>
       <LineInsertIndicator :index="0" />
-      <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line">
-        <LineShell :line="line" :index="lineIndex">
-          <WordInsertIndicator :index="0" :parent="line" />
-          <template v-for="(word, wordIndex) in line.words" :key="word">
-            <Word :word="word" :index="wordIndex" :parent="line" :line-index="lineIndex" />
-            <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
-          </template>
-          <Button
-            class="add-word-button"
-            icon="pi pi-plus"
-            severity="secondary"
-            @click="appendWord(line)"
-          />
-        </LineShell>
+      <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line.id">
+        <LineLazyShell>
+          <Line :line="line" :index="lineIndex">
+            <WordInsertIndicator :index="0" :parent="line" />
+            <template v-for="(word, wordIndex) in line.words" :key="word.id">
+              <Word :word="word" :index="wordIndex" :parent="line" :line-index="lineIndex" />
+              <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
+            </template>
+            <Button
+              class="add-word-button"
+              icon="pi pi-plus"
+              severity="secondary"
+              @click="appendWord(line)"
+            />
+          </Line>
+        </LineLazyShell>
         <LineInsertIndicator :index="lineIndex + 1" />
       </template>
     </div>
@@ -31,7 +33,8 @@
 
 <script setup lang="ts">
 import { useCoreStore, type LyricLine } from '@/stores/core'
-import LineShell from './LineShell.vue'
+import Line from './Line.vue'
+import LineLazyShell from './LineLazyShell.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
 import { Button, ContextMenu } from 'primevue'
@@ -97,10 +100,6 @@ const contextMenuItems = ref<MenuItem[]>([
   overflow-y: auto;
   overflow-x: hidden;
   --content-word-height: 4.8rem;
-}
-.editor {
-  display: flex;
-  flex-direction: column;
 }
 .add-word-button {
   height: var(--content-word-height);

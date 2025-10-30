@@ -210,7 +210,7 @@ const contextMenuItems: MenuItem[] = [
 
 <style lang="scss">
 .lline {
-  // min-height: 10rem;
+  min-height: 9.8rem;
   display: flex;
   overflow: hidden;
   border: 2px var(--l-border-color) solid;
@@ -220,6 +220,7 @@ const contextMenuItems: MenuItem[] = [
   --l-bg-color: transparent;
   opacity: 0.8;
   transition: transform 0.2s;
+  animation: fade 0.2s;
   &:hover,
   &.selected {
     --l-bg-color: var(--p-content-background);
@@ -260,7 +261,7 @@ const contextMenuItems: MenuItem[] = [
 }
 .lline-index {
   padding: 0.3rem 0 0.5rem;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   text-align: center;
   width: 3ch;
   font-family: var(--font-monospace);

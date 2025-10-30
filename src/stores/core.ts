@@ -14,6 +14,7 @@ const newLine = (attrs: Partial<LyricLine> = {}): LyricLine => ({
   background: false,
   duet: false,
   ...attrs,
+  id: Math.random().toString(36).slice(2),
 })
 const newWord = (attrs: Partial<LyricWord> = {}): LyricWord => ({
   startTime: 0,
@@ -24,6 +25,7 @@ const newWord = (attrs: Partial<LyricWord> = {}): LyricWord => ({
   bookmarked: false,
   // comments: [],
   ...attrs,
+  id: Math.random().toString(36).slice(2),
 })
 
 const line: LyricLine = newLine({
@@ -108,6 +110,7 @@ export type Metadata = Map<MetadataKey, string[]>
 // }
 /** 歌词行 */
 export interface LyricLine {
+  id: string
   /** 该行的翻译 */
   translatedLyric: string
   /** 该行的音译 */
@@ -129,6 +132,7 @@ export interface LyricLine {
 }
 /** 单词 */
 export interface LyricWord {
+  id: string
   /** 单词的起始时间 */
   startTime: number
   /** 单词的结束时间 */

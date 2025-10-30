@@ -58,3 +58,9 @@ input {
     transition: none;
   }
 }
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
