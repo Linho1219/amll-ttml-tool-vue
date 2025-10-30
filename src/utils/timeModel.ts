@@ -16,6 +16,6 @@ export function ms2str(num: number): string {
   const s = Math.floor((num % 60000) / 1000)
     .toString()
     .padStart(2, '0')
-  const ms = (num % 1000).toString().padStart(3, '0')
+  const ms = (Math.floor(num) % 1000).toString().padStart(3, '0')
   return `${m}:${s}.${ms}`
 }
