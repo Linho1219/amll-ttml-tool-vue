@@ -19,3 +19,14 @@ export function ms2str(num: number): string {
   const ms = (Math.floor(num) % 1000).toString().padStart(3, '0')
   return `${m}:${s}.${ms}`
 }
+
+export function ms2strShort(num: number): string {
+  if (num < 0) num = 0
+  const m = Math.floor(num / 60000)
+    .toString()
+    .padStart(2, '0')
+  const s = Math.floor((num % 60000) / 1000)
+    .toString()
+    .padStart(2, '0')
+  return `${m}:${s}`
+}
