@@ -201,6 +201,16 @@
       <Button icon="pi pi-comment" label="添加批注" size="small" severity="secondary" />
       <Button icon="pi pi-eraser" label="移除全部" size="small" severity="secondary" />
     </RibbonGroup>
+    <RibbonGroup label="性能">
+      <div class="kvgrid" v-if="isSupported && memory" style="text-align: right">
+        <span>已使用</span>
+        <span class="monospace">{{ size(memory.usedJSHeapSize) }}</span>
+        <span>已分配</span>
+        <span class="monospace">{{ size(memory.totalJSHeapSize) }}</span>
+        <span>刷新率</span>
+        <span class="monospace">{{ fps }} FPS</span>
+      </div>
+    </RibbonGroup>
   </Ribbon>
 </template>
 
@@ -213,6 +223,17 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import { computed, ref } from 'vue'
 import { ms2str, str2ms } from '@/utils/timeModel'
+
+import { useMemory } from '@vueuse/core'
+import { useFps } from '@vueuse/core'
+
+const fps = useFps()
+
+function size(v: number) {
+  const kb = v / 1024 / 1024
+  return `${kb.toFixed(2)} MB`
+}
+const { isSupported, memory } = useMemory()
 
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
