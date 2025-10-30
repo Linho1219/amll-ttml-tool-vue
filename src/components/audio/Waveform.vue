@@ -42,6 +42,7 @@ onUnmounted(() => {
   flex: 1;
   background-color: var(--p-button-secondary-background);
   border-radius: var(--p-border-radius-md);
+  overflow: hidden;
   cursor: text;
   ::part(canvases) {
     opacity: 0.3;

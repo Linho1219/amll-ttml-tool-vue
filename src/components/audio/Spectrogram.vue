@@ -12,9 +12,8 @@ import { onMounted, ref, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import HoverPlugin from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
-import SpectrogramPlugin from 'wavesurfer.js/dist/plugins/spectrogram.js'
+import SpectrogramPlugin from './spectrogramPlugin/index.ts'
 import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.js'
-import colorMap from './colorMap.json'
 const spectrogramEl = useTemplateRef('spectrogramEl')
 const primaryColor = useCssVar('--p-primary-color')
 const { height: spectrogramHeight } = useElementSize(spectrogramEl)
@@ -48,7 +47,6 @@ onMounted(() => {
       SpectrogramPlugin.create({
         labels: false,
         height: spectrogramHeight.value * spectrogramHeightRatio,
-        colorMap,
         fftSamples: 1024,
         noverlap: 512,
         frequencyMin: 100,
@@ -57,7 +55,6 @@ onMounted(() => {
         gainDB: 20,
         rangeDB: 80,
         windowFunc: 'hann',
-        useWebWorker: true,
       }),
       HoverPlugin.create({
         formatTimeCallback: (v) => ms2str(v * 1000),
