@@ -47,7 +47,7 @@ import type { MenuItem } from 'primevue/menuitem'
 import { stringifyNative } from '@/port/native'
 import editHistory from '@/stores/editHistory'
 import { chooseFile } from '@/utils/file'
-import { parseTTML } from '@/port/ttml'
+import { importTTML, parseTTML } from '@/port/ttml'
 import { importPersist } from '@/port'
 
 const runtimeStore = useRuntimeStore()
@@ -80,13 +80,7 @@ const openMenuItems: MenuItem[] = [
   {
     label: '从歌词文件导入',
     icon: 'pi pi-file-arrow-up',
-    command: async () => {
-      const str = await chooseFile('text/ttml')
-      if (!str) return
-      console.log(str)
-      const data = parseTTML(str)
-      importPersist(data)
-    },
+    command: handleImportFromFile,
   },
   {
     label: '从纯文本导入',
@@ -100,6 +94,15 @@ const openMenuItems: MenuItem[] = [
     command: () => {},
   },
 ]
+
+async function handleImportFromFile() {
+  const file = await chooseFile('.ttml,.qrc,.yrc,.lys,.txt')
+  if (!file) return
+  switch (file.extension) {
+    case 'ttml':
+      return importTTML(file.content)
+  }
+}
 
 // File save
 function handleSaveClick() {

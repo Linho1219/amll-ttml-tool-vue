@@ -1,4 +1,9 @@
-export function chooseFile(accept: string): Promise<string | null> {
+interface FileReturn {
+  fileName: string
+  extension: string
+  content: string
+}
+export function chooseFile(accept: string): Promise<FileReturn | null> {
   return new Promise((resolve) => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -14,10 +19,16 @@ export function chooseFile(accept: string): Promise<string | null> {
       }
       const reader = new FileReader()
       reader.onload = () => {
-        resolve(reader.result as string)
+        const content = reader.result as string
+        const extension = (file.name.split('.').pop() || '').toLowerCase()
+        resolve({ fileName: file.name, extension, content })
         document.body.removeChild(input)
       }
       reader.readAsText(file)
+    })
+    input.addEventListener('cancel', () => {
+      document.body.removeChild(input)
+      resolve(null)
     })
     input.click()
   })
