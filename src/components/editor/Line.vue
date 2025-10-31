@@ -85,6 +85,7 @@ import { Button, ContextMenu, FloatLabel } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
 import { computed, ref, useTemplateRef } from 'vue'
 import InputText from '../repack/InputText.vue'
+import { useStaticStore } from '@/stores/static'
 
 const props = defineProps<{
   line: LyricLine
@@ -92,9 +93,10 @@ const props = defineProps<{
 }>()
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
+const staticStore = useStaticStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
-const touch = () => runtimeStore.touchLineOnly(props.line)
+const touch = () => staticStore.touchLineOnly(props.line)
 function handleFocus() {
   forceOutsideBlur()
   touch()
@@ -106,13 +108,13 @@ function handleMouseDown(e: MouseEvent) {
   forceOutsideBlur()
   touch()
   if (e.metaKey || e.ctrlKey) {
-    runtimeStore.lastTouchedLine = props.line
+    staticStore.lastTouchedLine = props.line
     if (!isSelected.value) {
       runtimeStore.addLineToSelection(props.line)
     } else leftForClick = true
-  } else if (e.shiftKey && runtimeStore.lastTouchedLine) {
-    const lastTouchedLine = runtimeStore.lastTouchedLine
-    runtimeStore.lastTouchedLine = props.line
+  } else if (e.shiftKey && staticStore.lastTouchedLine) {
+    const lastTouchedLine = staticStore.lastTouchedLine
+    staticStore.lastTouchedLine = props.line
     const lines = coreStore.lyricLines
     const [start, end] = sortIndex(lines.indexOf(lastTouchedLine), props.index)
     const affectedLines = lines.slice(start, end + 1)
@@ -132,7 +134,7 @@ function handleClick(e: MouseEvent) {
 }
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
-  runtimeStore.touchLineOnly(props.line)
+  staticStore.touchLineOnly(props.line)
   runtimeStore.isDragging = true
   runtimeStore.canDrop = false
   if (!e.dataTransfer) return
@@ -188,7 +190,7 @@ const contextMenuItems: MenuItem[] = [
         ...props.line,
         words: props.line.words.map(coreStore.newWord),
       })
-      coreStore.lyricLines.splice(props.index, 0, duplicate)
+      coreStore.lyricLines.splice(props.index + 1, 0, duplicate)
     },
   },
   {

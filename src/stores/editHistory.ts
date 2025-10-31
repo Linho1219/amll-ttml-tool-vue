@@ -1,12 +1,9 @@
 import { computed, nextTick, reactive, toRaw, watch } from 'vue'
-import {
-  useCoreStore,
-  type LyricLine,
-  type LyricWord,
-  type Metadata,
-} from './core'
+import { useCoreStore, type LyricLine, type LyricWord, type Metadata } from './core'
 import { useRuntimeStore, type View } from './runtime'
 import cloneDeep from 'lodash-es/cloneDeep'
+import { useStaticStore } from './static'
+const staticStore = useStaticStore()
 
 interface Snapshot {
   timestamp: number
@@ -66,8 +63,8 @@ function take() {
       currentView: toRaw(runtimeStore.currentView),
       selectedLines: toRaw(runtimeStore.selectedLines),
       selectedWords: toRaw(runtimeStore.selectedWords),
-      lastTouchedLine: toRaw(runtimeStore.lastTouchedLine),
-      lastTouchedWord: toRaw(runtimeStore.lastTouchedWord),
+      lastTouchedLine: toRaw(staticStore.lastTouchedLine),
+      lastTouchedWord: toRaw(staticStore.lastTouchedWord),
     },
   })
   snapshotList.set(++state.current, snapshot)
@@ -88,8 +85,8 @@ function wayback(snapshot: Snapshot) {
   if (snapshot.runtime.selectedWords.size)
     runtimeStore.selectWord(...snapshot.runtime.selectedWords)
   else runtimeStore.selectLine(...snapshot.runtime.selectedLines)
-  runtimeStore.lastTouchedLine = snapshot.runtime.lastTouchedLine
-  runtimeStore.lastTouchedWord = snapshot.runtime.lastTouchedWord
+  staticStore.lastTouchedLine = snapshot.runtime.lastTouchedLine
+  staticStore.lastTouchedWord = snapshot.runtime.lastTouchedWord
   setTimeout(() => (stopRecording = false), 0)
 }
 

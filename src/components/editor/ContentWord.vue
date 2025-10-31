@@ -63,13 +63,15 @@ import {
   watch,
 } from 'vue'
 import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
-import { useRuntimeStore, type WordComponentActions } from '@/stores/runtime'
+import { useRuntimeStore } from '@/stores/runtime'
 import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { digit2Sup } from '@/utils/toSupSub'
 import { ContextMenu } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
+import { useStaticStore, type WordComponentActions } from '@/stores/static'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
+const staticStore = useStaticStore()
 const props = defineProps<{
   word: LyricWord
   index: number
@@ -94,7 +96,7 @@ watch(inputModel, (val) => {
 // Selection
 const touch = () => {
   forceOutsideBlur()
-  runtimeStore.touchLineWord(props.parent, props.word)
+  staticStore.touchLineWord(props.parent, props.word)
 }
 const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
 let leftForClick = false
@@ -105,8 +107,8 @@ function handleMousedown(e: MouseEvent) {
     if (!isSelected.value) {
       runtimeStore.addWordToSelection(props.word)
     } else leftForClick = true
-  } else if (e.shiftKey && runtimeStore.lastTouchedWord) {
-    const { lastTouchedWord, lastTouchedLine } = runtimeStore
+  } else if (e.shiftKey && staticStore.lastTouchedWord) {
+    const { lastTouchedWord, lastTouchedLine } = staticStore
     touch()
     if (!lastTouchedLine || !lastTouchedWord) return
     if (lastTouchedLine !== props.parent) {
@@ -121,7 +123,7 @@ function handleMousedown(e: MouseEvent) {
   } else {
     if (isSelected.value) return
     touch()
-    runtimeStore.selectWord(props.word)
+    runtimeStore.selectLineWord(props.parent, props.word)
   }
 }
 function handleClick(e: MouseEvent) {
@@ -134,7 +136,7 @@ function handleDbClick() {
 function handleFocus(_e: FocusEvent) {
   if (isSelected.value && runtimeStore.selectedWords.size === 1) return
   touch()
-  runtimeStore.selectWord(props.word)
+  runtimeStore.selectLineWord(props.parent, props.word)
 }
 const dragGhostEl = useTemplateRef('dragGhostEl')
 function handleDragStart(e: DragEvent) {
@@ -175,8 +177,8 @@ const contextMenuItems: MenuItem[] = [
     command: () => {
       const newWord = coreStore.newWord()
       props.parent.words.splice(props.index, 0, newWord)
-      runtimeStore.selectWord(newWord)
-      nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
+      runtimeStore.selectLineWord(props.parent, newWord)
+      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
     },
   },
   {
@@ -185,8 +187,8 @@ const contextMenuItems: MenuItem[] = [
     command: () => {
       const newWord = coreStore.newWord()
       props.parent.words.splice(props.index + 1, 0, newWord)
-      runtimeStore.selectWord(newWord)
-      nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
+      runtimeStore.selectLineWord(props.parent, newWord)
+      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
     },
   },
   {
@@ -197,7 +199,7 @@ const contextMenuItems: MenuItem[] = [
       if (wordsToMove.length === 0) return
       const newLine = coreStore.newLine({ ...props.parent, words: wordsToMove })
       coreStore.lyricLines.splice(props.lineIndex + 1, 0, newLine)
-      runtimeStore.selectWord(wordsToMove[0]!)
+      runtimeStore.selectLineWord(newLine, wordsToMove[0]!)
     },
   },
   {
@@ -242,8 +244,8 @@ function handleKeydown(event: KeyboardEvent) {
         prevWord.endTime = props.word.endTime
       }
       props.parent.words.splice(props.index, 1)
-      runtimeStore.selectWord(prevWord)
-      nextTick(() => runtimeStore.wordHooks.get(prevWord)?.focusInput(cursorPos))
+      runtimeStore.selectLineWord(props.parent, prevWord)
+      nextTick(() => staticStore.wordHooks.get(prevWord.id)?.focusInput(cursorPos))
       return
     }
     case 'Enter': {
@@ -258,7 +260,7 @@ function handleKeydown(event: KeyboardEvent) {
       event.preventDefault()
       const prevWord = props.parent.words[props.index - 1]
       if (!prevWord) return
-      nextTick(() => runtimeStore.wordHooks.get(prevWord)?.focusInput(-1))
+      nextTick(() => staticStore.wordHooks.get(prevWord.id)?.focusInput(-1))
       return
     }
     case 'ArrowRight': {
@@ -268,7 +270,7 @@ function handleKeydown(event: KeyboardEvent) {
       event.preventDefault()
       const nextWord = props.parent.words[props.index + 1]
       if (!nextWord) return
-      nextTick(() => runtimeStore.wordHooks.get(nextWord)?.focusInput(0))
+      nextTick(() => staticStore.wordHooks.get(nextWord.id)?.focusInput(0))
       return
     }
     case 'Backquote': {
@@ -288,8 +290,8 @@ function handleKeydown(event: KeyboardEvent) {
       props.word.endTime = breakTime
       props.word.word = el.value.slice(0, breakIndex)
       props.parent.words.splice(props.index + 1, 0, newWord)
-      runtimeStore.selectWord(newWord)
-      nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput(0))
+      runtimeStore.selectLineWord(props.parent, newWord)
+      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput(0))
       return
     }
   }
@@ -322,10 +324,11 @@ const hooks: WordComponentActions = {
   },
 }
 onMounted(() => {
-  runtimeStore.wordHooks.set(props.word, hooks)
+  staticStore.wordHooks.set(props.word.id, hooks)
 })
 onUnmounted(() => {
-  if (runtimeStore.wordHooks.get(props.word) === hooks) runtimeStore.wordHooks.delete(props.word)
+  if (staticStore.wordHooks.get(props.word.id) === hooks)
+    staticStore.wordHooks.delete(props.word.id)
 })
 </script>
 

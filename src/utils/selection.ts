@@ -21,7 +21,7 @@ export function sortIndex(a: number, b: number): [number, number] {
 export function sortWords(...words: LyricWord[]): LyricWord[] {
   if (words.length <= 1) return words
   const coreStore = useCoreStore()
-  const indexMap = new Map<LyricWord, number>()
+  const indexMap = new WeakMap<LyricWord, number>()
   let index = 0
   for (const line of coreStore.lyricLines)
     for (const word of line.words) indexMap.set(word, index++)
@@ -31,7 +31,7 @@ export function sortWords(...words: LyricWord[]): LyricWord[] {
 export function sortLines(...lines: LyricLine[]): LyricLine[] {
   if (lines.length <= 1) return lines
   const coreStore = useCoreStore()
-  const indexMap = new Map<LyricLine, number>()
+  const indexMap = new WeakMap<LyricLine, number>()
   coreStore.lyricLines.forEach((line, index) => indexMap.set(line, index))
   return lines.sort((a, b) => indexMap.get(a)! - indexMap.get(b)!)
 }

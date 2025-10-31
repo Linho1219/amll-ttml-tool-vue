@@ -3,20 +3,20 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeStore } from '@/stores/runtime'
+import { useStaticStore } from '@/stores/static'
 import { ms2str } from '@/utils/timeModel'
 import { useCssVar, useElementSize } from '@vueuse/core'
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import HoverPlugin from 'wavesurfer.js/dist/plugins/hover.esm.js'
-const audio = useRuntimeStore().getAudio()
+const audio = useStaticStore().audio
 const waveformEl = useTemplateRef('waveformEl')
 const primaryColor = useCssVar('--p-primary-color')
 const { height: waveformHeight } = useElementSize(waveformEl)
-const wsInstance = ref<WaveSurfer | null>(null)
+let wsInstance: WaveSurfer | null = null
 onMounted(() => {
   if (!waveformEl.value) return
-  wsInstance.value = WaveSurfer.create({
+  wsInstance = WaveSurfer.create({
     media: audio.audioEl,
     container: waveformEl.value,
     height: waveformHeight.value,
@@ -33,7 +33,7 @@ onMounted(() => {
   })
 })
 onUnmounted(() => {
-  wsInstance.value?.destroy()
+  wsInstance?.destroy()
 })
 </script>
 
@@ -61,6 +61,9 @@ onUnmounted(() => {
   ::part(hover) {
     display: flex;
     align-items: center;
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
   }
   ::part(hover-label) {
     padding: 0 0.5rem;

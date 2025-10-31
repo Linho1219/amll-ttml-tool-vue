@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeStore } from '@/stores/runtime'
+import { useStaticStore } from '@/stores/static'
 import { ms2str } from '@/utils/timeModel'
 import { useCssVar, useElementSize } from '@vueuse/core'
-import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import HoverPlugin from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
@@ -17,16 +17,17 @@ import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.js'
 const spectrogramEl = useTemplateRef('spectrogramEl')
 const primaryColor = useCssVar('--p-primary-color')
 const { height: spectrogramHeight } = useElementSize(spectrogramEl)
-const audio = useRuntimeStore().getAudio()
 
-const wsInstance = ref<WaveSurfer | null>(null)
-const rgInstance = ref<RegionsPlugin | null>(null)
+const audio = useStaticStore().audio
+
+let wsInstance: WaveSurfer | null = null
+let rgInstance: RegionsPlugin | null = null
 onMounted(() => {
   if (!spectrogramEl.value) return
   const spectrogramHeightRatio = 0.8
   const regions = RegionsPlugin.create()
-  rgInstance.value = regions
-  wsInstance.value = WaveSurfer.create({
+  rgInstance = regions
+  wsInstance = WaveSurfer.create({
     media: audio.audioEl,
     container: spectrogramEl.value,
     height: spectrogramHeight.value * (1 - spectrogramHeightRatio),
@@ -67,7 +68,7 @@ onMounted(() => {
     ],
   })
 })
-onUnmounted(() => wsInstance.value?.destroy())
+onUnmounted(() => wsInstance?.destroy())
 </script>
 
 <style lang="scss">
@@ -86,6 +87,11 @@ onUnmounted(() => wsInstance.value?.destroy())
       0 0 0 1px var(--p-primary-color),
       0 0 0 3px #0002;
     will-change: left;
+  }
+  ::part(hover) {
+    @media (prefers-reduced-motion: reduce) {
+      transition: none !important;
+    }
   }
   ::part(hover-label) {
     padding: 0 0.5rem;

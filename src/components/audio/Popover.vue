@@ -62,12 +62,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeStore } from '@/stores/runtime'
-import type { AudioCtrl } from '@/utils/audio'
+import { useStaticStore } from '@/stores/static'
 import { Button, InputGroup, InputGroupAddon, InputNumber, Slider } from 'primevue'
 import { computed, ref, watch } from 'vue'
 
-const audio = useRuntimeStore().getAudio()
+const audio = useStaticStore().audio
 const { volumeRef, playbackRateRef } = audio
 
 const volumeInputRef = ref<number | undefined>(Math.round(volumeRef.value * 100))

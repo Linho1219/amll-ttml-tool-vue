@@ -44,20 +44,22 @@ import WordInsertIndicator from './WordInsertIndicator.vue'
 import LineInsertIndicator from './LineInsertIndicator.vue'
 import DragGhost from './DragGhost.vue'
 import type { MenuItem } from 'primevue/menuitem'
+import { useStaticStore } from '@/stores/static'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
+const staticStore = useStaticStore()
 
 function appendWord(line: LyricLine) {
   const newWord = coreStore.newWord(line)
   line.words.push(newWord)
-  runtimeStore.selectWord(newWord)
-  nextTick(() => runtimeStore.wordHooks.get(newWord)?.focusInput())
+  runtimeStore.selectLineWord(line, newWord)
+  nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
 }
 function handleMouseDown(e: MouseEvent) {
   if (e.ctrlKey || e.metaKey) return
   forceOutsideBlur()
-  runtimeStore.lastTouchedLine = runtimeStore.lastTouchedWord = null
+  staticStore.lastTouchedLine = staticStore.lastTouchedWord = null
   runtimeStore.clearSelection()
 }
 function handleDragOver(e: DragEvent) {

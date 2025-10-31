@@ -14,10 +14,12 @@
 <script setup lang="ts">
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
+import { useStaticStore } from '@/stores/static'
 import { sortLines, sortWords } from '@/utils/selection'
 import { ref, watch } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
+const staticStore = useStaticStore()
 const dragover = ref(false)
 const props = defineProps<{ index: number }>()
 
@@ -50,7 +52,7 @@ function handleDrop(e: DragEvent) {
       })
       coreStore.lyricLines.splice(props.index, 0, ...duplicatedLines)
       runtimeStore.selectLine(...duplicatedLines)
-      runtimeStore.touchLineOnly(duplicatedLines.at(-1)!)
+      staticStore.touchLineOnly(duplicatedLines.at(-1)!)
     } else {
       const placeholder = coreStore.newLine()
       coreStore.lyricLines.splice(props.index, 0, placeholder)
@@ -67,9 +69,9 @@ function handleDrop(e: DragEvent) {
     if (isCopy) newLine.words = pendingWords.map(coreStore.newWord)
     else coreStore.deleteWord(...pendingWords)
     coreStore.lyricLines.splice(props.index, 0, newLine)
-    if (isCopy) runtimeStore.selectWord(...newLine.words)
+    if (isCopy) runtimeStore.selectLineWord(newLine, ...newLine.words)
     else runtimeStore.applyWordSelectToLine()
-    runtimeStore.touchLineWord(newLine, newLine.words.at(-1)!)
+    staticStore.touchLineWord(newLine, newLine.words.at(-1)!)
   }
 }
 </script>

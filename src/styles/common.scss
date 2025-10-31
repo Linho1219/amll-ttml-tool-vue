@@ -84,3 +84,12 @@ input {
   row-gap: 0.3rem;
   column-gap: 0.5rem;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

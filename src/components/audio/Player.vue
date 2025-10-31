@@ -30,7 +30,6 @@
 </template>
 
 <script setup lang="ts">
-import { useAudioCtrl } from '@/utils/audio'
 import { useFileDialog } from '@vueuse/core'
 import { Button, Card, Popover } from 'primevue'
 import { computed, nextTick, ref, useTemplateRef } from 'vue'
@@ -38,10 +37,10 @@ import PopoverPane from './Popover.vue'
 import Spectrogram from './Spectrogram.vue'
 import { ms2str } from '@/utils/timeModel'
 import Waveform from './Waveform.vue'
-import { useRuntimeStore } from '@/stores/runtime'
+import { useStaticStore } from '@/stores/static'
 
-const audio = useRuntimeStore().getAudio()
-const { progressRef, lengthRef, playingRef, volumeRef, activatedRef, playbackRateRef } = audio
+const audio = useStaticStore().audio
+const { progressRef, lengthRef, playingRef, activatedRef } = audio
 const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
   accept: 'audio/*',
   multiple: false,

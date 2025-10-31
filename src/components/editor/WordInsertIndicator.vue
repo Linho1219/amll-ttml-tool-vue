@@ -16,10 +16,12 @@
 <script setup lang="ts">
 import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
+import { useStaticStore } from '@/stores/static'
 import { sortWords } from '@/utils/selection'
 import { ref, watch } from 'vue'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
+const staticStore = useStaticStore()
 const dragover = ref(false)
 const props = defineProps<{ parent: LyricLine; index: number }>()
 
@@ -46,8 +48,8 @@ function handleDrop(e: DragEvent) {
   if (e.ctrlKey || e.metaKey) {
     const duplicatedWords = pendingWords.map(coreStore.newWord)
     props.parent.words.splice(props.index, 0, ...duplicatedWords)
-    runtimeStore.selectWord(...duplicatedWords)
-    runtimeStore.touchLineWord(props.parent, duplicatedWords.at(-1)!)
+    runtimeStore.selectLineWord(props.parent, ...duplicatedWords)
+    staticStore.touchLineWord(props.parent, duplicatedWords.at(-1)!)
   } else {
     const placeholder = coreStore.newWord(props.parent)
     props.parent.words.splice(props.index, 0, placeholder)
