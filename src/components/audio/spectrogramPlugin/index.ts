@@ -766,7 +766,9 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
     if (!buffer) return []
 
     try {
-      return await this.calculateFrequenciesWithWorker(buffer)
+      const result = await this.calculateFrequenciesWithWorker(buffer)
+      this.worker?.terminate()
+      return result
     } catch (error) {
       throw Error('Worker calculation failed, falling back to main thread:' + error)
     }

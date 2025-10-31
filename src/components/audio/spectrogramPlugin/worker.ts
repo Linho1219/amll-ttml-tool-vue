@@ -110,11 +110,12 @@ function calculateFrequencies(
         noiseFloor,
         ...spectrum.slice(0, spectrum.length * maxThresOfMaxMagnitude),
       )
-      const colorIndices = spectrum.map((magnitude) => {
-        const normalized = magnitude / maxMagnitude
+      const colorIndices = new Uint8Array(spectrum.length)
+      for (let i = 0; i < spectrum.length; i++) {
+        const normalized = spectrum[i]! / maxMagnitude
         const logVal = Math.log10(normalized * 9 + 1)
-        return Math.round(Math.min(1, logVal * gain) * 255)
-      })
+        colorIndices[i] = Math.round(Math.min(1, logVal * gain) * 255)
+      }
       for (let j = 0; j < spectrum.length; j++) {
         const linearIndex = j
         const logIndex = Math.exp((j * Math.log(spectrum.length)) / (spectrum.length - 1)) - 1
