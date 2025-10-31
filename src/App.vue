@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css'
 import '@/styles/common.scss'
-import '@/styles/ribbon.scss'
 import Titlebar from './components/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
 import Content from './components/editor/Editor.vue'

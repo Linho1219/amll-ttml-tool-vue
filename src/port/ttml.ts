@@ -1,7 +1,7 @@
 import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 import { coreCreate, type LyricLine, type MetadataKey } from '../stores/core'
 import { ms2str, str2ms } from '../utils/timeModel'
-import type { Persist } from '.'
+import { importPersist, type Persist } from '.'
 
 export function parseTTML(ttmlString: string): Persist {
   const raw = new DOMParser().parseFromString(ttmlString, 'application/xml').documentElement
@@ -77,12 +77,8 @@ export function parseTTML(ttmlString: string): Persist {
     if (role === 'x-bg') line.background = true
     // Contents
     const children = Array.from(rawLine.childNodes)
-    for (const [index, child] of children.entries()) {
+    for (const child of children) {
       let textContent = child.textContent || ''
-      if (removeBrace) {
-        if (index === 0) textContent = textContent.replace(/^\(/, '')
-        else if (index === children.length - 1) textContent = textContent.replace(/\)$/, '')
-      }
       if (isText(child)) {
         const word = coreCreate.newWord({
           word: textContent,
@@ -92,7 +88,7 @@ export function parseTTML(ttmlString: string): Persist {
         const spanAttrs = getAttrMap(child)
         const role = spanAttrs.get('ttm:role')
         if (role === 'x-bg') {
-          // Current line pushed
+          // Current line pushed already
           // so nested background line will be after current line
           processLine(child, true)
         } else if (role === 'x-translation') {
@@ -121,6 +117,12 @@ export function parseTTML(ttmlString: string): Persist {
       const lastWord = line.words.at(-1)
       if (firstWord?.startTime && !line.startTime) line.startTime = firstWord.startTime
       if (lastWord?.endTime && !line.endTime) line.endTime = lastWord.endTime
+    }
+    if (removeBrace && line.words.length) {
+      const firstWord = line.words[0]!
+      const lastWord = line.words.at(-1)!
+      firstWord.word = firstWord.word.replace(/^\(/, '')
+      lastWord.word = lastWord.word.replace(/\)$/, '')
     }
   }
   for (const rawLine of rawLines) processLine(rawLine)
@@ -237,3 +239,5 @@ export function stringifyTTML(data: Persist) {
   // Output
   return new XMLSerializer().serializeToString(doc)
 }
+
+export const importTTML = (ttmlString: string) => importPersist(parseTTML(ttmlString))

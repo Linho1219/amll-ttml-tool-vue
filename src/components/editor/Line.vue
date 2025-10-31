@@ -58,28 +58,19 @@
         <slot></slot>
       </div>
       <div class="lline-secondary" v-if="runtimeStore.isContentView">
-        <FloatLabel variant="on">
-          <InputText
-            fluid
-            v-model.lazy="props.line.translatedLyric"
-            @focus="handleFocus"
-            @mousedown.stop
-            @click.stop
-            @dragstart.stop
-          />
-          <label for="on_label">行翻译</label>
-        </FloatLabel>
-        <FloatLabel variant="on">
-          <InputText
-            fluid
-            v-model.lazy="props.line.romanLyric"
-            @focus="handleFocus"
-            @mousedown.stop
-            @click.stop
-            @dragstart.stop
-          />
-          <label for="on_label">行音译</label>
-        </FloatLabel>
+        <template v-for="f in orderedFields" :key="f.key">
+          <FloatLabel variant="on">
+            <InputText
+              fluid
+              v-model.lazy="props.line[f.model]"
+              @focus="handleFocus"
+              @mousedown.stop
+              @click.stop
+              @dragstart.stop
+            />
+            <label>{{ f.label }}</label>
+          </FloatLabel>
+        </template>
       </div>
     </div>
     <ContextMenu ref="menu" :model="contextMenuItems" />
@@ -206,6 +197,22 @@ const contextMenuItems: MenuItem[] = [
     command: () => coreStore.lyricLines.splice(props.index, 1),
   },
 ]
+
+const secondaryFields = [
+  {
+    key: 'translated',
+    label: '行翻译',
+    model: 'translatedLyric',
+  },
+  {
+    key: 'roman',
+    label: '行音译',
+    model: 'romanLyric',
+  },
+] as const
+const orderedFields = computed(() =>
+  runtimeStore.swapTranslateRoman ? [...secondaryFields].reverse() : secondaryFields,
+)
 </script>
 
 <style lang="scss">

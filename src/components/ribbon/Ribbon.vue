@@ -162,7 +162,7 @@
       </div>
       <Button icon="pi pi-sliders-h" label="批量时移" size="small" severity="secondary" />
     </RibbonGroup>
-    <RibbonGroup label="审校" more>
+    <RibbonGroup label="视图">
       <div class="kvgrid">
         <Checkbox
           inputId="ribbon-hlt-lineoverlap"
@@ -181,13 +181,21 @@
         />
         <label for="ribbon-hlt-wordoverlap">高亮词时间冲突</label>
         <Checkbox
-          inputId="ribbon-sensitive"
-          value="sensitive"
+          inputId="ribbon-auto-scroll"
+          value="auto-scroll"
           size="small"
           binary
           v-model="runtimeStore.scrollWithPlayback"
         />
-        <label for="ribbon-sensitive">随播放自动滚动</label>
+        <label for="ribbon-auto-scroll">随播放自动滚动</label>
+        <Checkbox
+          inputId="ribbon-swap-translate-roman"
+          value="swap-translate-roman"
+          size="small"
+          binary
+          v-model="runtimeStore.swapTranslateRoman"
+        />
+        <label for="ribbon-swap-translate-roman">交换翻译音译框</label>
       </div>
     </RibbonGroup>
     <RibbonGroup label="标记" more>

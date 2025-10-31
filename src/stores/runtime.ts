@@ -40,6 +40,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const hltLineTimeConflicts = ref(false)
   const hltWordTimeConflicts = ref(false)
   const scrollWithPlayback = ref(false)
+  const swapTranslateRoman = ref(false)
 
   // Audio
   const audio = useAudioCtrl()
@@ -76,6 +77,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     closeContext,
     globalLatency,
     hltLineTimeConflicts,
+    swapTranslateRoman,
     hltWordTimeConflicts,
     scrollWithPlayback,
     getAudio,
