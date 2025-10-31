@@ -1,5 +1,5 @@
 <template>
-  <div class="lline-lazy-shell" ref="shellEl" :style="{ height: shellHeight + 'px' }">
+  <div class="lline-lazy-shell" ref="shellEl" :style="{ minHeight: shellHeight + 'px' }">
     <div class="lline-lazy-content" ref="contentEl">
       <slot v-if="visible"></slot>
     </div>
@@ -23,7 +23,7 @@ watch(contentHeight, (h) => {
 </script>
 
 <style lang="scss">
-.lline-lazy-shell {
+.lline-lazy-content {
   min-height: 9.8rem;
 }
 </style>

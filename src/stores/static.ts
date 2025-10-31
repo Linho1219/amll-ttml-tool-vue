@@ -4,6 +4,7 @@ import type { LyricLine, LyricWord } from './core'
 const staticStore = {
   lineHooks: new Map<string, LineComponentActions>(),
   wordHooks: new Map<string, WordComponentActions>(),
+  closeContext: null as null | (() => void),
   audio: useAudioCtrl(),
   lastTouchedLine: null as LyricLine | null,
   lastTouchedWord: null as LyricWord | null,

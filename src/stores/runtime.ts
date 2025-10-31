@@ -1,12 +1,4 @@
-import {
-  computed,
-  reactive,
-  ref,
-  shallowReactive,
-  shallowRef,
-  type Ref,
-  type ShallowRef,
-} from 'vue'
+import { computed, ref, shallowReactive } from 'vue'
 import { defineStore } from 'pinia'
 import { useCoreStore, type LyricLine, type LyricWord } from './core'
 export enum View {
@@ -32,9 +24,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const isDraggingLine = computed(
     () => isDragging.value && selectedWords.size === 0 && selectedLines.size > 0,
   )
-
-  // Context menu hook
-  const closeContext = ref<null | (() => void)>(null)
 
   // Options
   const globalLatency = ref(0)
@@ -65,7 +54,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
     canDrop,
     isDraggingWord,
     isDraggingLine,
-    closeContext,
     globalLatency,
     hltLineTimeConflicts,
     swapTranslateRoman,

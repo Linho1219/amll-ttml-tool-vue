@@ -7,8 +7,8 @@
 <script setup lang="ts">
 import { useStaticStore } from '@/stores/static'
 import { ms2str } from '@/utils/timeModel'
-import { useCssVar, useElementSize } from '@vueuse/core'
-import { onMounted, onUnmounted, shallowRef, useTemplateRef } from 'vue'
+import { useCssVar } from '@vueuse/core'
+import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import HoverPlugin from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
@@ -16,7 +16,6 @@ import SpectrogramPlugin from './spectrogramPlugin/index.ts'
 import ZoomPlugin from 'wavesurfer.js/dist/plugins/zoom.js'
 const spectrogramEl = useTemplateRef('spectrogramEl')
 const primaryColor = useCssVar('--p-primary-color')
-const { height: spectrogramHeight } = useElementSize(spectrogramEl)
 
 const audio = useStaticStore().audio
 
@@ -30,7 +29,7 @@ onMounted(() => {
   wsInstance = WaveSurfer.create({
     media: audio.audioEl,
     container: spectrogramEl.value,
-    height: spectrogramHeight.value * (1 - spectrogramHeightRatio),
+    height: spectrogramEl.value.clientHeight * (1 - spectrogramHeightRatio),
     waveColor: primaryColor.value,
     progressColor: primaryColor.value,
     cursorColor: primaryColor.value,
@@ -46,7 +45,7 @@ onMounted(() => {
         maxZoom: 300,
       }),
       SpectrogramPlugin.create({
-        height: spectrogramHeight.value * spectrogramHeightRatio,
+        height: spectrogramEl.value.clientHeight * spectrogramHeightRatio,
         fftSamples: 1024,
         hopSize: 256,
         frequencyMin: 1000,

@@ -5,21 +5,20 @@
 <script setup lang="ts">
 import { useStaticStore } from '@/stores/static'
 import { ms2str } from '@/utils/timeModel'
-import { useCssVar, useElementSize } from '@vueuse/core'
+import { useCssVar } from '@vueuse/core'
 import { onMounted, onUnmounted, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import HoverPlugin from 'wavesurfer.js/dist/plugins/hover.esm.js'
 const audio = useStaticStore().audio
 const waveformEl = useTemplateRef('waveformEl')
 const primaryColor = useCssVar('--p-primary-color')
-const { height: waveformHeight } = useElementSize(waveformEl)
 let wsInstance: WaveSurfer | null = null
 onMounted(() => {
   if (!waveformEl.value) return
   wsInstance = WaveSurfer.create({
     media: audio.audioEl,
     container: waveformEl.value,
-    height: waveformHeight.value,
+    height: waveformEl.value.clientHeight,
     hideScrollbar: true,
     waveColor: primaryColor.value,
     progressColor: primaryColor.value,

@@ -157,11 +157,11 @@ const menu = useTemplateRef('menu')
 const closeContext = () => menu.value?.hide()
 function handleContext(e: MouseEvent) {
   handleFocus()
-  if (runtimeStore.closeContext && runtimeStore.closeContext !== closeContext)
-    runtimeStore.closeContext()
+  if (staticStore.closeContext && staticStore.closeContext !== closeContext)
+    staticStore.closeContext()
   if (!runtimeStore.isContentView) return
   menu.value?.show(e)
-  runtimeStore.closeContext = closeContext
+  staticStore.closeContext = closeContext
 }
 const contextMenuItems: MenuItem[] = [
   {

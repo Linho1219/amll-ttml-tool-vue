@@ -215,8 +215,8 @@
         <span class="monospace">{{ size(memory.usedJSHeapSize) }}</span>
         <span>已分配</span>
         <span class="monospace">{{ size(memory.totalJSHeapSize) }}</span>
-        <span>刷新率</span>
-        <span class="monospace">{{ fps }} FPS</span>
+        <span>帧速率</span>
+        <!-- <span class="monospace">{{ fps }} FPS</span> -->
       </div>
     </RibbonGroup>
   </Ribbon>
@@ -235,7 +235,7 @@ import { ms2str, str2ms } from '@/utils/timeModel'
 import { useMemory } from '@vueuse/core'
 import { useFps } from '@vueuse/core'
 
-const fps = useFps()
+// const fps = useFps()
 
 function size(v: number) {
   const kb = v / 1024 / 1024
