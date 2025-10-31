@@ -45,7 +45,6 @@ onMounted(() => {
         maxZoom: 300,
       }),
       SpectrogramPlugin.create({
-        labels: false,
         height: spectrogramHeight.value * spectrogramHeightRatio,
         fftSamples: 1024,
         hopSize: 256,
