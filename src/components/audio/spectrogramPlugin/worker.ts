@@ -6,7 +6,7 @@
 // Modified by @Linho1219
 
 // Import centralized FFT functionality
-import FFT, { createFilterBankForScale, applyFilterBank } from 'wavesurfer.js/dist/fft.js'
+import FFT from 'wavesurfer.js/dist/fft.js'
 
 // Global FFT instance (reused for performance)
 let fft: FFT | null = null
@@ -22,7 +22,7 @@ interface WorkerMessage {
     fftSamples: number
     windowFunc: string
     alpha?: number
-    noverlap: number
+    hopSize: number
     scale: 'linear' | 'logarithmic' | 'mel' | 'bark' | 'erb'
     gain: number
     noiseFloor: number
@@ -40,7 +40,7 @@ interface WorkerResponse {
 }
 
 // Worker message handler
-self.onmessage = function (e: MessageEvent<WorkerMessage>) {
+self.onmessage = (e: MessageEvent<WorkerMessage>) => {
   const { type, id, audioData, options } = e.data
 
   if (type === 'calculateFrequencies') {
@@ -77,7 +77,7 @@ function calculateFrequencies(
     fftSamples,
     windowFunc,
     alpha,
-    noverlap,
+    hopSize,
     gain,
     noiseFloor,
     maxThresOfMaxMagnitude,
@@ -93,13 +93,6 @@ function calculateFrequencies(
   if (!fft || fft.bufferSize !== fftSamples) {
     fft = new (FFT as any)(fftSamples, sampleRate, windowFunc, alpha || 0.16)
   }
-
-  // Calculate hop size
-  let actualNoverlap = noverlap || Math.max(0, Math.round(fftSamples * 0.5))
-  const maxOverlap = fftSamples * 0.5
-  actualNoverlap = Math.min(actualNoverlap, maxOverlap)
-  const minHopSize = Math.max(64, fftSamples * 0.25)
-  const hopSize = Math.max(minHopSize, fftSamples - actualNoverlap)
 
   const frequencies: Uint8Array[][] = []
 

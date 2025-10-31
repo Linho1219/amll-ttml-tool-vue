@@ -58,8 +58,7 @@ export type SpectrogramPluginOptions = {
   labelsBackground?: string
   labelsColor?: string
   labelsHzColor?: string
-  /** Size of the overlapping window. Must be < fftSamples. Auto deduced from canvas size by default. */
-  noverlap?: number
+  hopSize?: number
   /** The window function to be used. */
   windowFunc?:
     | 'bartlett'
@@ -113,7 +112,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
   private colorMap: number[][]
   private fftSamples: SpectrogramPluginOptions['fftSamples']
   private height: SpectrogramPluginOptions['height']
-  private noverlap: SpectrogramPluginOptions['noverlap']
+  private hopSize: SpectrogramPluginOptions['hopSize']
   private windowFunc: SpectrogramPluginOptions['windowFunc']
   private alpha: SpectrogramPluginOptions['alpha']
   private frequencyMin: SpectrogramPluginOptions['frequencyMin']
@@ -168,7 +167,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
 
     this.fftSamples = options.fftSamples || 512
     this.height = options.height || 200
-    this.noverlap = options.noverlap || undefined // Will be calculated later based on canvas size
+    this.hopSize = options.hopSize || this.fftSamples // Will be calculated later based on canvas size
     this.windowFunc = options.windowFunc || 'hann'
     this.alpha = options.alpha
 
@@ -792,14 +791,6 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
         ? buffer.numberOfChannels
         : 1
 
-    // Calculate noverlap
-    let noverlap = this.noverlap
-    if (!noverlap) {
-      const totalWidth = this.getWidth()
-      const uniqueSamplesPerPx = buffer.length / totalWidth
-      noverlap = Math.max(0, Math.round(fftSamples - uniqueSamplesPerPx))
-    }
-
     // Prepare audio data for worker
     const audioData: Float32Array[] = []
     for (let c = 0; c < channels; c++) {
@@ -834,7 +825,7 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
         fftSamples: this.fftSamples,
         windowFunc: this.windowFunc,
         alpha: this.alpha,
-        noverlap,
+        hopSize: this.hopSize,
         gain: this.gain,
         noiseFloor: this.noiseFloor,
         maxThresOfMaxMagnitude:
