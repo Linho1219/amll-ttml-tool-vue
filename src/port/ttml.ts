@@ -1,3 +1,7 @@
+// Node compatible TTML parser and stringifier
+// Following AMLL TTML Lyric Format
+// See https://www.w3.org/TR/2018/REC-ttml1-20181108/
+
 import { DOMParser, XMLSerializer } from '@xmldom/xmldom'
 import { coreCreate, type LyricLine, type MetadataKey } from '../stores/core'
 import { ms2str, str2ms } from '../utils/timeModel'
@@ -240,4 +244,4 @@ export function stringifyTTML(data: Persist) {
   return new XMLSerializer().serializeToString(doc)
 }
 
-export const importTTML = (ttmlString: string) => importPersist(parseTTML(ttmlString))
+export const importTTML = (s: string) => importPersist(parseTTML(s))

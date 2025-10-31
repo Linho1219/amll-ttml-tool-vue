@@ -49,6 +49,8 @@ import editHistory from '@/stores/editHistory'
 import { chooseFile } from '@/utils/file'
 import { importTTML, parseTTML } from '@/port/ttml'
 import { importPersist } from '@/port'
+import { importQRC } from '@/port/qrc'
+import { importYRC } from '@/port/yrc'
 
 const runtimeStore = useRuntimeStore()
 
@@ -101,6 +103,10 @@ async function handleImportFromFile() {
   switch (file.extension) {
     case 'ttml':
       return importTTML(file.content)
+    case 'yrc':
+      return importYRC(file.content)
+    case 'qrc':
+      return importQRC(file.content)
   }
 }
 
