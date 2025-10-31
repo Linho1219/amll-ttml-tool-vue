@@ -5,7 +5,7 @@
       <div class="player-toolbar">
         <Button icon="pi pi-upload" severity="secondary" @click="() => handleSelectFile()" />
         <Button icon="pi pi-sliders-v" severity="secondary" @click="tooglePopover" />
-        <Popover ref="popover"> </Popover>
+        <Popover ref="popover"> <PopoverPane /> </Popover>
         <Button
           :icon="playingRef ? 'pi pi-pause' : 'pi pi-play'"
           @click="playingRef = !playingRef"

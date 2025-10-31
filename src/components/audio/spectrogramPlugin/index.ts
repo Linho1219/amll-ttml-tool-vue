@@ -838,10 +838,9 @@ class SpectrogramPlugin extends BasePlugin<SpectrogramPluginEvents, SpectrogramP
         gain: this.gain,
         noiseFloor: this.noiseFloor,
         maxThresOfMaxMagnitude:
-          fftSamples -
-          fftSamples *
-            ((this.minFreqThresOfMaxMagnitude! - this.frequencyMin!) /
-              (this.frequencyMax! - this.frequencyMin!)),
+          1 -
+          (this.minFreqThresOfMaxMagnitude! - this.frequencyMin!) /
+            (this.frequencyMax! - this.frequencyMin!),
         logRatio: this.logRatio,
         splitChannels: this.options.splitChannels || false,
       },

@@ -113,7 +113,10 @@ function calculateFrequencies(
 
       // Convert to uint8 color indices
       const freqBins = new Uint8Array(spectrum.length)
-      const maxMagnitude = Math.max(noiseFloor, ...spectrum.slice(0, maxThresOfMaxMagnitude))
+      const maxMagnitude = Math.max(
+        noiseFloor,
+        ...spectrum.slice(0, spectrum.length * maxThresOfMaxMagnitude),
+      )
       const colorIndices = spectrum.map((magnitude) => {
         const normalized = magnitude / maxMagnitude
         const logVal = Math.log10(normalized * 9 + 1)
@@ -121,7 +124,7 @@ function calculateFrequencies(
       })
       for (let j = 0; j < spectrum.length; j++) {
         const linearIndex = j
-        const logIndex = Math.exp((j * Math.log(spectrum.length)) / spectrum.length) - 1
+        const logIndex = Math.exp((j * Math.log(spectrum.length)) / (spectrum.length - 1)) - 1
         const blendedIndex = linearIndex * (1 - logRatio) + logIndex * logRatio
         const flooredIndex = Math.floor(blendedIndex)
         const ceiledIndex = Math.min(spectrum.length - 1, Math.ceil(blendedIndex))

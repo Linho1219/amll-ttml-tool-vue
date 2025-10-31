@@ -376,16 +376,3 @@ function bookmarkClick() {
   else focusingSet.value.forEach((item) => (item.bookmarked = false))
 }
 </script>
-
-<style lang="scss">
-.placeholderbeat-applytoall-addon {
-  z-index: 1;
-  &:has(.placeholderbeat-applytoall:focus-visible) {
-    outline: var(--p-button-focus-ring-width) var(--p-button-focus-ring-style)
-      var(--p-button-secondary-focus-ring-color);
-    outline-offset: var(--p-button-focus-ring-offset);
-
-    box-shadow: var(--p-button-secondary-focus-ring-shadow);
-  }
-}
-</style>

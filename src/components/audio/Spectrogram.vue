@@ -8,7 +8,7 @@
 import { useRuntimeStore } from '@/stores/runtime'
 import { ms2str } from '@/utils/timeModel'
 import { useCssVar, useElementSize } from '@vueuse/core'
-import { onMounted, ref, useTemplateRef } from 'vue'
+import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
 import WaveSurfer from 'wavesurfer.js'
 import HoverPlugin from 'wavesurfer.js/dist/plugins/hover.esm.js'
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions.js'
@@ -48,7 +48,7 @@ onMounted(() => {
         labels: false,
         height: spectrogramHeight.value * spectrogramHeightRatio,
         fftSamples: 1024,
-        noverlap: 512,
+        // noverlap: 512,
         frequencyMin: 1000,
         frequencyMax: 22050,
         minFreqThresOfMaxMagnitude: 8000,
@@ -68,6 +68,7 @@ onMounted(() => {
     ],
   })
 })
+onUnmounted(() => wsInstance.value?.destroy())
 </script>
 
 <style lang="scss">

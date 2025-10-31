@@ -59,6 +59,17 @@ input {
   }
 }
 
+.p-inputgroupaddon {
+  z-index: 1;
+  &:has(.p-button:focus-visible) {
+    outline: var(--p-button-focus-ring-width) var(--p-button-focus-ring-style)
+      var(--p-button-secondary-focus-ring-color);
+    outline-offset: var(--p-button-focus-ring-offset);
+
+    box-shadow: var(--p-button-secondary-focus-ring-shadow);
+  }
+}
+
 @keyframes fade {
   from {
     opacity: 0;
