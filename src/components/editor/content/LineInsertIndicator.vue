@@ -92,6 +92,7 @@ function handleDrop(e: DragEvent) {
   }
   &.dragging::before {
     top: -2rem;
+    bottom: -0.6rem;
     z-index: 3;
   }
   &.floatup {

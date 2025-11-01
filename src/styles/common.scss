@@ -70,6 +70,18 @@ input {
   }
 }
 
+.p-slider-handle {
+  box-shadow: 0 0 0 2px inset var(--p-slider-handle-background);
+  background-color: var(--p-slider-handle-content-background) !important;
+  &::before {
+    content: unset !important;
+  }
+  &:active,
+  :root:has(&:active) * {
+    cursor: grabbing;
+  }
+}
+
 @keyframes fade {
   from {
     opacity: 0;
