@@ -27,7 +27,7 @@ editHistory.init()
 }
 #app {
   margin: 0;
-  padding: 0.5rem;
+  padding: 0.5rem 0;
   position: fixed;
   top: 0;
   bottom: 0;

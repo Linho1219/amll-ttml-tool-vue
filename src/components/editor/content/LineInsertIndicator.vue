@@ -112,7 +112,7 @@ function handleDrop(e: DragEvent) {
     right: 0;
     bottom: 0;
     height: 0;
-    margin: auto 0.2rem;
+    margin: auto 1rem;
     box-shadow: 0 0 0 0.08rem var(--p-primary-color);
   }
 }

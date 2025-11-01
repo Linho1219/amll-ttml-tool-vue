@@ -173,6 +173,7 @@ const orderedFields = computed(() =>
 
 <style lang="scss">
 .lline {
+  margin: 0 0.5rem;
   min-height: 9.8rem;
   display: flex;
   overflow: hidden;

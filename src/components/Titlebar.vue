@@ -125,6 +125,7 @@ function handleSaveClick() {
 <style lang="scss">
 .titlebar {
   display: flex;
+  margin: 0 0.5rem;
   .leftbar,
   .rightbar {
     flex: 1;

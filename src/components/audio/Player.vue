@@ -73,6 +73,7 @@ const showSpectrogram = ref(false)
 .player {
   border: 1px solid color-mix(in srgb, var(--p-zinc-600), transparent 85%);
   overflow: hidden;
+  margin: 0 0.5rem;
   .p-card-body {
     padding: 0;
   }
