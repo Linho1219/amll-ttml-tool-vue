@@ -1,6 +1,6 @@
 <template>
   <RibbonGroup label="性能">
-    <div class="kvgrid" v-if="isSupported && memory" style="text-align: right">
+    <div class="perfgrid" v-if="isSupported && memory">
       <span>已使用</span>
       <span class="monospace">{{ size(memory.usedJSHeapSize) }}</span>
       <span>已分配</span>
@@ -23,3 +23,16 @@ function size(v: number) {
 }
 const { isSupported, memory } = useMemory()
 </script>
+
+<style lang="scss">
+.perfgrid {
+  display: grid;
+  font-family: var(--font-monospace);
+  grid-template-columns: 3em 9ch;
+  text-align: right;
+  align-items: center;
+  justify-items: stretch;
+  row-gap: 0.3rem;
+  column-gap: 0.5rem;
+}
+</style>

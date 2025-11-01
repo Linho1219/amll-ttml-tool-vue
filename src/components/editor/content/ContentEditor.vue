@@ -6,39 +6,35 @@
     @contextmenu="handleContext"
     selection-root
   >
-    <DynamicScroller class="editor-scroller" :items="coreStore.lyricLines" :min-item-size="130">
-      <template v-slot="{ item: line, index: lineIndex, active }">
-        <DynamicScrollerItem
-          :item="line"
-          :active="active"
-          :size-dependencies="[line.words]"
-          :watch-data="true"
-          :data-index="lineIndex"
-        >
-          <LineInsertIndicator v-if="lineIndex === 0" :index="0" />
-          <Line :line="line" :index="lineIndex" :key="line.id" @contextmenu="handleContext">
-            <WordInsertIndicator :index="0" :parent="line" />
-            <template v-for="(word, wordIndex) in line.words" :key="word.id">
-              <Word
-                :word="word"
-                :index="wordIndex"
-                :parent="line"
-                :line-index="lineIndex"
-                @contextmenu="handleContext"
-              />
-              <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
-            </template>
-            <Button
-              class="add-word-button"
-              icon="pi pi-plus"
-              severity="secondary"
-              @click="appendWord(line)"
+    <VList
+      :data="coreStore.lyricLines"
+      class="editor-scroller"
+      #default="{ item: line, index: lineIndex }"
+    >
+      <div :key="line.id">
+        <LineInsertIndicator v-if="lineIndex === 0" :index="0" />
+        <Line :line="line" :index="lineIndex" @contextmenu="handleContext">
+          <WordInsertIndicator :index="0" :parent="line" />
+          <template v-for="(word, wordIndex) in line.words" :key="word.id">
+            <Word
+              :word="word"
+              :index="wordIndex"
+              :parent="line"
+              :line-index="lineIndex"
+              @contextmenu="handleContext"
             />
-          </Line>
-          <LineInsertIndicator :index="lineIndex + 1" />
-        </DynamicScrollerItem>
-      </template>
-    </DynamicScroller>
+            <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
+          </template>
+          <Button
+            class="add-word-button"
+            icon="pi pi-plus"
+            severity="secondary"
+            @click="appendWord(line)"
+          />
+        </Line>
+        <LineInsertIndicator :index="lineIndex + 1" />
+      </div>
+    </VList>
     <ContextMenu ref="menu" :model="menuItems" />
   </div>
   <DragGhost v-if="runtimeStore.isDragging" />
@@ -58,7 +54,7 @@ import LineInsertIndicator from './LineInsertIndicator.vue'
 import DragGhost from './DragGhost.vue'
 import type { MenuItem } from 'primevue/menuitem'
 import { useStaticStore } from '@/stores/static'
-import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+import { VList } from 'virtua/vue'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()

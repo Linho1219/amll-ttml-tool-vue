@@ -23,6 +23,7 @@
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.4.1",
+    "virtua": "^0.46.5",
     "vue": "^3.5.22",
     "vue-virtual-scroller": "2.0.0-beta.8",
     "wavesurfer.js": "^7.11.1"

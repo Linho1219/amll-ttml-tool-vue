@@ -1,19 +1,9 @@
 <template>
-  <div class="editor timing">
-    <RecycleScroller
-      class="editor-scroller"
-      :items="coreStore.lyricLines"
-      :item-size="rem(5)"
-      v-slot="{ item: line, index: lineIndex }"
-    >
-      {{ line.words.map((words) => words.word).join('') }}
-    </RecycleScroller>
-  </div>
+  <div class="editor timing"></div>
 </template>
 
 <script setup lang="ts">
 import { useCoreStore } from '@/stores/core'
-import { RecycleScroller } from 'vue-virtual-scroller'
 
 const coreStore = useCoreStore()
 const rem = (v: number) => v * 14

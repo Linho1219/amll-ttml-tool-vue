@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import 'primeicons/primeicons.css'
 import '@/styles/common.scss'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import Titlebar from './components/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
 import ContentEditor from './components/editor/content/ContentEditor.vue'
