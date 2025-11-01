@@ -48,16 +48,10 @@
       </div>
     </div>
     <div class="lline-inner">
-      <div
-        class="lline-content"
-        :class="{
-          'content-view': runtimeStore.isContentView,
-          'timing-view': runtimeStore.isTimingView,
-        }"
-      >
+      <div class="lline-content">
         <slot></slot>
       </div>
-      <div class="lline-secondary" v-if="runtimeStore.isContentView">
+      <div class="lline-secondary">
         <template v-for="f in orderedFields" :key="f.key">
           <FloatLabel variant="on">
             <InputText
@@ -84,7 +78,7 @@ import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { Button, ContextMenu, FloatLabel } from 'primevue'
 import type { MenuItem } from 'primevue/menuitem'
 import { computed, ref, useTemplateRef } from 'vue'
-import InputText from '../repack/InputText.vue'
+import InputText from '@/components/repack/InputText.vue'
 import { useStaticStore } from '@/stores/static'
 
 const props = defineProps<{
@@ -159,7 +153,6 @@ function handleContext(e: MouseEvent) {
   handleFocus()
   if (staticStore.closeContext && staticStore.closeContext !== closeContext)
     staticStore.closeContext()
-  if (!runtimeStore.isContentView) return
   menu.value?.show(e)
   staticStore.closeContext = closeContext
 }
@@ -311,12 +304,10 @@ const orderedFields = computed(() =>
 .lline-content {
   flex: 1;
   display: flex;
-  &.content-view {
-    padding: 0.5rem;
-    flex-wrap: wrap;
-    row-gap: 0.5rem;
-    align-content: flex-start;
-  }
+  padding: 0.5rem;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+  align-content: flex-start;
 }
 .lline-drag-ghost {
   position: absolute;

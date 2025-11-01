@@ -1,11 +1,11 @@
 <template>
   <div
-    class="editor-shell"
+    class="editor-shell content"
     @mousedown.self="handleMouseDown"
     @dragover="handleDragOver"
     @contextmenu="handleContext"
   >
-    <div class="editor" selection-root>
+    <div class="editor content" selection-root>
       <LineInsertIndicator :index="0" />
       <template v-for="(line, lineIndex) in coreStore.lyricLines" :key="line.id">
         <LineLazyShell>
@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { useCoreStore, type LyricLine } from '@/stores/core'
-import Line from './Line.vue'
+import Line from './ContentLine.vue'
 import LineLazyShell from './LineLazyShell.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
@@ -79,7 +79,6 @@ const closeContext = () => menu.value?.hide()
 function handleContext(e: MouseEvent) {
   if (staticStore.closeContext && staticStore.closeContext !== closeContext)
     staticStore.closeContext()
-  if (!runtimeStore.isContentView) return
   menu.value?.show(e)
   staticStore.closeContext = closeContext
 }
@@ -97,7 +96,7 @@ const contextMenuItems = ref<MenuItem[]>([
 </script>
 
 <style lang="scss">
-.editor-shell {
+.editor-shell.content {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;

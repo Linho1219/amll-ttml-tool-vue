@@ -3,7 +3,8 @@ import 'primeicons/primeicons.css'
 import '@/styles/common.scss'
 import Titlebar from './components/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
-import Content from './components/editor/Editor.vue'
+import ContentEditor from './components/editor/content/ContentEditor.vue'
+import TimingEditor from './components/editor/timing/TimingEditor.vue'
 import Player from './components/audio/Player.vue'
 import { useRuntimeStore } from './stores/runtime'
 const runtimeStore = useRuntimeStore()
@@ -14,7 +15,8 @@ editHistory.init()
 <template>
   <Titlebar />
   <Ribbon v-if="!runtimeStore.isPreviewView" />
-  <Content />
+  <ContentEditor v-if="runtimeStore.isContentView" />
+  <TimingEditor v-if="runtimeStore.isTimingView" />
   <Player />
 </template>
 

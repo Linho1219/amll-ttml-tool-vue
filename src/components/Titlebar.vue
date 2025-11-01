@@ -93,7 +93,7 @@ const openMenuItems: MenuItem[] = [
   {
     label: '空项目',
     icon: 'pi pi-ban',
-    command: () => {},
+    command: handleNewProject,
   },
 ]
 
@@ -108,6 +108,12 @@ async function handleImportFromFile() {
     case 'qrc':
       return importQRC(file.content)
   }
+}
+async function handleNewProject() {
+  importPersist({
+    lyricLines: [],
+    metadata: {},
+  })
 }
 
 // File save
