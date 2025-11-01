@@ -46,7 +46,6 @@
         @blur="props.word.word = inputModel"
       />
     </div>
-    <ContextMenu ref="menu" :model="contextMenuItems" />
   </div>
 </template>
 <script setup lang="ts">
@@ -66,8 +65,6 @@ import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { forceOutsideBlur, sortIndex } from '@/utils/selection'
 import { digit2Sup } from '@/utils/toSupSub'
-import { ContextMenu } from 'primevue'
-import type { MenuItem } from 'primevue/menuitem'
 import { useStaticStore, type WordComponentActions } from '@/stores/static'
 const runtimeStore = useRuntimeStore()
 const coreStore = useCoreStore()
@@ -133,7 +130,7 @@ function handleClick(e: MouseEvent) {
 function handleDbClick() {
   inputEl.value?.select()
 }
-function handleFocus(_e: FocusEvent) {
+function handleFocus() {
   if (isSelected.value && runtimeStore.selectedWords.size === 1) return
   touch()
   runtimeStore.selectLineWord(props.parent, props.word)
@@ -160,54 +157,13 @@ function handleDragEnd(_e: DragEvent) {
 }
 
 // Context menu
-const menu = useTemplateRef('menu')
-const closeContext = () => menu.value?.hide()
+const emit = defineEmits<{
+  (name: 'contextmenu', e: MouseEvent, lineIndex: number, wordIndex: number): void
+}>()
 function handleContext(e: MouseEvent) {
-  handleFocus(e)
-  if (staticStore.closeContext && staticStore.closeContext !== closeContext)
-    staticStore.closeContext()
-  if (!runtimeStore.isContentView) return
-  menu.value?.show(e)
-  staticStore.closeContext = closeContext
+  handleFocus()
+  emit('contextmenu', e, props.lineIndex, props.index)
 }
-const contextMenuItems: MenuItem[] = [
-  {
-    label: '在前插入词',
-    icon: 'pi pi-arrow-left',
-    command: () => {
-      const newWord = coreStore.newWord()
-      props.parent.words.splice(props.index, 0, newWord)
-      runtimeStore.selectLineWord(props.parent, newWord)
-      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
-    },
-  },
-  {
-    label: '在后插入词',
-    icon: 'pi pi-arrow-right',
-    command: () => {
-      const newWord = coreStore.newWord()
-      props.parent.words.splice(props.index + 1, 0, newWord)
-      runtimeStore.selectLineWord(props.parent, newWord)
-      nextTick(() => staticStore.wordHooks.get(newWord.id)?.focusInput())
-    },
-  },
-  {
-    label: '在此拆分行',
-    icon: 'pi pi-code',
-    command: () => {
-      const wordsToMove = props.parent.words.splice(props.index)
-      if (wordsToMove.length === 0) return
-      const newLine = coreStore.newLine({ ...props.parent, words: wordsToMove })
-      coreStore.lyricLines.splice(props.lineIndex + 1, 0, newLine)
-      runtimeStore.selectLineWord(newLine, wordsToMove[0]!)
-    },
-  },
-  {
-    label: '删除单词',
-    icon: 'pi pi-trash',
-    command: () => props.parent.words.splice(props.index, 1),
-  },
-]
 
 // Placeholder and input width control
 const placeholder = computed(() => {

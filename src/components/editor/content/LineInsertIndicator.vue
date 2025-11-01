@@ -12,7 +12,7 @@
   ></div>
 </template>
 <script setup lang="ts">
-import { useCoreStore, type LyricLine } from '@/stores/core'
+import { useCoreStore } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { useStaticStore } from '@/stores/static'
 import { sortLines, sortWords } from '@/utils/selection'
@@ -81,13 +81,21 @@ function handleDrop(e: DragEvent) {
   box-sizing: content-box;
   height: 0.8rem;
   position: relative;
-  &.dragging {
-    z-index: -1;
-    margin: -1rem;
-    padding: 1rem;
+  z-index: -1;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  &.dragging::before {
+    top: -2rem;
+    z-index: 3;
   }
   &.floatup {
-    z-index: 1;
+    z-index: 3;
   }
   &.dragover {
     &::after {

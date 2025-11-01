@@ -5,7 +5,7 @@
       selected: isSelected,
       removing: isSelected && runtimeStore.isDraggingLine && !runtimeStore.isDraggingCopy,
     }"
-    @mousedown="handleMouseDown"
+    @mousedown.stop="handleMouseDown"
     @click="handleClick"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
@@ -67,7 +67,6 @@
         </template>
       </div>
     </div>
-    <ContextMenu ref="menu" :model="contextMenuItems" />
   </div>
 </template>
 
@@ -147,51 +146,13 @@ function handleDragEnd(_e: DragEvent) {
   runtimeStore.isDraggingCopy = false
 }
 
-const menu = useTemplateRef('menu')
-const closeContext = () => menu.value?.hide()
+const emit = defineEmits<{
+  (name: 'contextmenu', e: MouseEvent, lineIndex: number): void
+}>()
 function handleContext(e: MouseEvent) {
   handleFocus()
-  if (staticStore.closeContext && staticStore.closeContext !== closeContext)
-    staticStore.closeContext()
-  menu.value?.show(e)
-  staticStore.closeContext = closeContext
+  emit('contextmenu', e, props.index)
 }
-const contextMenuItems: MenuItem[] = [
-  {
-    label: '在前插入行',
-    icon: 'pi pi-arrow-up',
-    command: () => {
-      const newLine = coreStore.newLine()
-      coreStore.lyricLines.splice(props.index, 0, newLine)
-      runtimeStore.selectLine(newLine)
-    },
-  },
-  {
-    label: '在后插入行',
-    icon: 'pi pi-arrow-down',
-    command: () => {
-      const newLine = coreStore.newLine()
-      coreStore.lyricLines.splice(props.index + 1, 0, newLine)
-      runtimeStore.selectLine(newLine)
-    },
-  },
-  {
-    label: '克隆行',
-    icon: 'pi pi-clone',
-    command: () => {
-      const duplicate = coreStore.newLine({
-        ...props.line,
-        words: props.line.words.map(coreStore.newWord),
-      })
-      coreStore.lyricLines.splice(props.index + 1, 0, duplicate)
-    },
-  },
-  {
-    label: '删除行',
-    icon: 'pi pi-trash',
-    command: () => coreStore.lyricLines.splice(props.index, 1),
-  },
-]
 
 const secondaryFields = [
   {
@@ -222,7 +183,7 @@ const orderedFields = computed(() =>
   --l-bg-color: transparent;
   opacity: 0.8;
   transition: transform 0.2s;
-  animation: fade 0.2s;
+  // animation: fade 0.2s;
   &:hover,
   &.selected {
     --l-bg-color: var(--p-content-background);

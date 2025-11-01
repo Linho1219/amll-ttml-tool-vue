@@ -7,7 +7,7 @@
       floatup,
       zerowidth: props.index === 0,
     }"
-    @dragover.prevent="handleDragOver"
+    @dragover="handleDragOver"
     @dragleave="handleDragLeave"
     @drop="handleDrop"
   ></div>
@@ -31,8 +31,9 @@ watch(
   (val) => setTimeout(() => (floatup.value = val), 200),
 )
 
-function handleDragOver(_e: DragEvent) {
+function handleDragOver(e: DragEvent) {
   if (!runtimeStore.isDraggingWord) return
+  e.preventDefault()
   dragover.value = true
   runtimeStore.canDrop = true
 }
