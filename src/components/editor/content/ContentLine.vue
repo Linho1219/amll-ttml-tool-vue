@@ -89,25 +89,26 @@ const coreStore = useCoreStore()
 const staticStore = useStaticStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
 
-const touch = () => staticStore.touchLineOnly(props.line)
-function handleFocus() {
+const touch = () => {
   forceOutsideBlur()
+  staticStore.touchLineOnly(props.line)
+}
+function handleFocus() {
   touch()
   runtimeStore.selectLine(props.line)
 }
 let leftForClick = false
 function handleMouseDown(e: MouseEvent) {
   leftForClick = false
-  forceOutsideBlur()
-  touch()
   if (e.metaKey || e.ctrlKey) {
+    touch()
     staticStore.lastTouchedLine = props.line
     if (!isSelected.value) {
       runtimeStore.addLineToSelection(props.line)
     } else leftForClick = true
   } else if (e.shiftKey && staticStore.lastTouchedLine) {
     const lastTouchedLine = staticStore.lastTouchedLine
-    staticStore.lastTouchedLine = props.line
+    touch()
     const lines = coreStore.lyricLines
     const [start, end] = sortIndex(lines.indexOf(lastTouchedLine), props.index)
     const affectedLines = lines.slice(start, end + 1)
@@ -115,6 +116,7 @@ function handleMouseDown(e: MouseEvent) {
       affectedLines.forEach((line) => runtimeStore.removeLineFromSelection(line))
     else affectedLines.forEach((line) => runtimeStore.addLineToSelection(line))
   } else {
+    touch()
     runtimeStore.clearWordSelection()
     if (isSelected.value) return
     runtimeStore.selectLine(props.line)
