@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCoreStore, type LyricLine } from '@/stores/core'
+import { useCoreStore, type LyricLine, type LyricWord } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { useStaticStore } from '@/stores/static'
 import { sortWords } from '@/utils/selection'
@@ -52,6 +52,13 @@ function handleDrop(e: DragEvent) {
     runtimeStore.selectLineWord(props.parent, ...duplicatedWords)
     staticStore.touchLineWord(props.parent, duplicatedWords.at(-1)!)
   } else {
+    const continuity = checkWordContinuity(pendingWords)
+    if (continuity) {
+      const [start, end] = continuity
+      if (props.index >= start && props.index <= end + 1)
+        // Dropping into itself, do nothing
+        return
+    }
     const placeholder = coreStore.newWord(props.parent)
     props.parent.words.splice(props.index, 0, placeholder)
     coreStore.deleteWord(...pendingWords)
@@ -59,6 +66,23 @@ function handleDrop(e: DragEvent) {
     props.parent.words.splice(insertIndex, 1, ...pendingWords)
     runtimeStore.applyWordSelectToLine()
   }
+}
+
+function checkWordContinuity(words: Readonly<LyricWord[]>): null | [number, number] {
+  if (words.length === 0) return null
+  const parentWords = props.parent.words
+  if (words.length === 1) {
+    const index = parentWords.indexOf(words[0]!)
+    return [index, index]
+  }
+  const indices: number[] = []
+  for (const [index, word] of parentWords.entries()) {
+    if (!words.includes(word)) continue
+    if (indices.length === 0) indices.push(index)
+    else if (indices.at(-1) === index - 1) indices.push(index)
+    else return null
+  }
+  return [indices[0]!, indices.at(-1)!]
 }
 </script>
 
