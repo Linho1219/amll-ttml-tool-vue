@@ -204,12 +204,6 @@ function handleKeydown(event: KeyboardEvent) {
       nextTick(() => staticStore.wordHooks.get(prevWord.id)?.focusInput(cursorPos))
       return
     }
-    case 'Enter': {
-      // Blur input
-      event.preventDefault()
-      el.blur()
-      return
-    }
     case 'ArrowLeft': {
       // If at start, focus previous word
       if (el.selectionStart !== 0 || props.index === 0) return

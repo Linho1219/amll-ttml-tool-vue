@@ -11,7 +11,7 @@
 import { InputText, type InputTextProps } from 'primevue'
 import { onMounted, ref, shallowRef, useTemplateRef, watch } from 'vue'
 
-defineProps</* @vue-ignore */InputTextProps>()
+defineProps</* @vue-ignore */ InputTextProps>()
 
 // expose input element
 const inputComponent = useTemplateRef<typeof InputText>('inputComponent')
@@ -42,10 +42,7 @@ const handleBlur = () => {
   }
 }
 const handleKeydown = (e: KeyboardEvent) => {
-  if (e.key === 'Enter' && modifiers.lazy) {
-    model.value = processor(innerModel.value)
-    innerModel.value = model.value
-  }
+  if (e.key === 'Enter') inputEl.value?.blur()
 }
 watch(model, (val) => {
   if (!focused.value || !modifiers.lazy) innerModel.value = val

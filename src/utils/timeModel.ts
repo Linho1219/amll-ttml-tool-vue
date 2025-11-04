@@ -1,4 +1,5 @@
 export function str2ms(str: string): number | null {
+  str = str.trim()
   const match = str.match(/^(?:(\d+):)?(\d+)?(\.\d+)?$/)
   if (!match) return null
   const [, strM, strS, strMs] = match
