@@ -3,7 +3,7 @@
     class="editor content"
     @mousedown="handleMouseDown"
     @dragover="handleDragOver"
-    @contextmenu="handleContext"
+    @contextmenu="handleBlankContext"
     selection-root
   >
     <VList
@@ -11,9 +11,13 @@
       class="editor-scroller"
       #default="{ item: line, index: lineIndex }"
     >
-      <div :key="line.id">
-        <LineInsertIndicator v-if="lineIndex === 0" :index="0" />
-        <Line :line="line" :index="lineIndex" @contextmenu="handleContext">
+      <div :key="line.id" class="line-item-shell">
+        <LineInsertIndicator
+          v-if="lineIndex === 0"
+          :index="0"
+          @contextmenu="handleLineInsertContext"
+        />
+        <Line :line="line" :index="lineIndex" @contextmenu="handleLineContext">
           <WordInsertIndicator :index="0" :parent="line" />
           <template v-for="(word, wordIndex) in line.words" :key="word.id">
             <Word
@@ -21,7 +25,7 @@
               :index="wordIndex"
               :parent="line"
               :line-index="lineIndex"
-              @contextmenu="handleContext"
+              @contextmenu="handleWordContext"
             />
             <WordInsertIndicator :index="wordIndex + 1" :parent="line" />
           </template>
@@ -32,7 +36,7 @@
             @click="appendWord(line)"
           />
         </Line>
-        <LineInsertIndicator :index="lineIndex + 1" />
+        <LineInsertIndicator :index="lineIndex + 1" @contextmenu="handleLineInsertContext" />
       </div>
     </VList>
     <ContextMenu ref="menu" :model="menuItems" />
@@ -96,6 +100,18 @@ const blankMenuItems: MenuItem[] = [
     command: () => {
       const newLine = coreStore.newLine()
       coreStore.lyricLines.push(newLine)
+      runtimeStore.selectLine(newLine)
+    },
+  },
+]
+const lineInsertMenuItems: MenuItem[] = [
+  {
+    label: '插入新行',
+    icon: 'pi pi-plus',
+    command: () => {
+      if (contextLineIndex === undefined) return
+      const newLine = coreStore.newLine()
+      coreStore.lyricLines.splice(contextLineIndex, 0, newLine)
       runtimeStore.selectLine(newLine)
     },
   },
@@ -191,16 +207,27 @@ const wordMenuItems: MenuItem[] = [
     },
   },
 ]
+
+const menuItemsMap = {
+  blank: blankMenuItems,
+  line: lineMenuItems,
+  lineInsert: lineInsertMenuItems,
+  word: wordMenuItems,
+} as const
 const menuItems = shallowRef<MenuItem[]>(blankMenuItems)
 
-function handleContext(e: MouseEvent, lineIndex?: number, wordIndex?: number) {
-  contextLineIndex = lineIndex
-  contextWordIndex = wordIndex
-  if (lineIndex !== undefined && wordIndex !== undefined) menuItems.value = wordMenuItems
-  else if (lineIndex !== undefined) menuItems.value = lineMenuItems
-  else menuItems.value = blankMenuItems
-  menu.value?.show(e)
-}
+const handleContext =
+  (src: 'line' | 'word' | 'lineInsert' | 'blank') =>
+  (e: MouseEvent, lineIndex?: number, wordIndex?: number) => {
+    contextLineIndex = lineIndex
+    contextWordIndex = wordIndex
+    menuItems.value = menuItemsMap[src]
+    menu.value?.show(e)
+  }
+const handleBlankContext = handleContext('blank')
+const handleLineContext = handleContext('line')
+const handleLineInsertContext = handleContext('lineInsert')
+const handleWordContext = handleContext('word')
 </script>
 
 <style lang="scss">

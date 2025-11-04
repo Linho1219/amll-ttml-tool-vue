@@ -9,6 +9,7 @@
     @dragover.prevent="handleDragOver"
     @dragleave="handleDragLeave"
     @drop="handleDrop"
+    @contextmenu="handleContext"
   ></div>
 </template>
 <script setup lang="ts">
@@ -97,6 +98,13 @@ function checkLineContinuity(lines: Readonly<LyricLine[]>): null | [number, numb
   }
   return [indices[0]!, indices.at(-1)!]
 }
+
+const emit = defineEmits<{
+  (name: 'contextmenu', e: MouseEvent, lineIndex: number): void
+}>()
+function handleContext(e: MouseEvent) {
+  emit('contextmenu', e, props.index)
+}
 </script>
 
 <style lang="scss">
@@ -104,7 +112,6 @@ function checkLineContinuity(lines: Readonly<LyricLine[]>): null | [number, numb
   box-sizing: content-box;
   height: 0.8rem;
   position: relative;
-  z-index: -1;
   &::before {
     content: '';
     position: absolute;
@@ -113,10 +120,12 @@ function checkLineContinuity(lines: Readonly<LyricLine[]>): null | [number, numb
     right: 0;
     bottom: 0;
   }
-  &.dragging::before {
-    top: -2rem;
-    bottom: -0.6rem;
-    z-index: 3;
+  &.dragging {
+    z-index: -1;
+    &::before {
+      top: -2rem;
+      bottom: -0.6rem;
+    }
   }
   &.floatup {
     z-index: 3;
