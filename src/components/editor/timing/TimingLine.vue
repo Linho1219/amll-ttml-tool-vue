@@ -1,5 +1,5 @@
 <template>
-  <div class="tline" :class="{ first: props.index === 0 }">
+  <div class="tline">
     <div class="tline-head">
       <div class="tline-head-btns">
         <Button
@@ -49,16 +49,15 @@ const props = defineProps<{
 
 <style lang="scss">
 .tline {
-  min-height: 7.5rem;
   box-sizing: content-box;
   display: flex;
-  box-shadow:
-    -1px -1px 0 var(--tline-border-color),
-    inset -1px -1px 0 var(--tline-border-color);
-  margin: 0 0.5rem;
-  &.first {
-    margin-top: 1px;
-  }
+  // box-shadow:
+  //   -1px -1px 0 var(--tline-border-color),
+  //   inset -1px -1px 0 var(--tline-border-color);
+  border: 2px solid var(--p-button-secondary-background);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin: 0.2rem 0.5rem;
   --timestamp-space: 0.5rem;
   --tline-border-color: var(--p-content-border-color);
   --word-height: 7.5rem;
@@ -67,7 +66,7 @@ const props = defineProps<{
   display: flex;
   gap: 0.5rem;
   padding-right: 0.5rem;
-  border-right: 1px solid var(--tline-border-color);
+  border-right: 1px solid transparent;
   background-color: color-mix(in srgb, var(--p-content-border-color), transparent 70%);
 }
 .tline-head-btns {
@@ -95,5 +94,7 @@ const props = defineProps<{
   flex: 1;
   display: flex;
   flex-wrap: wrap;
+  min-height: 7.5rem;
+  margin-bottom: -1px;
 }
 </style>

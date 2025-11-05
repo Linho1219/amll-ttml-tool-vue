@@ -49,6 +49,8 @@ export const useRuntimeStore = defineStore('runtime', () => {
     addLineToSelection,
     removeWordFromSelection,
     removeLineFromSelection,
+    getFirstSelectedLine,
+    getFirstSelectedWord,
     isDragging,
     isDraggingCopy,
     canDrop,
@@ -112,5 +114,13 @@ export const useRuntimeStore = defineStore('runtime', () => {
     const coreStore = useCoreStore()
     for (const line of coreStore.lyricLines)
       for (const word of line.words) if (selectedWords.has(word)) selectedLines.add(line)
+  }
+  function getFirstSelectedLine(): LyricLine | null {
+    if (selectedLines.size === 0) return null
+    return selectedLines.values().next().value!
+  }
+  function getFirstSelectedWord(): LyricWord | null {
+    if (selectedWords.size === 0) return null
+    return selectedWords.values().next().value!
   }
 })

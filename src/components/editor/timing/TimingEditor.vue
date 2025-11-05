@@ -8,7 +8,7 @@
       <div :key="line.id" class="line-item-shell">
         <Line :line="line" :index="lineIndex">
           <template v-for="word in line.words" :key="word.id">
-            <Word :word="word" v-if="word.word.trim()" />
+            <Word :word="word" :parent="line" v-if="word.word.trim()" />
           </template>
         </Line>
       </div>
@@ -23,7 +23,6 @@ import Line from './TimingLine.vue'
 import Word from './TimingWord.vue'
 
 const coreStore = useCoreStore()
-const rem = (v: number) => v * 14
 </script>
 
 <style lang="scss">
