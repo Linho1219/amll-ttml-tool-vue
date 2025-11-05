@@ -14,13 +14,14 @@
 import type { LyricLine, LyricWord } from '@/stores/core'
 import Timestamp from './Timestamp.vue'
 import { useRuntimeStore } from '@/stores/runtime'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useStaticStore } from '@/stores/static'
 import { useConfigStore } from '@/stores/config'
 
 const props = defineProps<{
   word: LyricWord
   parent: LyricLine
+  parentIndex: number
 }>()
 const runtimeStore = useRuntimeStore()
 const configStore = useConfigStore()
@@ -37,6 +38,16 @@ const isActive = computed(
     audio.progressRef.value - configStore.globalLatency >= props.word.startTime &&
     audio.progressRef.value - configStore.globalLatency <= props.word.endTime,
 )
+
+const emit = defineEmits<{
+  (e: 'needScroll', parentIndex: number): void
+}>()
+watch([isActive, () => configStore.scrollWithPlayback], () => {
+  if (isActive.value && configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
+})
+watch([isSelected, () => configStore.scrollWithPlayback], () => {
+  if (isSelected.value && !configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
+})
 </script>
 
 <style lang="scss">
