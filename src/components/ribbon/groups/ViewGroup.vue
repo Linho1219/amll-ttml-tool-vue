@@ -6,7 +6,7 @@
         value="hlt-lineoverlap"
         size="small"
         binary
-        v-model="runtimeStore.hltLineTimeConflicts"
+        v-model="configStore.hltLineTimeConflicts"
       />
       <label for="ribbon-hlt-lineoverlap">高亮行时间冲突</label>
       <Checkbox
@@ -14,7 +14,7 @@
         value="hlt-wordoverlap"
         size="small"
         binary
-        v-model="runtimeStore.hltWordTimeConflicts"
+        v-model="configStore.hltWordTimeConflicts"
       />
       <label for="ribbon-hlt-wordoverlap">高亮词时间冲突</label>
       <Checkbox
@@ -22,7 +22,7 @@
         value="auto-scroll"
         size="small"
         binary
-        v-model="runtimeStore.scrollWithPlayback"
+        v-model="configStore.scrollWithPlayback"
       />
       <label for="ribbon-auto-scroll">随播放自动滚动</label>
       <Checkbox
@@ -30,7 +30,7 @@
         value="swap-translate-roman"
         size="small"
         binary
-        v-model="runtimeStore.swapTranslateRoman"
+        v-model="configStore.swapTranslateRoman"
       />
       <label for="ribbon-swap-translate-roman">交换翻译音译框</label>
     </div>
@@ -38,8 +38,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeStore } from '@/stores/runtime'
 import { Checkbox } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
-const runtimeStore = useRuntimeStore()
+import { useConfigStore } from '@/stores/config'
+const configStore = useConfigStore()
 </script>

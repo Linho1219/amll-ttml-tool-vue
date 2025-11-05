@@ -10,7 +10,7 @@
         fluid
         size="small"
         placeholder="0"
-        v-model="runtimeStore.globalLatency"
+        v-model="configStore.globalLatency"
       />
     </div>
     <Button icon="pi pi-sliders-h" label="批量时移" size="small" severity="secondary" />
@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeStore } from '@/stores/runtime'
 import { Button, InputNumber } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
+import { useConfigStore } from '@/stores/config'
 
-const runtimeStore = useRuntimeStore()
+const configStore = useConfigStore()
 </script>

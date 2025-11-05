@@ -79,12 +79,14 @@ import type { MenuItem } from 'primevue/menuitem'
 import { computed, ref, useTemplateRef } from 'vue'
 import InputText from '@/components/repack/InputText.vue'
 import { useStaticStore } from '@/stores/static'
+import { useConfigStore } from '@/stores/config'
 
 const props = defineProps<{
   line: LyricLine
   index: number
 }>()
 const runtimeStore = useRuntimeStore()
+const configStore = useConfigStore()
 const coreStore = useCoreStore()
 const staticStore = useStaticStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))
@@ -169,7 +171,7 @@ const secondaryFields = [
   },
 ] as const
 const orderedFields = computed(() =>
-  runtimeStore.swapTranslateRoman ? [...secondaryFields].reverse() : secondaryFields,
+  configStore.swapTranslateRoman ? [...secondaryFields].reverse() : secondaryFields,
 )
 </script>
 

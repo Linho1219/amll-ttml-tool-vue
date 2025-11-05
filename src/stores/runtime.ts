@@ -25,13 +25,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
     () => isDragging.value && selectedWords.size === 0 && selectedLines.size > 0,
   )
 
-  // Options
-  const globalLatency = ref(0)
-  const hltLineTimeConflicts = ref(false)
-  const hltWordTimeConflicts = ref(false)
-  const scrollWithPlayback = ref(false)
-  const swapTranslateRoman = ref(false)
-
   return {
     currentView,
     isContentView,
@@ -56,11 +49,6 @@ export const useRuntimeStore = defineStore('runtime', () => {
     canDrop,
     isDraggingWord,
     isDraggingLine,
-    globalLatency,
-    hltLineTimeConflicts,
-    swapTranslateRoman,
-    hltWordTimeConflicts,
-    scrollWithPlayback,
   }
 
   function clearSelection() {
