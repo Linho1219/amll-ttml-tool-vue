@@ -49,26 +49,31 @@ const props = defineProps<{
 
 <style lang="scss">
 .tline {
-  height: 7.5rem;
+  min-height: 7.5rem;
   box-sizing: content-box;
   display: flex;
-  border-bottom: 1px solid var(--p-content-border-color);
+  box-shadow:
+    -1px -1px 0 var(--tline-border-color),
+    inset -1px -1px 0 var(--tline-border-color);
   margin: 0 0.5rem;
   &.first {
-    border-top: 1px solid var(--p-content-border-color);
+    margin-top: 1px;
   }
+  --timestamp-space: 0.5rem;
+  --tline-border-color: var(--p-content-border-color);
+  --word-height: 7.5rem;
 }
 .tline-head {
   display: flex;
   gap: 0.5rem;
   padding-right: 0.5rem;
-  border-right: 1px solid var(--p-content-border-color);
+  border-right: 1px solid var(--tline-border-color);
   background-color: color-mix(in srgb, var(--p-content-border-color), transparent 70%);
 }
 .tline-head-btns {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   --p-button-text-secondary-color: color-mix(
     in srgb,
     var(--p-form-field-placeholder-color),
@@ -79,15 +84,16 @@ const props = defineProps<{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  padding: var(--timestamp-space) 0;
 }
 .tline-index {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   text-align: center;
   font-family: var(--font-monospace);
 }
 .tline-content {
   flex: 1;
-  overflow-x: auto;
+  display: flex;
+  flex-wrap: wrap;
 }
 </style>

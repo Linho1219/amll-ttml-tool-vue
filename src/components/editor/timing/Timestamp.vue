@@ -61,6 +61,7 @@ watch(showInput, (v) => {
   padding-inline: var(--p-inputtext-sm-padding-x);
   border-radius: var(--p-inputtext-border-radius);
   background: var(--p-inputtext-background);
+  font-size: var(--p-inputtext-sm-font-size);
   border: 1px solid transparent;
 }
 .timestamp-caption,
@@ -69,6 +70,5 @@ watch(showInput, (v) => {
   box-sizing: content-box;
   width: 9ch;
   color: inherit;
-  font-size: inherit;
 }
 </style>

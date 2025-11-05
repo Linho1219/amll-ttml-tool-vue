@@ -6,7 +6,11 @@
       #default="{ item: line, index: lineIndex }"
     >
       <div :key="line.id" class="line-item-shell">
-        <Line :line="line" :index="lineIndex" />
+        <Line :line="line" :index="lineIndex">
+          <template v-for="word in line.words" :key="word.id">
+            <Word :word="word" v-if="word.word.trim()" />
+          </template>
+        </Line>
       </div>
     </VList>
   </div>
@@ -16,6 +20,7 @@
 import { useCoreStore } from '@/stores/core'
 import { VList } from 'virtua/vue'
 import Line from './TimingLine.vue'
+import Word from './TimingWord.vue'
 
 const coreStore = useCoreStore()
 const rem = (v: number) => v * 14
