@@ -35,6 +35,7 @@ export function useAudioCtrl() {
 
   const play = () => audio.play()
   const pause = () => audio.pause()
+  const togglePlay = () => (audio.paused ? play() : pause())
 
   const playingRef = ref(false)
   audio.onplay = () => {
@@ -57,6 +58,7 @@ export function useAudioCtrl() {
     mount,
     play,
     pause,
+    togglePlay,
     seek,
     getProgress,
     /** Readonly: use `seek` to change */
