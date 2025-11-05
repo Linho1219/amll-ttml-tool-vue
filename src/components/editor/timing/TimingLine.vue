@@ -5,6 +5,7 @@
         <Button
           :severity="props.line.bookmarked ? 'warn' : 'secondary'"
           variant="text"
+          size="small"
           :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
           :class="{ active: props.line.bookmarked }"
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
@@ -12,6 +13,7 @@
         <Button
           :severity="props.line.duet ? 'info' : 'secondary'"
           variant="text"
+          size="small"
           icon="pi pi-align-right"
           :class="{ active: props.line.duet }"
           @click.stop="props.line.duet = !props.line.duet"
@@ -19,6 +21,7 @@
         <Button
           :severity="props.line.background ? 'help' : 'secondary'"
           variant="text"
+          size="small"
           icon="pi pi-expand"
           :class="{ active: props.line.background }"
           @click.stop="props.line.background = !props.line.background"
@@ -94,7 +97,6 @@ const props = defineProps<{
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  min-height: 7.5rem;
   margin-bottom: -1px;
 }
 </style>
