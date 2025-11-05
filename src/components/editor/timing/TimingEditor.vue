@@ -28,15 +28,24 @@ import { useCoreStore } from '@/stores/core'
 import { VList } from 'virtua/vue'
 import Line from './TimingLine.vue'
 import Word from './TimingWord.vue'
-import { useTemplateRef } from 'vue'
+import { onMounted, useTemplateRef } from 'vue'
+import { useRuntimeStore } from '@/stores/runtime'
 
 const coreStore = useCoreStore()
+const runtimeStore = useRuntimeStore()
 
 const vscroll = useTemplateRef('vscroll')
 function handleScrollTo(lineIndex: number) {
   vscroll.value?.scrollToIndex(lineIndex, { align: 'center' })
 }
-
+onMounted(() => {
+  if (runtimeStore.selectedWords.size > 1) runtimeStore.clearWordSelection()
+  if (runtimeStore.selectedLines.size) {
+    const firstLine = runtimeStore.getFirstSelectedLine()!
+    const lineIndex = coreStore.lyricLines.indexOf(firstLine)
+    if (lineIndex !== -1) handleScrollTo(lineIndex)
+  }
+})
 </script>
 
 <style lang="scss">

@@ -10,6 +10,7 @@
       :data="coreStore.lyricLines"
       class="editor-scroller"
       #default="{ item: line, index: lineIndex }"
+      ref="vscroll"
     >
       <div :key="line.id" class="line-item-shell">
         <LineInsertIndicator
@@ -51,7 +52,7 @@ import Line from './ContentLine.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import Word from './ContentWord.vue'
 import { Button, ContextMenu } from 'primevue'
-import { computed, nextTick, ref, shallowRef, useTemplateRef } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, useTemplateRef } from 'vue'
 import { forceOutsideBlur } from '@/utils/selection'
 import WordInsertIndicator from './WordInsertIndicator.vue'
 import LineInsertIndicator from './LineInsertIndicator.vue'
@@ -228,6 +229,17 @@ const handleBlankContext = handleContext('blank')
 const handleLineContext = handleContext('line')
 const handleLineInsertContext = handleContext('lineInsert')
 const handleWordContext = handleContext('word')
+
+const vscroll = useTemplateRef('vscroll')
+function handleScrollTo(lineIndex: number) {
+  vscroll.value?.scrollToIndex(lineIndex, { align: 'center' })
+}
+onMounted(() => {
+  if (!runtimeStore.selectedLines.size) return
+  const firstLine = runtimeStore.getFirstSelectedLine()!
+  const lineIndex = coreStore.lyricLines.indexOf(firstLine)
+  if (lineIndex !== -1) handleScrollTo(lineIndex)
+})
 </script>
 
 <style lang="scss">
