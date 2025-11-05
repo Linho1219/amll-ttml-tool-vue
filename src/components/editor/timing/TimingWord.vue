@@ -16,12 +16,14 @@ import Timestamp from './Timestamp.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import { computed } from 'vue'
 import { useStaticStore } from '@/stores/static'
+import { useConfigStore } from '@/stores/config'
 
 const props = defineProps<{
   word: LyricWord
   parent: LyricLine
 }>()
 const runtimeStore = useRuntimeStore()
+const configStore = useConfigStore()
 function handleMouseDown() {
   runtimeStore.selectLineWord(props.parent, props.word)
 }
@@ -32,8 +34,8 @@ const isSelected = computed(() => {
 const audio = useStaticStore().audio
 const isActive = computed(
   () =>
-    audio.progressRef.value >= props.word.startTime &&
-    audio.progressRef.value <= props.word.endTime,
+    audio.progressRef.value - configStore.globalLatency >= props.word.startTime &&
+    audio.progressRef.value - configStore.globalLatency <= props.word.endTime,
 )
 </script>
 

@@ -5,7 +5,6 @@
       <span>延迟</span>
       <InputNumber
         class="durationinput"
-        :useGrouping="false"
         style="width: 0; flex: 1"
         fluid
         size="small"

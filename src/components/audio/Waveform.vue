@@ -20,6 +20,7 @@ onMounted(() => {
     container: waveformEl.value,
     height: waveformEl.value.clientHeight,
     hideScrollbar: true,
+    dragToSeek: true,
     waveColor: primaryColor.value,
     progressColor: primaryColor.value,
     cursorWidth: 0,
