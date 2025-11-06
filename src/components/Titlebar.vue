@@ -90,7 +90,7 @@ const openMenuItems: MenuItem[] = [
   {
     label: '从 TTML 文件导入',
     icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile('.ttml', parseTTML),
+    command: handleImportFromFile('.ttml', importTTML),
   },
   {
     label: '从 YRC 文件导入',
@@ -105,7 +105,7 @@ const openMenuItems: MenuItem[] = [
   {
     label: '从文本文件导入',
     icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile('.txt', importPlainText),
+    command: handleImportFromFile('text/plain', importPlainText),
   },
   {
     label: '从纯文本导入',

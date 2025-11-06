@@ -45,9 +45,9 @@ onUnmounted(() => {
   <template v-else>
     <Ribbon />
     <main>
+      <Sidebar v-if="runtimeStore.sidebarShown" />
       <ContentEditor v-if="runtimeStore.isContentView" class="editor" />
       <TimingEditor v-if="runtimeStore.isTimingView" class="editor" />
-      <Sidebar v-if="runtimeStore.sidebarShown" />
     </main>
   </template>
   <Player />
@@ -71,6 +71,7 @@ onUnmounted(() => {
   gap: 0.5rem;
 }
 main {
+  height: 0;
   flex: 1;
   display: flex;
 }

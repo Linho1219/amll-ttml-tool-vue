@@ -41,8 +41,8 @@
       </div>
     </VList>
     <ContextMenu ref="menu" :model="menuItems" />
+    <DragGhost v-if="runtimeStore.isDragging" />
   </div>
-  <DragGhost v-if="runtimeStore.isDragging" />
 </template>
 
 <script setup lang="ts">

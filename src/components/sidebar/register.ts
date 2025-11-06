@@ -13,7 +13,7 @@ interface SidebarTab {
 export const sidebarRegs = {
   [SidebarKey.SplitText]: {
     key: SidebarKey.SplitText,
-    title: '分词',
+    title: '批量分词',
     component: SplitTextTab,
   },
 } as const satisfies Record<SidebarKey, SidebarTab>

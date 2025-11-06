@@ -2,7 +2,7 @@
   <RibbonGroup label="内容">
     <Button
       icon="pi pi-arrows-h"
-      label="分词窗格"
+      label="批量分词"
       size="small"
       :severity="
         runtimeStore.openedSidebars.includes(SidebarKey.SplitText) ? undefined : 'secondary'

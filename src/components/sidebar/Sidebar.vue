@@ -21,7 +21,7 @@
         </TabList>
       </Tabs>
     </div>
-    <component class="slidbar-inner" :is="currentSidebarTab?.component" />
+    <component class="sidebar-inner" :is="currentSidebarTab?.component" />
   </aside>
 </template>
 
@@ -39,10 +39,10 @@ const currentSidebarTab = computed(() => openedSidebarTabs.value[runtimeStore.cu
 
 <style lang="scss">
 .sidebar {
-  width: 300px;
+  width: 360px;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--p-content-border-color);
+  border-right: 1px solid var(--p-content-border-color);
 }
 .sidebar-title.single {
   display: flex;
@@ -51,11 +51,13 @@ const currentSidebarTab = computed(() => openedSidebarTabs.value[runtimeStore.cu
   padding: 0.3rem 0.5rem 0.5rem 1rem;
 }
 .sidebar-title-single-text {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
 }
-.slidbar-inner {
-  float: 1;
+.sidebar-inner {
+  height: 0;
+  flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
+  padding: 0.5rem 1rem;
 }
 </style>
