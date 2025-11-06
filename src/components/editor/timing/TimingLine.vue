@@ -1,5 +1,5 @@
 <template>
-  <div class="tline">
+  <div class="tline" :class="{ ignored: props.line.ignoreInTiming }">
     <div class="tline-head">
       <div class="tline-head-btns">
         <Button
@@ -64,6 +64,9 @@ const props = defineProps<{
   --timestamp-space: 0.5rem;
   --tline-border-color: var(--p-content-border-color);
   --word-height: 7.5rem;
+  &.ignored {
+    opacity: 0.5;
+  }
 }
 .tline-head {
   display: flex;

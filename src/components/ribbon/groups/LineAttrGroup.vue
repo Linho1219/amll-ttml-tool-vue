@@ -27,7 +27,8 @@
           value="ignoretime"
           size="small"
           :disabled="lineSelectedEmpty"
-          :indeterminate="lineSelectedEmpty"
+          :indeterminate="ignoreTimingIndeterminate"
+          v-model="ignoreTimingChecked"
           binary
         />
         <label for="ribbon-ignoretime">忽略打轴</label>
@@ -84,6 +85,10 @@ const { checked: backgroundChecked, indeterminate: backgroundIndeterminate } = a
 const { checked: duetChecked, indeterminate: duetIndeterminate } = attrCheckbox(
   runtimeStore.selectedLines,
   'duet',
+)
+const { checked: ignoreTimingChecked, indeterminate: ignoreTimingIndeterminate } = attrCheckbox(
+  runtimeStore.selectedLines,
+  'ignoreInTiming',
 )
 
 const {
