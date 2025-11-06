@@ -32,6 +32,7 @@ export function useAudioCtrl() {
     progressRef.value = getProgress()
     if (!audio.paused) requestAnimationFrame(maintainProgressRef)
   }
+  audio.onseeked = () => (progressRef.value = getProgress())
 
   const play = () => audio.play()
   const pause = () => audio.pause()
