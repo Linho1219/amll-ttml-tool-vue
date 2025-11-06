@@ -51,6 +51,7 @@ import { importTTML, parseTTML } from '@/port/ttml'
 import { importPersist } from '@/port'
 import { importQRC } from '@/port/qrc'
 import { importYRC } from '@/port/yrc'
+import { importPlainText } from '@/port/paintext'
 
 const runtimeStore = useRuntimeStore()
 
@@ -73,6 +74,13 @@ watch(
 
 // File open
 const openMenu = useTemplateRef('openMenu')
+
+const handleImportFromFile = (accept: string, parser: (content: string) => void) => async () => {
+  const file = await chooseFile(accept)
+  if (!file) return
+  return parser(file.content)
+}
+
 const openMenuItems: MenuItem[] = [
   {
     label: '现有项目',
@@ -80,9 +88,24 @@ const openMenuItems: MenuItem[] = [
     command: () => {},
   },
   {
-    label: '从歌词文件导入',
+    label: '从 TTML 文件导入',
     icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile,
+    command: handleImportFromFile('.ttml', parseTTML),
+  },
+  {
+    label: '从 YRC 文件导入',
+    icon: 'pi pi-file-arrow-up',
+    command: handleImportFromFile('.yrc', importYRC),
+  },
+  {
+    label: '从 QRC 文件导入',
+    icon: 'pi pi-file-arrow-up',
+    command: handleImportFromFile('.qrc', importQRC),
+  },
+  {
+    label: '从文本文件导入',
+    icon: 'pi pi-file-arrow-up',
+    command: handleImportFromFile('.txt', importPlainText),
   },
   {
     label: '从纯文本导入',
@@ -97,18 +120,6 @@ const openMenuItems: MenuItem[] = [
   },
 ]
 
-async function handleImportFromFile() {
-  const file = await chooseFile('.ttml,.qrc,.yrc,.lys,.txt')
-  if (!file) return
-  switch (file.extension) {
-    case 'ttml':
-      return importTTML(file.content)
-    case 'yrc':
-      return importYRC(file.content)
-    case 'qrc':
-      return importQRC(file.content)
-  }
-}
 async function handleNewProject() {
   importPersist({
     lyricLines: [],
