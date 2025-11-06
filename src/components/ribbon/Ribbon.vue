@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { Card } from 'primevue'
-import ContentProcessGroup from './groups/ContentProcessGroup.vue'
+import ContentProcessGroup from './groups/ContentGroup.vue'
 import LineAttrGroup from './groups/LineAttrGroup.vue'
 import MarkGroup from './groups/MarkGroup.vue'
 import PerformanceGroup from './groups/PerformanceGroup.vue'
