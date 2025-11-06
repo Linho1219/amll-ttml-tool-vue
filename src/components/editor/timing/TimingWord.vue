@@ -5,7 +5,14 @@
     :class="{ selected: isSelected, active: isActive }"
   >
     <Timestamp class="tword-timestamp" begin v-model="props.word.startTime" />
-    <span class="tword-text">{{ props.word.word }}</span>
+    <span class="tword-text">
+      <i
+        v-if="props.word.bookmarked"
+        class="pi pi-bookmark-fill"
+        style="color: var(--p-button-text-warn-color)"
+      ></i>
+      {{ props.word.word }}
+    </span>
     <Timestamp class="tword-timestamp" end v-model="props.word.endTime" />
   </div>
 </template>
@@ -35,6 +42,7 @@ const isSelected = computed(() => {
 const audio = useStaticStore().audio
 const isActive = computed(
   () =>
+    (props.word.startTime || props.word.endTime) &&
     audio.progressRef.value - configStore.globalLatency >= props.word.startTime &&
     audio.progressRef.value - configStore.globalLatency <= props.word.endTime,
 )
@@ -46,9 +54,9 @@ watch([isActive, () => configStore.scrollWithPlayback], () => {
   if (props.parent.background) return
   if (isActive.value && configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
 })
-watch([isSelected, () => configStore.scrollWithPlayback], () => {
-  if (isSelected.value && !configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
-})
+// watch([isSelected, () => configStore.scrollWithPlayback], () => {
+//   if (isSelected.value && !configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
+// })
 </script>
 
 <style lang="scss">
