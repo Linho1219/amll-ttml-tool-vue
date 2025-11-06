@@ -1,6 +1,14 @@
 <template>
   <RibbonGroup label="内容">
-    <Button icon="pi pi-arrows-h" label="分词窗格" size="small" severity="secondary" />
+    <Button
+      icon="pi pi-arrows-h"
+      label="分词窗格"
+      size="small"
+      :severity="
+        runtimeStore.openedSidebars.includes(SidebarKey.SplitText) ? undefined : 'secondary'
+      "
+      @click="runtimeStore.toogleSidebar(SidebarKey.SplitText)"
+    />
     <Button icon="pi pi-search" label="查找替换" size="small" severity="secondary" />
     <Button icon="pi pi-info-circle" label="元数据" size="small" severity="secondary" />
   </RibbonGroup>
@@ -9,4 +17,7 @@
 <script setup lang="ts">
 import { Button } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
+import { useRuntimeStore } from '@/stores/runtime'
+import { SidebarKey } from '@/components/sidebar/register'
+const runtimeStore = useRuntimeStore()
 </script>

@@ -12,6 +12,7 @@ const runtimeStore = useRuntimeStore()
 import editHistory from './stores/editHistory'
 import { onMounted, onUnmounted } from 'vue'
 import { useStaticStore } from './stores/static'
+import Sidebar from './components/sidebar/Sidebar.vue'
 editHistory.init()
 
 const handleRootKeydown = (e: KeyboardEvent) => {
@@ -38,9 +39,17 @@ onUnmounted(() => {
 
 <template>
   <Titlebar />
-  <Ribbon v-if="!runtimeStore.isPreviewView" />
-  <ContentEditor v-if="runtimeStore.isContentView" />
-  <TimingEditor v-if="runtimeStore.isTimingView" />
+  <template v-if="runtimeStore.isPreviewView">
+    <main></main>
+  </template>
+  <template v-else>
+    <Ribbon />
+    <main>
+      <ContentEditor v-if="runtimeStore.isContentView" class="editor" />
+      <TimingEditor v-if="runtimeStore.isTimingView" class="editor" />
+      <Sidebar v-if="runtimeStore.sidebarShown" />
+    </main>
+  </template>
   <Player />
 </template>
 
@@ -60,5 +69,14 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+main {
+  flex: 1;
+  display: flex;
+}
+.editor {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

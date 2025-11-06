@@ -244,9 +244,6 @@ onMounted(() => {
 
 <style lang="scss">
 .editor.content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
   --content-word-height: 4.8rem;
 }
 .editor-scroller {

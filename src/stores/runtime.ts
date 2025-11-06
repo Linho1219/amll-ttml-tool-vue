@@ -1,6 +1,7 @@
-import { computed, ref, shallowReactive } from 'vue'
+import { computed, reactive, ref, shallowReactive, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useCoreStore, type LyricLine, type LyricWord } from './core'
+import type { SidebarKey } from '@/components/sidebar/register'
 export enum View {
   Content,
   Timing,
@@ -24,6 +25,13 @@ export const useRuntimeStore = defineStore('runtime', () => {
   const isDraggingLine = computed(
     () => isDragging.value && selectedWords.size === 0 && selectedLines.size > 0,
   )
+
+  const openedSidebars = reactive<SidebarKey[]>([])
+  const currentSidebarIndex = ref(0)
+  const sidebarShown = computed(() => openedSidebars.length > 0)
+  watch(openedSidebars, ({ length }) => {
+    currentSidebarIndex.value = Math.min(currentSidebarIndex.value, length - 1)
+  })
 
   return {
     currentView,
@@ -49,6 +57,12 @@ export const useRuntimeStore = defineStore('runtime', () => {
     canDrop,
     isDraggingWord,
     isDraggingLine,
+    openedSidebars,
+    currentSidebarIndex,
+    sidebarShown,
+    openSidebar,
+    closeCurrentSidebar,
+    toogleSidebar,
   }
 
   function clearSelection() {
@@ -110,5 +124,21 @@ export const useRuntimeStore = defineStore('runtime', () => {
   function getFirstSelectedWord(): LyricWord | null {
     if (selectedWords.size === 0) return null
     return selectedWords.values().next().value!
+  }
+
+  function openSidebar(key: SidebarKey) {
+    if (!openedSidebars.includes(key)) {
+      openedSidebars.push(key)
+      currentSidebarIndex.value = openedSidebars.length - 1
+    } else {
+      currentSidebarIndex.value = openedSidebars.indexOf(key)
+    }
+  }
+  function closeCurrentSidebar() {
+    openedSidebars.splice(currentSidebarIndex.value, 1)
+  }
+  function toogleSidebar(key: SidebarKey) {
+    if (openedSidebars[currentSidebarIndex.value] === key) closeCurrentSidebar()
+    else openSidebar(key)
   }
 })
