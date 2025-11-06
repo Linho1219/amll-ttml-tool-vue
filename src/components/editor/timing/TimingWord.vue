@@ -56,6 +56,7 @@ watch([isSelected, () => configStore.scrollWithPlayback], () => {
   height: var(--word-height);
   display: flex;
   flex-direction: column;
+  align-items: center;
   padding: var(--timestamp-space) 0.5rem;
   justify-content: space-between;
   box-shadow:
