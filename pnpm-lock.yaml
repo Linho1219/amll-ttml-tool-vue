@@ -17,6 +17,15 @@ importers:
       '@xmldom/xmldom':
         specifier: ^0.8.11
         version: 0.8.11
+      compromise:
+        specifier: ^14.14.4
+        version: 14.14.4
+      compromise-speech:
+        specifier: ^0.1.1
+        version: 0.1.1(compromise@14.14.4)
+      compromise-syllables:
+        specifier: ^0.0.6
+        version: 0.0.6(compromise@14.14.4)
       flatted:
         specifier: ^3.3.3
         version: 3.3.3
@@ -608,6 +617,20 @@ packages:
   colorjs.io@0.5.2:
     resolution: {integrity: sha512-twmVoizEW7ylZSN32OgKdXRmo1qg+wT5/6C3xu5b9QsWzSFAhHLn2xd8ro0diCsKfCj1RdaTP/nrcW+vAoQPIw==}
 
+  compromise-speech@0.1.1:
+    resolution: {integrity: sha512-nTT/zi0cNQXoiwnvJVl6Sm9TLE+esHmjRHISmyPw3DtiLPagpaONFKa/rY/gCgvOGemOkr3i4jOj+gG5YtdsOw==}
+    peerDependencies:
+      compromise: '>=14.0.0'
+
+  compromise-syllables@0.0.6:
+    resolution: {integrity: sha512-27UnmoL2PqmBE9+LnB1VmiZa+Y1MoZvAtYIn6WvqDX9h2X3wPtlUqPoatqA2p4Jq36f6hahzrPgaTVaE8qlC2Q==}
+    peerDependencies:
+      compromise: '>=12.0.0'
+
+  compromise@14.14.4:
+    resolution: {integrity: sha512-QdbJwronwxeqb7a5KFK/+Y5YieZ4PE1f7ai0vU58Pp4jih+soDCBMuKVbhDEPQ+6+vI3vSiG4UAAjTAXLJw1Qw==}
+    engines: {node: '>=12.0.0'}
+
   copy-anything@4.0.5:
     resolution: {integrity: sha512-7Vv6asjS4gMOuILabD3l739tsaxFQmC+a7pLZm02zyvs8p977bL3zEgq3yDk5rn9B0PbYgIv++jmHcuUab4RhA==}
     engines: {node: '>=18'}
@@ -623,6 +646,10 @@ packages:
     resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
     engines: {node: '>=0.10'}
     hasBin: true
+
+  efrt@2.7.0:
+    resolution: {integrity: sha512-/RInbCy1d4P6Zdfa+TMVsf/ufZVotat5hCw3QXmWtjU+3pFEOvOQ7ibo3aIxyCJw2leIeAMjmPj+1SLJiCpdrQ==}
+    engines: {node: '>=12.0.0'}
 
   entities@4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
@@ -656,6 +683,10 @@ packages:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
+
+  grad-school@0.0.5:
+    resolution: {integrity: sha512-rXunEHF9M9EkMydTBux7+IryYXEZinRk6g8OBOGDBzo/qWJjhTxy86i5q7lQYpCLHN8Sqv1XX3OIOc7ka2gtvQ==}
+    engines: {node: '>=8.0.0'}
 
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
@@ -934,6 +965,9 @@ packages:
   speakingurl@14.0.1:
     resolution: {integrity: sha512-1POYv7uv2gXoyGFpBCmpDVSNV74IfsWlDW216UPjbWufNf+bSU6GdbDsxdcxtfwb4xlI3yxzOTKClUosxARYrQ==}
     engines: {node: '>=0.10.0'}
+
+  suffix-thumb@5.0.2:
+    resolution: {integrity: sha512-I5PWXAFKx3FYnI9a+dQMWNqTxoRt6vdBdb0O+BJ1sxXCWtSoQCusc13E58f+9p4MYx/qCnEMkD5jac6K2j3dgA==}
 
   superjson@2.2.3:
     resolution: {integrity: sha512-ay3d+LW/S6yppKoTz3Bq4mG0xrS5bFwfWEBmQfbC7lt5wmtk+Obq0TxVuA9eYRirBTQb1K3eEpBRHMQEo0WyVw==}
@@ -1474,6 +1508,20 @@ snapshots:
 
   colorjs.io@0.5.2: {}
 
+  compromise-speech@0.1.1(compromise@14.14.4):
+    dependencies:
+      compromise: 14.14.4
+
+  compromise-syllables@0.0.6(compromise@14.14.4):
+    dependencies:
+      compromise: 14.14.4
+
+  compromise@14.14.4:
+    dependencies:
+      efrt: 2.7.0
+      grad-school: 0.0.5
+      suffix-thumb: 5.0.2
+
   copy-anything@4.0.5:
     dependencies:
       is-what: 5.5.0
@@ -1488,6 +1536,8 @@ snapshots:
 
   detect-libc@1.0.3:
     optional: true
+
+  efrt@2.7.0: {}
 
   entities@4.5.0: {}
 
@@ -1535,6 +1585,8 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
+
+  grad-school@0.0.5: {}
 
   has-flag@4.0.0: {}
 
@@ -1789,6 +1841,8 @@ snapshots:
   source-map-js@1.2.1: {}
 
   speakingurl@14.0.1: {}
+
+  suffix-thumb@5.0.2: {}
 
   superjson@2.2.3:
     dependencies:

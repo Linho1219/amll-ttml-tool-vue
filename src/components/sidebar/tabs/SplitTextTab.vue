@@ -75,7 +75,7 @@ import { Button, Checkbox, Select } from 'primevue'
 import { reactive, ref } from 'vue'
 import SplitTextReWriteEditor from './SplitTextReWriteEditor.vue'
 import InputText from '@/components/repack/InputText.vue'
-import { basicSplit, type Rewrite, type Splitter } from '@/utils/split'
+import { basicSplit, compromiseSplit, type Rewrite, type Splitter } from '@/utils/splitText'
 
 interface Engine {
   name: string
@@ -89,6 +89,12 @@ const engines: Engine[] = [
     description:
       '对西文按词拆分，对于 CJK 按字拆分。若有自定义规则，将对拆分后的词应用，已拆分的词不会合并。',
     processor: basicSplit,
+  },
+  {
+    name: 'Compromise 英文分词',
+    description:
+      '在基本分词基础上，添加基于正字法的英文音节拆分。若有自定义规则，将覆盖词内音节拆分。',
+    processor: compromiseSplit,
   },
 ]
 
