@@ -2,11 +2,11 @@
   <RibbonGroup label="性能">
     <div class="perfgrid" v-if="isSupported && memory">
       <span>已使用</span>
-      <span class="monospace">{{ size(memory.usedJSHeapSize) }}</span>
+      <span class="perfvalue monospace">{{ size(memory.usedJSHeapSize) }}</span>
       <span>已分配</span>
-      <span class="monospace">{{ size(memory.totalJSHeapSize) }}</span>
+      <span class="perfvalue monospace">{{ size(memory.totalJSHeapSize) }}</span>
       <span>帧速率</span>
-      <span class="monospace">{{ fps }} FPS</span>
+      <span class="perfvalue monospace">{{ fps }} FPS</span>
     </div>
   </RibbonGroup>
 </template>
@@ -27,12 +27,14 @@ const { isSupported, memory } = useMemory()
 <style lang="scss">
 .perfgrid {
   display: grid;
-  font-family: var(--font-monospace);
-  grid-template-columns: 3em 9ch;
+  grid-template-columns: auto auto;
   text-align: right;
   align-items: center;
   justify-items: stretch;
   row-gap: 0.3rem;
   column-gap: 0.5rem;
+}
+.perfvalue {
+  width: 9ch;
 }
 </style>
