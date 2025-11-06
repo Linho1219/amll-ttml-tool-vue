@@ -1,4 +1,4 @@
-import nlp from 'compromise'
+import nlp from 'compromise/tokenize'
 import nlpSpeech from 'compromise-speech'
 
 export interface Rewrite {
