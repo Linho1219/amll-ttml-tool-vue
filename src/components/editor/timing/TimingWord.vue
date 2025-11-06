@@ -43,6 +43,7 @@ const emit = defineEmits<{
   (e: 'needScroll', parentIndex: number): void
 }>()
 watch([isActive, () => configStore.scrollWithPlayback], () => {
+  if (props.parent.background) return
   if (isActive.value && configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
 })
 watch([isSelected, () => configStore.scrollWithPlayback], () => {
