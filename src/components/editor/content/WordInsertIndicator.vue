@@ -53,7 +53,7 @@ function handleDrop(e: DragEvent) {
     staticStore.touchLineWord(props.parent, duplicatedWords.at(-1)!)
   } else {
     const continuity = checkWordContinuity(pendingWords)
-    if (continuity) {
+    if (continuity && runtimeStore.getFirstSelectedLine() === props.parent) {
       const [start, end] = continuity
       if (props.index >= start && props.index <= end + 1)
         // Dropping into itself, do nothing
