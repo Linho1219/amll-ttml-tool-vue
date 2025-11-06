@@ -26,7 +26,7 @@
           <div v-for="(item, index) in customRewrites" class="rewrite-item">
             <InputText placeholder="原词" type="text" v-model.lazy.trim="item.target" fluid />
             <i class="pi pi-arrow-right"></i>
-            <SplitTextReWriteEditor :original="item.target" v-model="item.indices" />
+            <SplitTextRewriteEditor :original="item.target" v-model="item.indices" />
             <Button
               icon="pi pi-times"
               variant="text"
@@ -73,7 +73,7 @@ import { useCoreStore, type LyricLine } from '@/stores/core'
 import { useRuntimeStore } from '@/stores/runtime'
 import { Button, Checkbox, Select } from 'primevue'
 import { reactive, ref } from 'vue'
-import SplitTextReWriteEditor from './SplitTextReWriteEditor.vue'
+import SplitTextRewriteEditor from './SplitTextRewriteEditor.vue'
 import InputText from '@/components/repack/InputText.vue'
 import { basicSplit, compromiseSplit, type Rewrite, type Splitter } from '@/utils/splitText'
 
