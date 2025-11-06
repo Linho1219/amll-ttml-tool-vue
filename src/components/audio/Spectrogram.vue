@@ -73,7 +73,7 @@ onUnmounted(() => wsInstance?.destroy())
 <style lang="scss">
 .spectrogram {
   cursor: text;
-  height: 12.5rem;
+  min-height: 12.5rem;
   position: relative;
   ::part(canvases) {
     opacity: 0.6;
