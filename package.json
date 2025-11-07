@@ -23,6 +23,7 @@
     "compromise-syllables": "^0.0.6",
     "flatted": "^3.3.3",
     "lodash-es": "^4.17.21",
+    "mitt": "^3.0.1",
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.4.1",

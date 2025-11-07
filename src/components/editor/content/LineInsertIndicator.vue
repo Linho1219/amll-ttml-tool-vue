@@ -77,8 +77,7 @@ function handleDrop(e: DragEvent) {
     if (isCopy) newLine.words = pendingWords.map(coreStore.newWord)
     else coreStore.deleteWord(...pendingWords)
     coreStore.lyricLines.splice(props.index, 0, newLine)
-    if (isCopy) runtimeStore.selectLineWord(newLine, ...newLine.words)
-    else runtimeStore.applyWordSelectToLine()
+    runtimeStore.selectLineWord(newLine, ...newLine.words)
     staticStore.touchLineWord(newLine, newLine.words.at(-1)!)
   }
 }

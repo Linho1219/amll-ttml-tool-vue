@@ -60,6 +60,7 @@ import DragGhost from './DragGhost.vue'
 import type { MenuItem } from 'primevue/menuitem'
 import { useStaticStore } from '@/stores/static'
 import { VList } from 'virtua/vue'
+import globalEmit from '@/utils/mitt'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
@@ -229,6 +230,12 @@ const handleBlankContext = handleContext('blank')
 const handleLineContext = handleContext('line')
 const handleLineInsertContext = handleContext('lineInsert')
 const handleWordContext = handleContext('word')
+
+globalEmit.on('delete', () => {
+  if (runtimeStore.selectedWords.size) {
+    coreStore.deleteWord(...runtimeStore.selectedWords)
+  } else coreStore.deleteLine(...runtimeStore.selectedLines)
+})
 
 const vscroll = useTemplateRef('vscroll')
 function handleScrollTo(lineIndex: number) {

@@ -49,6 +49,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     addWordToSelection,
     addLineToSelection,
     removeWordFromSelection,
+    removeWordFromSelectionWithoutApply,
     removeLineFromSelection,
     getFirstSelectedLine,
     getFirstSelectedWord,
@@ -105,6 +106,9 @@ export const useRuntimeStore = defineStore('runtime', () => {
   function removeWordFromSelection(...words: LyricWord[]) {
     words.forEach((word) => selectedWords.delete(word))
     applyWordSelectToLine()
+  }
+  function removeWordFromSelectionWithoutApply(...words: LyricWord[]) {
+    words.forEach((word) => selectedWords.delete(word))
   }
   function removeLineFromSelection(...lines: LyricLine[]) {
     lines.forEach((line) => selectedLines.delete(line))

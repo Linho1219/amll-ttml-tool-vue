@@ -1,4 +1,4 @@
-import { useConfigStore } from '@/stores/config'
+import { usePreferenceStore } from '@/stores/preference'
 import { computed, readonly, ref, watch } from 'vue'
 
 // use ms as time unit
@@ -35,7 +35,7 @@ export function useAudioCtrl() {
   }
   audio.onseeked = () => (progressRef.value = getProgress())
   const amendmentRef = computed(
-    () => useConfigStore().globalLatency * playbackRateRef.value * (playingRef.value ? 1 : 0),
+    () => usePreferenceStore().globalLatency * playbackRateRef.value * (playingRef.value ? 1 : 0),
   )
 
   const play = () => {

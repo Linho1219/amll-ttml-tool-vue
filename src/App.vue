@@ -24,12 +24,18 @@ import ContentEditor from './components/editor/content/ContentEditor.vue'
 import TimingEditor from './components/editor/timing/TimingEditor.vue'
 import Player from './components/audio/Player.vue'
 import { useRuntimeStore } from './stores/runtime'
-const runtimeStore = useRuntimeStore()
 import editHistory from './stores/editHistory'
 import { onMounted, onUnmounted } from 'vue'
-import { useStaticStore } from './stores/static'
 import Sidebar from './components/sidebar/Sidebar.vue'
+import { usePreferenceStore } from './stores/preference'
+import { matchHotkeyInMap, parseKeyEvent } from './utils/hotkey'
+import globalEmit from './utils/mitt'
+import { useCoreStore } from './stores/core'
 editHistory.init()
+
+const preferenceStore = usePreferenceStore()
+const coreStore = useCoreStore()
+const runtimeStore = useRuntimeStore()
 
 const handleRootKeydown = (e: KeyboardEvent) => {
   if (e.target !== document.body)
@@ -38,10 +44,24 @@ const handleRootKeydown = (e: KeyboardEvent) => {
       if (tagName === 'textarea' || e.target.isContentEditable) return
       if (tagName === 'input' && (<HTMLInputElement>e.target).type === 'text') return
     }
-  console.log('Root keydown:', e.key)
-  if (e.code === 'Space') {
-    e.preventDefault()
-    useStaticStore().audio.togglePlay()
+  const hotkey = parseKeyEvent(e)
+  if (!hotkey) return
+  const command = matchHotkeyInMap(hotkey, preferenceStore.hotkeyMap)
+  if (!command) return
+  e.preventDefault()
+  switch (command) {
+    case 'undo': {
+      editHistory.undo()
+      break
+    }
+    case 'redo': {
+      editHistory.redo()
+      break
+    }
+    default: {
+      globalEmit.emit(command)
+      break
+    }
   }
 }
 

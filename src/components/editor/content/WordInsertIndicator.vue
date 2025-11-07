@@ -64,7 +64,7 @@ function handleDrop(e: DragEvent) {
     coreStore.deleteWord(...pendingWords)
     const insertIndex = props.parent.words.indexOf(placeholder)
     props.parent.words.splice(insertIndex, 1, ...pendingWords)
-    runtimeStore.applyWordSelectToLine()
+    runtimeStore.selectLineWord(props.parent, ...pendingWords)
   }
 }
 

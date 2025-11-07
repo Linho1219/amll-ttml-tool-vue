@@ -1,5 +1,6 @@
 import { reactive } from 'vue'
 import { defineStore } from 'pinia'
+import { useRuntimeStore } from './runtime'
 
 //test
 
@@ -74,6 +75,9 @@ export const useCoreStore = defineStore('core', () => {
     if (filtered.length === lyricLines.length) return
     lyricLines.length = 0
     lyricLines.push(...filtered)
+    const runtimeStore = useRuntimeStore()
+    runtimeStore.clearWordSelection()
+    lineSet.forEach((line) => runtimeStore.removeLineFromSelection(line))
   }
   function deleteWord(...words: LyricWord[]) {
     const wordSet = new Set(words)
@@ -83,6 +87,8 @@ export const useCoreStore = defineStore('core', () => {
       line.words.length = 0
       line.words.push(...filtered)
     }
+    const runtimeStore = useRuntimeStore()
+    wordSet.forEach((word) => runtimeStore.removeWordFromSelectionWithoutApply(word))
   }
   function deleteWordFromLine(line: LyricLine, ...words: LyricWord[]) {
     const wordSet = new Set(words)

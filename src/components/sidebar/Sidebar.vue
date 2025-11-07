@@ -31,10 +31,10 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { computed } from 'vue'
 import { sidebarRegs } from './register'
 import { Button, Tab, TabList, Tabs } from 'primevue'
-import { useConfigStore } from '@/stores/config'
+import { usePreferenceStore } from '@/stores/preference'
 
 const runtimeStore = useRuntimeStore()
-const configStore = useConfigStore()
+const configStore = usePreferenceStore()
 
 const openedSidebarTabs = computed(() => runtimeStore.openedSidebars.map((key) => sidebarRegs[key]))
 const currentSidebarTab = computed(() => openedSidebarTabs.value[runtimeStore.currentSidebarIndex])

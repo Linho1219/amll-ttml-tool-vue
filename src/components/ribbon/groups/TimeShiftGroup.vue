@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { Button, InputNumber } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
-import { useConfigStore } from '@/stores/config'
+import { usePreferenceStore } from '@/stores/preference'
 
-const configStore = useConfigStore()
+const configStore = usePreferenceStore()
 </script>

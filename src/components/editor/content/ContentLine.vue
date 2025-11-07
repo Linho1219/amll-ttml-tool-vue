@@ -79,14 +79,14 @@ import type { MenuItem } from 'primevue/menuitem'
 import { computed, ref, useTemplateRef } from 'vue'
 import InputText from '@/components/repack/InputText.vue'
 import { useStaticStore } from '@/stores/static'
-import { useConfigStore } from '@/stores/config'
+import { usePreferenceStore } from '@/stores/preference'
 
 const props = defineProps<{
   line: LyricLine
   index: number
 }>()
 const runtimeStore = useRuntimeStore()
-const configStore = useConfigStore()
+const configStore = usePreferenceStore()
 const coreStore = useCoreStore()
 const staticStore = useStaticStore()
 const isSelected = computed(() => runtimeStore.selectedLines.has(props.line))

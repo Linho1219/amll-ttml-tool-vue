@@ -25,7 +25,7 @@ import Timestamp from './Timestamp.vue'
 import { useRuntimeStore, View } from '@/stores/runtime'
 import { computed, nextTick, watch } from 'vue'
 import { useStaticStore } from '@/stores/static'
-import { useConfigStore } from '@/stores/config'
+import { usePreferenceStore } from '@/stores/preference'
 
 const props = defineProps<{
   word: LyricWord
@@ -33,7 +33,7 @@ const props = defineProps<{
   parentIndex: number
 }>()
 const runtimeStore = useRuntimeStore()
-const configStore = useConfigStore()
+const configStore = usePreferenceStore()
 function handleMouseDown() {
   runtimeStore.selectLineWord(props.parent, props.word)
 }

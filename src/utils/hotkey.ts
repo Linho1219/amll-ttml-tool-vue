@@ -16,17 +16,81 @@ export type HotkeyCmd =
   | 'seekForward'
   | 'volumeUp'
   | 'volumeDown'
+  | 'undo'
+  | 'redo'
+  | 'find'
+  | 'replace'
+  | 'delete'
+  | 'backspace'
+  | 'bookmark'
+  | 'preferences'
+  | 'splitText'
+  | 'batchSplitText'
 
 export interface HotKey {
-  key: string
+  code: string
   ctrl: boolean
   alt: boolean
   shift: boolean
 }
 
-export function isHotkeyMatch(a: HotKey, b: HotKey) {
-  return a.key === b.key && a.ctrl === b.ctrl && a.alt === b.alt && a.shift === b.shift
+const Shift = Symbol('Shift')
+const Ctrl = Symbol('Ctrl')
+const Alt = Symbol('Alt')
+function hkey(...args: (symbol | string)[]) {
+  let ctrl = false,
+    alt = false,
+    shift = false,
+    code = ''
+  for (const arg of args) {
+    if (arg === Ctrl) ctrl = true
+    else if (arg === Alt) alt = true
+    else if (arg === Shift) shift = true
+    else if (typeof arg === 'string') {
+      if (arg.match(/^[a-zA-Z]$/)) code = 'Key' + arg.toUpperCase()
+      else if (arg.match(/^[0-9]$/)) code = 'Digit' + arg
+      else code = arg
+    }
+  }
+  return { code, ctrl, alt, shift }
 }
+
+export const getDefaultHotkeyMap = () =>
+  ({
+    switchToContent: [hkey(Shift, '1')],
+    switchToTiming: [hkey(Shift, '2')],
+    switchToPreview: [hkey(Shift, '3')],
+    goPrevLine: [hkey('w')],
+    goNextLine: [hkey('s')],
+    goPrevWord: [hkey('a')],
+    goNextWord: [hkey('d')],
+    splitText: [hkey('Backquote')],
+    batchSplitText: [hkey(Ctrl, 'Backquote')],
+    goPrevWordnPlay: [hkey('r')],
+    goNextWordnPlay: [hkey('y')],
+    markBegin: [hkey('f')],
+    markEndBegin: [hkey('g')],
+    markEnd: [hkey('h')],
+    playPauseAudio: [hkey('Space')],
+    seekBackward: [hkey('ArrowLeft')],
+    seekForward: [hkey('ArrowRight')],
+    volumeUp: [hkey('ArrowUp')],
+    volumeDown: [hkey('ArrowDown')],
+    undo: [hkey(Ctrl, 'z')],
+    redo: [hkey(Ctrl, 'y'), hkey(Ctrl, Shift, 'z')],
+    find: [hkey(Ctrl, 'f')],
+    replace: [hkey(Ctrl, 'h'), hkey(Ctrl, Shift, 'f')],
+    delete: [hkey('Delete')],
+    backspace: [hkey('Backspace')],
+    bookmark: [hkey(Alt, 'd')],
+    preferences: [hkey(Ctrl, ',')],
+  }) as HotkeyMap
+
+export function isHotkeyMatch(a: HotKey, b: HotKey) {
+  return a.code === b.code && a.ctrl === b.ctrl && a.alt === b.alt && a.shift === b.shift
+}
+
+export type HotkeyMap = Record<HotkeyCmd, HotKey[]>
 
 const keyBlockList = new Set([
   'Meta',
@@ -40,17 +104,24 @@ const keyBlockList = new Set([
 ])
 export function parseKeyEvent(e: KeyboardEvent): HotKey | null {
   if (keyBlockList.has(e.key)) return null
-  const key = e.key.toUpperCase()
   return {
-    key,
+    code: e.code,
     ctrl: e.ctrlKey || e.metaKey,
     alt: e.altKey,
     shift: e.shiftKey,
   }
 }
 
+export function matchHotkeyInMap(hotkey: HotKey, hotkeyMap: HotkeyMap): HotkeyCmd | undefined {
+  for (const cmd in hotkeyMap) {
+    const hotkeys = hotkeyMap[cmd as HotkeyCmd]
+    if (hotkeys.some((hk) => isHotkeyMatch(hk, hotkey))) return cmd as HotkeyCmd
+  }
+  return undefined
+}
+
 const keyRewrites: Record<string, string> = {
-  ' ': '空格',
+  Space: '空格',
   Escape: 'Esc',
   ArrowLeft: '←',
   ArrowRight: '→',
@@ -62,7 +133,7 @@ export function hotkeyToString(hotkey: HotKey, isMac: boolean = false) {
   if (hotkey.ctrl) parts.push(isMac ? '⌘' : 'Ctrl')
   if (hotkey.alt) parts.push(isMac ? '⌥' : 'Alt')
   if (hotkey.shift) parts.push(isMac ? '⇧' : 'Shift')
-  const key = keyRewrites[hotkey.key] ?? hotkey.key
+  const key = (keyRewrites[hotkey.code] ?? hotkey.code).replace(/^Key/, '').replace(/^Digit/, '')
   parts.push(key)
   return parts.join(isMac ? '' : '+')
 }
