@@ -13,10 +13,10 @@ interface Snapshot {
   }
   runtime: {
     currentView: View
-    selectedLines: ReadonlySet<LyricLine>
-    selectedWords: ReadonlySet<LyricWord>
-    lastTouchedLine: LyricLine | null
-    lastTouchedWord: LyricWord | null
+    selectedLineIds: string[]
+    selectedWordIds: string[]
+    lastTouchedLineId: string | undefined
+    lastTouchedWordId: string | undefined
   }
 }
 
@@ -61,10 +61,10 @@ function take() {
     },
     runtime: {
       currentView: toRaw(runtimeStore.currentView),
-      selectedLines: toRaw(runtimeStore.selectedLines),
-      selectedWords: toRaw(runtimeStore.selectedWords),
-      lastTouchedLine: toRaw(staticStore.lastTouchedLine),
-      lastTouchedWord: toRaw(staticStore.lastTouchedWord),
+      selectedLineIds: [...runtimeStore.selectedLines].map((l) => l.id),
+      selectedWordIds: [...runtimeStore.selectedWords].map((w) => w.id),
+      lastTouchedLineId: staticStore.lastTouchedLine?.id,
+      lastTouchedWordId: staticStore.lastTouchedWord?.id,
     },
   })
   snapshotList.set(++state.current, snapshot)
@@ -82,11 +82,22 @@ function wayback(snapshot: Snapshot) {
   snapshot.core.metadata.forEach((value, key) => coreStore.metadata.set(key, value))
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshot.core.lyricLines)
   runtimeStore.currentView = snapshot.runtime.currentView
-  if (snapshot.runtime.selectedWords.size)
-    runtimeStore.selectWord(...snapshot.runtime.selectedWords)
-  else runtimeStore.selectLine(...snapshot.runtime.selectedLines)
-  staticStore.lastTouchedLine = snapshot.runtime.lastTouchedLine
-  staticStore.lastTouchedWord = snapshot.runtime.lastTouchedWord
+  const selectedLines: LyricLine[] = []
+  const selectedWords: LyricWord[] = []
+  let lastTouchedLine: LyricLine | null = null
+  let lastTouchedWord: LyricWord | null = null
+  for (const line of coreStore.lyricLines) {
+    if (snapshot.runtime.selectedLineIds.includes(line.id)) selectedLines.push(line)
+    if (snapshot.runtime.lastTouchedLineId === line.id) lastTouchedLine = line
+    for (const word of line.words) {
+      if (snapshot.runtime.selectedWordIds.includes(word.id)) selectedWords.push(word)
+      if (snapshot.runtime.lastTouchedWordId === word.id) lastTouchedWord = word
+    }
+  }
+  if (selectedWords.length) runtimeStore.selectWord(...selectedWords)
+  else runtimeStore.selectLine(...selectedLines)
+  staticStore.lastTouchedLine = lastTouchedLine
+  staticStore.lastTouchedWord = lastTouchedWord
   setTimeout(() => (stopRecording = false), 0)
 }
 
