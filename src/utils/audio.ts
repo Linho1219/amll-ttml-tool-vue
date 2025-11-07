@@ -1,4 +1,5 @@
-import { readonly, ref, watch } from 'vue'
+import { useConfigStore } from '@/stores/config'
+import { computed, readonly, ref, watch } from 'vue'
 
 // use ms as time unit
 export function useAudioCtrl() {
@@ -33,6 +34,9 @@ export function useAudioCtrl() {
     if (!audio.paused) requestAnimationFrame(maintainProgressRef)
   }
   audio.onseeked = () => (progressRef.value = getProgress())
+  const amendmentRef = computed(
+    () => useConfigStore().globalLatency * playbackRateRef.value * (playingRef.value ? 1 : 0),
+  )
 
   const play = () => audio.play()
   const pause = () => audio.pause()
@@ -65,6 +69,7 @@ export function useAudioCtrl() {
     /** Readonly: use `seek` to change */
     progressRef: readonly(progressRef),
     lengthRef: readonly(lengthRef),
+    amendmentRef,
     playingRef,
     volumeRef,
     playbackRateRef,

@@ -45,8 +45,8 @@ const audio = useStaticStore().audio
 const isActive = computed(
   () =>
     (props.word.startTime || props.word.endTime) &&
-    audio.progressRef.value - configStore.globalLatency >= props.word.startTime &&
-    audio.progressRef.value - configStore.globalLatency <= props.word.endTime,
+    audio.progressRef.value - audio.amendmentRef.value >= props.word.startTime &&
+    audio.progressRef.value - audio.amendmentRef.value <= props.word.endTime,
 )
 
 const emit = defineEmits<{
@@ -82,15 +82,18 @@ function handleTextDbClick() {
   align-items: center;
   padding: var(--timestamp-space) 0.5rem;
   justify-content: space-between;
+  --tword-border-color: var(--tline-border-color);
+  --tword-thick-border-color: transparent;
   box-shadow:
-    -1px -1px 0 var(--tline-border-color),
-    inset -1px -1px 0 var(--tline-border-color);
+    -1px -1px 0 var(--tword-border-color),
+    inset -1px -1px 0 var(--tword-border-color),
+    var(--tword-thick-border-color) inset -1px -1px 0 3px,
+    var(--tword-thick-border-color) inset 0 0 0 3px;
+  &:hover {
+    --tword-thick-border-color: color-mix(in srgb, var(--p-primary-color), transparent 75%);
+  }
   &.selected {
-    box-shadow:
-      -1px -1px 0 var(--tline-border-color),
-      inset -1px -1px 0 var(--tline-border-color),
-      var(--p-primary-color) inset -1px -1px 0 3px,
-      var(--p-primary-color) inset 0 0 0 3px;
+    --tword-thick-border-color: var(--p-primary-color);
     .tword-timestamp {
       opacity: 1;
     }

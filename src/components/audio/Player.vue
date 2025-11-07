@@ -12,7 +12,7 @@
           :disabled="!activatedRef"
         />
         <div class="audio-progress monospace">
-          <div class="audio-progress-primary">{{ ms2str(progressRef) }}</div>
+          <div class="audio-progress-primary">{{ ms2str(displayProgress) }}</div>
           <div class="audio-progress-secondary">
             <span class="audio-percentage-text">{{ percentageRef }}%</span>
             <span class="audio-length-text">{{ ms2str(lengthRef) }}</span>
@@ -40,7 +40,8 @@ import Waveform from './Waveform.vue'
 import { useStaticStore } from '@/stores/static'
 
 const audio = useStaticStore().audio
-const { progressRef, lengthRef, playingRef, activatedRef } = audio
+const { progressRef, amendmentRef, lengthRef, playingRef, activatedRef } = audio
+
 const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
   accept: 'audio/*',
   multiple: false,
@@ -58,9 +59,10 @@ audio.audioEl.onloadeddata = () => {
   })
 }
 
+const displayProgress = computed(() => progressRef.value - amendmentRef.value)
 const percentageRef = computed(() => {
   if (lengthRef.value === 0) return 0
-  return Math.round((progressRef.value / lengthRef.value) * 100)
+  return Math.round((displayProgress.value / lengthRef.value) * 100)
 })
 
 const popover = useTemplateRef('popover')
