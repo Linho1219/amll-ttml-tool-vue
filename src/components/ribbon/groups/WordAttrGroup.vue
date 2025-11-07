@@ -23,6 +23,7 @@
           class="durationinput"
           size="small"
           placeholder="0"
+          :useGrouping="false"
           :disabled="wordSelectedEmpty"
           v-model="wordDuration"
           :invalid="(wordDuration ?? 0) < 0"
