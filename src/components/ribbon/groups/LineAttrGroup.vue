@@ -4,7 +4,6 @@
       <div class="kvgrid">
         <Checkbox
           inputId="ribbon-duetline"
-          value="duetline"
           size="small"
           :disabled="lineSelectedEmpty"
           :indeterminate="duetIndeterminate"
@@ -14,7 +13,6 @@
         <label for="ribbon-duetline">对唱行</label>
         <Checkbox
           inputId="ribbon-bgline"
-          value="bgline"
           size="small"
           :disabled="lineSelectedEmpty"
           :indeterminate="backgroundIndeterminate"
@@ -24,14 +22,20 @@
         <label for="ribbon-bgline">背景行</label>
         <Checkbox
           inputId="ribbon-ignoretime"
-          value="ignoretime"
           size="small"
           :disabled="lineSelectedEmpty"
           :indeterminate="ignoreTimingIndeterminate"
           v-model="ignoreTimingChecked"
           binary
         />
-        <label for="ribbon-ignoretime">忽略打轴</label>
+        <label for="ribbon-ignoretime">时轴中忽略</label>
+        <Checkbox
+          inputId="ribbon-alwaysignorebg"
+          size="small"
+          v-model="preferenceStore.alwaysIgnoreBackground"
+          binary
+        />
+        <label for="ribbon-alwaysignorebg">始终忽略背景</label>
       </div>
       <div class="kvgrid">
         <span>开始时间</span>
@@ -73,8 +77,10 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { computed } from 'vue'
 import { attrCheckbox, itemTimeInput } from '../common'
 import InputText from '@/components/repack/InputText.vue'
+import { usePreferenceStore } from '@/stores/preference'
 
 const runtimeStore = useRuntimeStore()
+const preferenceStore = usePreferenceStore()
 
 const lineSelectedEmpty = computed(() => runtimeStore.selectedLines.size === 0)
 

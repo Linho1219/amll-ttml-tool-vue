@@ -8,6 +8,7 @@ export const usePreferenceStore = defineStore('preference', () => {
   const hltWordTimeConflicts = ref(false)
   const scrollWithPlayback = ref(false)
   const swapTranslateRoman = ref(false)
+  const alwaysIgnoreBackground = ref(false)
   const sidebarWidth = ref(360)
   const hotkeyMap = reactive(getDefaultHotkeyMap())
 
@@ -15,6 +16,7 @@ export const usePreferenceStore = defineStore('preference', () => {
     globalLatency,
     hltLineTimeConflicts,
     swapTranslateRoman,
+    alwaysIgnoreBackground,
     hltWordTimeConflicts,
     scrollWithPlayback,
     sidebarWidth,
