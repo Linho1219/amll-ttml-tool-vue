@@ -1,5 +1,12 @@
 <template>
-  <div class="tline" :class="{ ignored: props.line.ignoreInTiming }">
+  <div
+    class="tline"
+    :class="{
+      ignored:
+        props.line.ignoreInTiming ||
+        (preferenceStore.alwaysIgnoreBackground && props.line.background),
+    }"
+  >
     <div class="tline-head">
       <div class="tline-head-btns">
         <Button
@@ -43,11 +50,14 @@
 import type { LyricLine } from '@/stores/core'
 import { Button } from 'primevue'
 import Timestamp from './Timestamp.vue'
+import { usePreferenceStore } from '@/stores/preference'
 
 const props = defineProps<{
   index: number
   line: LyricLine
 }>()
+
+const preferenceStore = usePreferenceStore()
 </script>
 
 <style lang="scss">

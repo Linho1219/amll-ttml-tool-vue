@@ -20,6 +20,7 @@ export type HotkeyCmd =
   | 'goPrevWord'
   | 'goNextWord'
   | 'goPrevWordnPlay'
+  | 'playCurrWord'
   | 'goNextWordnPlay'
   | 'markBegin'
   | 'markEndBegin'
@@ -80,6 +81,7 @@ export const getDefaultHotkeyMap = (): HotkeyMap => ({
   splitText: [hkey('Backquote')],
   batchSplitText: [hkey(Ctrl, 'Backquote')],
   goPrevWordnPlay: [hkey('r')],
+  playCurrWord: [hkey('t')],
   goNextWordnPlay: [hkey('y')],
   markBegin: [hkey('f')],
   markEndBegin: [hkey('g')],

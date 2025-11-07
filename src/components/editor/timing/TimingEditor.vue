@@ -51,9 +51,13 @@ onMounted(() => {
   }
 })
 
+const shouldIgnore = (line: LyricLine) =>
+  line.ignoreInTiming || (preferenceStore.alwaysIgnoreBackground && line.background)
+
 function findNextLineWord(
   word: LyricWord,
 ): [lineIndex: number, line: LyricLine, word: LyricWord] | null {
+  if (!word) return null
   let found = false
   for (const [lineIndex, line] of coreStore.lyricLines.entries()) {
     if (!found) {
@@ -65,9 +69,32 @@ function findNextLineWord(
       }
       found = true
     } else {
-      if (line.ignoreInTiming) continue
+      if (shouldIgnore(line)) continue
       if (line.words.length === 0) continue
       return [lineIndex, line, line.words[0]!]
+    }
+  }
+  return null
+}
+function findLastLineWord(
+  word: LyricWord,
+): [lineIndex: number, line: LyricLine, word: LyricWord] | null {
+  if (!word) return null
+  let found = false
+  for (let lineIndex = coreStore.lyricLines.length - 1; lineIndex >= 0; lineIndex--) {
+    const line = coreStore.lyricLines[lineIndex]!
+    if (!found) {
+      const wordIndex = line.words.indexOf(word)
+      if (wordIndex === -1) continue
+      for (let i = wordIndex - 1; i >= 0; i--) {
+        const prevWord = line.words[i]!
+        if (prevWord.word.trim()) return [lineIndex, line, prevWord]
+      }
+      found = true
+    } else {
+      if (shouldIgnore(line)) continue
+      if (line.words.length === 0) continue
+      return [lineIndex, line, line.words.at(-1)!]
     }
   }
   return null
@@ -129,6 +156,64 @@ useGlobalKeyboard('markEndBegin', () => {
   if (isWordFirstOfLine(nextWordLine, nextWord)) nextWordLine.startTime = progress
   runtimeStore.selectLineWord(nextWordLine, nextWord)
   handleScrollTo(nextWordLineIndex)
+})
+
+function shiftLine(shift: 1 | -1): LyricLine | undefined {
+  const line = runtimeStore.getFirstSelectedLine()
+  const word = runtimeStore.getFirstSelectedWord()
+  if (!line || !word) return
+  let nextLineIndex = coreStore.lyricLines.indexOf(line) + shift
+  while (
+    nextLineIndex >= 0 &&
+    nextLineIndex < coreStore.lyricLines.length &&
+    shouldIgnore(coreStore.lyricLines[nextLineIndex]!)
+  )
+    nextLineIndex += shift
+  const nextLine = coreStore.lyricLines[nextLineIndex]
+  if (!nextLine) return
+  const lastWordFilteredIndex = line.words.filter((w) => w.word.trim()).indexOf(word)
+  const filteredTargetWords = nextLine.words.filter((w) => w.word.trim())
+  if (filteredTargetWords.length === 0) return
+  const targetWord = filteredTargetWords[lastWordFilteredIndex] ?? filteredTargetWords.at(-1)
+  if (!targetWord) return
+  runtimeStore.selectLineWord(nextLine, targetWord)
+  handleScrollTo(nextLineIndex)
+  return nextLine
+}
+useGlobalKeyboard('goNextLine', () => {
+  shiftLine(1)
+})
+useGlobalKeyboard('goPrevLine', () => {
+  shiftLine(-1)
+})
+
+const shiftWord = (delta: 1 | -1): LyricWord | undefined => {
+  const currWord = runtimeStore.getFirstSelectedWord()
+  if (!currWord) return
+  const result = delta === 1 ? findNextLineWord(currWord) : findLastLineWord(currWord)
+  if (!result) return
+  const [lineIndex, line, word] = result
+  runtimeStore.selectLineWord(line, word)
+  handleScrollTo(lineIndex)
+  return word
+}
+useGlobalKeyboard('goNextWord', () => {
+  shiftWord(1)
+})
+useGlobalKeyboard('goNextWordnPlay', () => {
+  const word = shiftWord(1)
+  if (word && word.startTime) staticStore.audio.seek(word.startTime)
+})
+useGlobalKeyboard('goPrevWord', () => {
+  shiftWord(-1)
+})
+useGlobalKeyboard('goPrevWordnPlay', () => {
+  const word = shiftWord(-1)
+  if (word && word.startTime) staticStore.audio.seek(word.startTime)
+})
+useGlobalKeyboard('playCurrWord', () => {
+  const word = runtimeStore.getFirstSelectedWord()
+  if (word && word.startTime) staticStore.audio.seek(word.startTime)
 })
 </script>
 

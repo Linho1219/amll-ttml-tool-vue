@@ -23,7 +23,7 @@ import Ribbon from './components/ribbon/Ribbon.vue'
 import ContentEditor from './components/editor/content/ContentEditor.vue'
 import TimingEditor from './components/editor/timing/TimingEditor.vue'
 import Player from './components/audio/Player.vue'
-import { useRuntimeStore } from './stores/runtime'
+import { useRuntimeStore, View } from './stores/runtime'
 import editHistory from './stores/editHistory'
 import { onMounted, onUnmounted } from 'vue'
 import Sidebar from './components/sidebar/Sidebar.vue'
@@ -55,6 +55,18 @@ const handleRootKeydown = (e: KeyboardEvent) => {
     }
     case 'redo': {
       editHistory.redo()
+      break
+    }
+    case 'switchToContent': {
+      runtimeStore.currentView = View.Content
+      break
+    }
+    case 'switchToTiming': {
+      runtimeStore.currentView = View.Timing
+      break
+    }
+    case 'switchToPreview': {
+      runtimeStore.currentView = View.Preview
       break
     }
     default: {
