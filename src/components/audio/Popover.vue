@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import { useStaticStore } from '@/stores/static'
+import { useGlobalKeyboard } from '@/utils/hotkey'
 import { Button, InputGroup, InputGroupAddon, InputNumber, Slider } from 'primevue'
 import { computed, ref, watch } from 'vue'
 
@@ -107,6 +108,13 @@ watch(rateInputRef, (value) => {
 const rateSliderRef = computed({
   get: () => rateToSlider(playbackRateRef.value),
   set: (v: number) => (playbackRateRef.value = sliderToRate(v)),
+})
+
+useGlobalKeyboard('volumeDown', () => {
+  audio.volumeRef.value = Math.max(0, audio.volumeRef.value - 0.1)
+})
+useGlobalKeyboard('volumeUp', () => {
+  audio.volumeRef.value = Math.min(1, audio.volumeRef.value + 0.1)
 })
 </script>
 

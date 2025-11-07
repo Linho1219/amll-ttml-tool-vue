@@ -48,6 +48,15 @@ const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
   multiple: false,
 })
 useGlobalKeyboard('chooseMedia', () => handleSelectFile())
+useGlobalKeyboard('playPauseAudio', () => {
+  if (activatedRef.value) playingRef.value = !playingRef.value
+})
+useGlobalKeyboard('seekBackward', () => {
+  audio.seekBy(-5000)
+})
+useGlobalKeyboard('seekForward', () => {
+  audio.seekBy(5000)
+})
 
 const refresher = ref(Symbol())
 onFileChange((files) => {

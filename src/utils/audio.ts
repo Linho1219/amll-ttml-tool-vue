@@ -27,6 +27,11 @@ export function useAudioCtrl() {
   }
 
   const seek = (time: number) => (audio.currentTime = time / 1000)
+  const seekBy = (delta: number) => {
+    delta /= 1000
+    const target = Math.min(Math.max(0, audio.currentTime + delta), audio.duration)
+    audio.currentTime = target
+  }
   const getProgress = () => audio.currentTime * 1000
   const progressRef = ref(0)
   const maintainProgressRef = () => {
@@ -69,6 +74,7 @@ export function useAudioCtrl() {
     pause,
     togglePlay,
     seek,
+    seekBy,
     getProgress,
     /** Readonly: use `seek` to change */
     progressRef: readonly(progressRef),
