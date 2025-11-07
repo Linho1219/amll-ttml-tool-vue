@@ -26,6 +26,7 @@ export type HotkeyCmd =
   | 'preferences'
   | 'splitText'
   | 'batchSplitText'
+  | 'chooseMedia'
 
 export interface HotKey {
   code: string
@@ -55,36 +56,36 @@ function hkey(...args: (symbol | string)[]) {
   return { code, ctrl, alt, shift }
 }
 
-export const getDefaultHotkeyMap = () =>
-  ({
-    switchToContent: [hkey(Shift, '1')],
-    switchToTiming: [hkey(Shift, '2')],
-    switchToPreview: [hkey(Shift, '3')],
-    goPrevLine: [hkey('w')],
-    goNextLine: [hkey('s')],
-    goPrevWord: [hkey('a')],
-    goNextWord: [hkey('d')],
-    splitText: [hkey('Backquote')],
-    batchSplitText: [hkey(Ctrl, 'Backquote')],
-    goPrevWordnPlay: [hkey('r')],
-    goNextWordnPlay: [hkey('y')],
-    markBegin: [hkey('f')],
-    markEndBegin: [hkey('g')],
-    markEnd: [hkey('h')],
-    playPauseAudio: [hkey('Space')],
-    seekBackward: [hkey('ArrowLeft')],
-    seekForward: [hkey('ArrowRight')],
-    volumeUp: [hkey('ArrowUp')],
-    volumeDown: [hkey('ArrowDown')],
-    undo: [hkey(Ctrl, 'z')],
-    redo: [hkey(Ctrl, 'y'), hkey(Ctrl, Shift, 'z')],
-    find: [hkey(Ctrl, 'f')],
-    replace: [hkey(Ctrl, 'h'), hkey(Ctrl, Shift, 'f')],
-    delete: [hkey('Delete')],
-    backspace: [hkey('Backspace')],
-    bookmark: [hkey(Alt, 'd')],
-    preferences: [hkey(Ctrl, ',')],
-  }) as HotkeyMap
+export const getDefaultHotkeyMap = (): HotkeyMap => ({
+  switchToContent: [hkey(Shift, '1')],
+  switchToTiming: [hkey(Shift, '2')],
+  switchToPreview: [hkey(Shift, '3')],
+  goPrevLine: [hkey('w')],
+  goNextLine: [hkey('s')],
+  goPrevWord: [hkey('a')],
+  goNextWord: [hkey('d')],
+  splitText: [hkey('Backquote')],
+  batchSplitText: [hkey(Ctrl, 'Backquote')],
+  goPrevWordnPlay: [hkey('r')],
+  goNextWordnPlay: [hkey('y')],
+  markBegin: [hkey('f')],
+  markEndBegin: [hkey('g')],
+  markEnd: [hkey('h')],
+  playPauseAudio: [hkey('Space')],
+  seekBackward: [hkey('ArrowLeft')],
+  seekForward: [hkey('ArrowRight')],
+  volumeUp: [hkey('ArrowUp')],
+  volumeDown: [hkey('ArrowDown')],
+  undo: [hkey(Ctrl, 'z')],
+  redo: [hkey(Ctrl, 'y'), hkey(Ctrl, Shift, 'z')],
+  find: [hkey(Ctrl, 'f')],
+  replace: [hkey(Ctrl, 'h'), hkey(Ctrl, Shift, 'f')],
+  delete: [hkey('Delete')],
+  backspace: [hkey('Backspace')],
+  bookmark: [hkey(Ctrl, 'd')],
+  preferences: [hkey(Ctrl, ',')],
+  chooseMedia: [hkey(Ctrl, 'm')],
+})
 
 export function isHotkeyMatch(a: HotKey, b: HotKey) {
   return a.code === b.code && a.ctrl === b.ctrl && a.alt === b.alt && a.shift === b.shift

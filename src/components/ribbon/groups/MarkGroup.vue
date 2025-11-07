@@ -17,6 +17,7 @@ import { Button } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import { computed } from 'vue'
+import globalEmit from '@/utils/mitt'
 const runtimeStore = useRuntimeStore()
 
 const focusingSet = computed(() =>
@@ -27,4 +28,5 @@ function bookmarkClick() {
   if (bookmarkAdd.value) focusingSet.value.forEach((item) => (item.bookmarked = true))
   else focusingSet.value.forEach((item) => (item.bookmarked = false))
 }
+globalEmit.on('bookmark', () => bookmarkClick())
 </script>
