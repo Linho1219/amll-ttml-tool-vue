@@ -1,5 +1,9 @@
 <template>
-  <div class="timestamp" :class="{ begin: props.begin, end: props.end }">
+  <div
+    class="timestamp"
+    ref="timestampEl"
+    :class="{ begin: props.begin, end: props.end, flashing }"
+  >
     <div class="timestamp-caption" v-if="!showInput" @dblclick="showInput = true">
       {{ ms2str(upstream) }}
     </div>
@@ -23,6 +27,7 @@ const props = defineProps<{
   begin?: boolean
   end?: boolean
 }>()
+
 const upstream = defineModel<number>({ required: true })
 const inputModel = computed({
   get: () => ms2str(upstream.value),
@@ -36,24 +41,45 @@ const showInput = ref(false)
 watch(showInput, (v) => {
   if (v) nextTick(() => input.value?.input?.select())
 })
+
+const timestampEl = useTemplateRef('timestampEl')
+const flashing = ref(false)
+watch(upstream, () => {
+  if (!timestampEl.value) return
+  flashing.value = false
+  void timestampEl.value.offsetWidth
+  flashing.value = true
+})
 </script>
 
 <style lang="scss">
 .timestamp {
+  &.begin {
+    --timestamp-color: var(--p-button-text-success-color);
+  }
+  &.end {
+    --timestamp-color: var(--p-button-text-danger-color);
+  }
+  --timestamp-bg-color: color-mix(in srgb, var(--timestamp-color), transparent 80%);
+  --timestamp-hlt-color: color-mix(in srgb, var(--timestamp-color), transparent 40%);
+  --timestamp-selection-bg-color: color-mix(in srgb, var(--timestamp-color), transparent 40%);
+
   font-family: var(--font-monospace);
   --p-inputtext-sm-padding-y: 0.3rem;
   --p-inputtext-sm-padding-x: 0.4rem;
-
+  --p-inputtext-background: var(--timestamp-bg-color);
+  --p-inputtext-focus-border-color: var(--timestamp-color);
   ::selection {
-    background-color: color-mix(in srgb, var(--p-inputtext-focus-border-color), transparent 50%);
+    background-color: var(--timestamp-selection-bg-color);
   }
-  &.begin {
-    --p-inputtext-background: var(--p-button-outlined-success-active-background);
-    --p-inputtext-focus-border-color: var(--p-button-text-success-color);
+
+  @keyframes timestamp-flash {
+    from {
+      background-color: var(--timestamp-hlt-color);
+    }
   }
-  &.end {
-    --p-inputtext-background: var(--p-button-outlined-danger-active-background);
-    --p-inputtext-focus-border-color: var(--p-button-text-danger-color);
+  &.flashing {
+    animation: timestamp-flash 0.5s ease-in-out;
   }
 }
 .timestamp-caption {

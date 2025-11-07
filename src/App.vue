@@ -28,8 +28,7 @@ import editHistory from './stores/editHistory'
 import { onMounted, onUnmounted } from 'vue'
 import Sidebar from './components/sidebar/Sidebar.vue'
 import { usePreferenceStore } from './stores/preference'
-import { matchHotkeyInMap, parseKeyEvent } from './utils/hotkey'
-import globalEmit from './utils/mitt'
+import { emitGlobalKeyboard, matchHotkeyInMap, parseKeyEvent } from './utils/hotkey'
 import { useCoreStore } from './stores/core'
 editHistory.init()
 
@@ -59,7 +58,7 @@ const handleRootKeydown = (e: KeyboardEvent) => {
       break
     }
     default: {
-      globalEmit.emit(command)
+      emitGlobalKeyboard(command)
       break
     }
   }

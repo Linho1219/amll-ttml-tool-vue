@@ -1,3 +1,16 @@
+import mitt from 'mitt'
+import { onUnmounted } from 'vue'
+const globalKeyboardEmit = mitt<{ [K in HotkeyCmd]: undefined }>()
+export function useGlobalKeyboard(command: HotkeyCmd, handler: () => void) {
+  globalKeyboardEmit.on(command, handler)
+  onUnmounted(() => {
+    globalKeyboardEmit.off(command, handler)
+  })
+}
+export function emitGlobalKeyboard(command: HotkeyCmd) {
+  globalKeyboardEmit.emit(command)
+}
+
 export type HotkeyCmd =
   | 'switchToContent'
   | 'switchToTiming'

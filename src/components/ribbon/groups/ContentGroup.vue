@@ -19,10 +19,10 @@ import { Button } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
 import { useRuntimeStore } from '@/stores/runtime'
 import { SidebarKey } from '@/components/sidebar/register'
-import globalEmit from '@/utils/mitt'
+import { useGlobalKeyboard } from '@/utils/hotkey'
 const runtimeStore = useRuntimeStore()
 
-globalEmit.on('batchSplitText', () => {
+useGlobalKeyboard('batchSplitText', () => {
   runtimeStore.toogleSidebar(SidebarKey.SplitText)
 })
 </script>

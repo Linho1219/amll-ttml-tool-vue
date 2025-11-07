@@ -60,7 +60,7 @@ import DragGhost from './DragGhost.vue'
 import type { MenuItem } from 'primevue/menuitem'
 import { useStaticStore } from '@/stores/static'
 import { VList } from 'virtua/vue'
-import globalEmit from '@/utils/mitt'
+import { useGlobalKeyboard } from '@/utils/hotkey'
 
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
@@ -231,7 +231,7 @@ const handleLineContext = handleContext('line')
 const handleLineInsertContext = handleContext('lineInsert')
 const handleWordContext = handleContext('word')
 
-globalEmit.on('delete', () => {
+useGlobalKeyboard('delete', () => {
   if (runtimeStore.selectedWords.size) {
     coreStore.deleteWord(...runtimeStore.selectedWords)
   } else coreStore.deleteLine(...runtimeStore.selectedLines)
