@@ -29,7 +29,7 @@
           :invalid="(wordDuration ?? 0) < 0"
         />
       </div>
-      <div class="vflex" style="gap: 0.5rem; width: 10rem">
+      <div class="vflex" style="gap: 0.5rem; width: 7.5rem">
         <span style="text-align: center">
           占位拍
           <span style="font-family: var(--font-monospace)"

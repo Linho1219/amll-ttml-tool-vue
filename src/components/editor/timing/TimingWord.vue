@@ -9,7 +9,7 @@
       <i
         v-if="props.word.bookmarked"
         class="pi pi-bookmark-fill"
-        style="color: var(--p-button-text-warn-color)"
+        style="color: var(--p-button-text-warn-color); margin-right: 0.3em"
       ></i>
       <span class="tword-text" @dblclick="handleTextDbClick">
         {{ props.word.word }}
