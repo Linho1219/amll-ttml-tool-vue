@@ -1,10 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-export enum View {
-  Content,
-  Timing,
-  Preview,
-}
+
 export const useConfigStore = defineStore('config', () => {
   const globalLatency = ref(0)
   const hltLineTimeConflicts = ref(false)

@@ -5,14 +5,16 @@
     :class="{ selected: isSelected, active: isActive }"
   >
     <Timestamp class="tword-timestamp" begin v-model="props.word.startTime" />
-    <span class="tword-text">
+    <div class="tword-content">
       <i
         v-if="props.word.bookmarked"
         class="pi pi-bookmark-fill"
         style="color: var(--p-button-text-warn-color)"
       ></i>
-      {{ props.word.word }}
-    </span>
+      <span class="tword-text" @dblclick="handleTextDbClick">
+        {{ props.word.word }}
+      </span>
+    </div>
     <Timestamp class="tword-timestamp" end v-model="props.word.endTime" />
   </div>
 </template>
@@ -20,8 +22,8 @@
 <script setup lang="ts">
 import type { LyricLine, LyricWord } from '@/stores/core'
 import Timestamp from './Timestamp.vue'
-import { useRuntimeStore } from '@/stores/runtime'
-import { computed, watch } from 'vue'
+import { useRuntimeStore, View } from '@/stores/runtime'
+import { computed, nextTick, watch } from 'vue'
 import { useStaticStore } from '@/stores/static'
 import { useConfigStore } from '@/stores/config'
 
@@ -57,6 +59,19 @@ watch([isActive, () => configStore.scrollWithPlayback], () => {
 // watch([isSelected, () => configStore.scrollWithPlayback], () => {
 //   if (isSelected.value && !configStore.scrollWithPlayback) emit('needScroll', props.parentIndex)
 // })
+
+function handleTextDbClick() {
+  runtimeStore.currentView = View.Content
+  let attemptCount = 20
+  const id = props.word.id
+  const focusTarget = () => {
+    const hooks = useStaticStore().wordHooks.get(id)
+    if (hooks) requestAnimationFrame(() => hooks.focusInput())
+    else if (attemptCount-- > 0) requestAnimationFrame(() => focusTarget())
+    else console.warn(`Failed to focus word input for word id ${id}: max attempts reached`)
+  }
+  requestAnimationFrame(() => focusTarget())
+}
 </script>
 
 <style lang="scss">
@@ -79,7 +94,7 @@ watch([isActive, () => configStore.scrollWithPlayback], () => {
     .tword-timestamp {
       opacity: 1;
     }
-    .tword-text {
+    .tword-content {
       color: color-mix(in srgb, var(--p-primary-color), var(--p-button-text-plain-color) 50%);
     }
   }
@@ -90,7 +105,7 @@ watch([isActive, () => configStore.scrollWithPlayback], () => {
 .tword-timestamp {
   opacity: 0.7;
 }
-.tword-text {
+.tword-content {
   text-align: center;
   font-size: 1.5rem;
 }
