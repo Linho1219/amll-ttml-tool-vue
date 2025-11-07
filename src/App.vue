@@ -1,3 +1,19 @@
+<template>
+  <Titlebar />
+  <template v-if="runtimeStore.isPreviewView">
+    <main></main>
+  </template>
+  <template v-else>
+    <Ribbon />
+    <main>
+      <Sidebar v-if="runtimeStore.sidebarShown" />
+      <ContentEditor v-if="runtimeStore.isContentView" class="editor" />
+      <TimingEditor v-if="runtimeStore.isTimingView" class="editor" />
+    </main>
+  </template>
+  <Player />
+</template>
+
 <script setup lang="ts">
 import 'primeicons/primeicons.css'
 import '@/styles/common.scss'
@@ -22,7 +38,7 @@ const handleRootKeydown = (e: KeyboardEvent) => {
       if (tagName === 'textarea' || e.target.isContentEditable) return
       if (tagName === 'input' && (<HTMLInputElement>e.target).type === 'text') return
     }
-  console.log('Root keydown:', e.code)
+  console.log('Root keydown:', e.key)
   if (e.code === 'Space') {
     e.preventDefault()
     useStaticStore().audio.togglePlay()
@@ -36,22 +52,6 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleRootKeydown)
 })
 </script>
-
-<template>
-  <Titlebar />
-  <template v-if="runtimeStore.isPreviewView">
-    <main></main>
-  </template>
-  <template v-else>
-    <Ribbon />
-    <main>
-      <Sidebar v-if="runtimeStore.sidebarShown" />
-      <ContentEditor v-if="runtimeStore.isContentView" class="editor" />
-      <TimingEditor v-if="runtimeStore.isTimingView" class="editor" />
-    </main>
-  </template>
-  <Player />
-</template>
 
 <style lang="scss">
 :root {

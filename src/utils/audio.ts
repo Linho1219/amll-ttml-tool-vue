@@ -38,8 +38,12 @@ export function useAudioCtrl() {
     () => useConfigStore().globalLatency * playbackRateRef.value * (playingRef.value ? 1 : 0),
   )
 
-  const play = () => audio.play()
-  const pause = () => audio.pause()
+  const play = () => {
+    if (audio.src) audio.play()
+  }
+  const pause = () => {
+    if (audio.src) audio.pause()
+  }
   const togglePlay = () => (audio.paused ? play() : pause())
 
   const playingRef = ref(false)
