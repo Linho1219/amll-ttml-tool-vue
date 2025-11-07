@@ -11,6 +11,7 @@ export const useConfigStore = defineStore('config', () => {
   const hltWordTimeConflicts = ref(false)
   const scrollWithPlayback = ref(false)
   const swapTranslateRoman = ref(false)
+  const sidebarWidth = ref(360)
 
   return {
     globalLatency,
@@ -18,5 +19,6 @@ export const useConfigStore = defineStore('config', () => {
     swapTranslateRoman,
     hltWordTimeConflicts,
     scrollWithPlayback,
+    sidebarWidth,
   }
 })

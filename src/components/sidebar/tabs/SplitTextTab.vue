@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="action">
-      <div class="warn">注意：批量分词会导致现有词语信息（包含时间戳）丢失。</div>
+      <div class="warn">批量分词会导致现有词语信息（包含时间戳）丢失。</div>
       <Button
         label="应用到选定行"
         icon="pi pi-angle-right"
@@ -137,7 +137,7 @@ function applyToLines(lines: LyricLine[]) {
   flex-direction: column;
   gap: 1.2rem;
   .subtitle {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   .description {
     font-size: 0.9rem;
