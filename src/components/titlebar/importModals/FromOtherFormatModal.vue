@@ -46,7 +46,12 @@
         />
         <div style="flex: 1"></div>
         <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
-        <Button label="导入" icon="pi pi-arrow-right" @click="handleImport" />
+        <Button
+          label="导入"
+          icon="pi pi-arrow-right"
+          :disabled="!inputText"
+          @click="handleImport"
+        />
       </div>
     </template>
     <div v-else class="require-select-tip">请在左侧选择格式</div>
@@ -62,6 +67,7 @@ import { importPersist, type Persist } from '@/port'
 import { parseLRC } from '@/port/lrc'
 import { parseLRCa2 } from '@/port/lrca2'
 import { parseQRC } from '@/port/qrc'
+import { parseSPL } from '@/port/spl'
 import { parseYRC } from '@/port/yrc'
 import { chooseFile } from '@/utils/file'
 import { Button, Dialog, IftaLabel, Listbox, Tag, Textarea } from 'primevue'
@@ -85,7 +91,7 @@ const formats: FormatInfo[] = [
   {
     name: '基本 LRC',
     description:
-      '最常见的歌词格式。支持以行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，如需导入基于 LRC 的扩展格式，请转到 LRC A2 扩展、SPL 等格式。',
+      '最常见的歌词格式。支持以行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，若导入基于 LRC 的扩展格式，请选择对应扩展格式选项。',
     accept: '.lrc',
     example:
       `[02:01.079]Get in the line, to dream alive\n` +
@@ -93,6 +99,16 @@ const formats: FormatInfo[] = [
       `[02:06.103][02:08.916][02:11.135]On the journey`,
     reference: [{ name: '维基百科', url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
     parser: parseLRC,
+  },
+  {
+    name: 'LRC A2 扩展',
+    description: '基于 LRC 的扩展格式，支持行时间戳和逐字时间戳，最早由 A2 Media Player 提出。',
+    accept: '.lrc',
+    example:
+      `[02:38.850]<02:38.850>Words <02:39.030>are <02:39.120>made <02:39.360>of <02:39.420>plastic<02:40.080>\n` +
+      `[02:40.080]<02:40.080>Come <02:40.290>back <02:40.470>like <02:40.680>elastic<02:41.370>`,
+    reference: [{ name: '维基百科', url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
+    parser: parseLRCa2,
   },
   {
     name: '网易云逐字',
@@ -113,14 +129,15 @@ const formats: FormatInfo[] = [
     parser: parseQRC,
   },
   {
-    name: 'LRC A2 扩展',
-    description: '基于 LRC 的扩展格式，支持行时间戳和逐字时间戳，最早由 A2 Media Player 提出。',
-    accept: '.lrc',
+    name: '椒盐音乐逐字',
+    description:
+      '椒盐音乐的私有格式，基于 LRC 扩展，支持行时间戳和逐字时间戳，并支持翻译。由于规则繁杂，可能不完全可用。',
+    accept: '.spl,.lrc',
     example:
-      `[02:38.850]<02:38.850>Words <02:39.030>are <02:39.120>made <02:39.360>of <02:39.420>plastic<02:40.080\n` +
-      `[02:40.080]<02:40.080>Come <02:40.290>back <02:40.470>like <02:40.680>elastic<02:41.370`,
-    reference: [{ name: '维基百科', url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
-    parser: parseLRCa2,
+      `[02:38.850]<02:38.850>Words <02:39.030>are <02:39.120>made <02:39.360>of <02:39.420>plastic[02:40.080]\n` +
+      `[02:40.080]<02:40.080>Come <02:40.290>back <02:40.470>like <02:40.680>elastic[02:41.370]`,
+    reference: [{ name: '椒盐官方文档', url: 'https://moriafly.com/standards/spl.html' }],
+    parser: parseSPL,
   },
 ]
 const selectedFormat = ref<FormatInfo | undefined>(formats[0])
@@ -139,7 +156,9 @@ function handleImport() {
     const persist = selectedFormat.value.parser(inputText.value)
     importPersist(persist)
     visible.value = false
-  } catch (err) {}
+  } catch (err) {
+    console.error(err)
+  }
 }
 function openUrl(url: string) {
   window.open(url, '_blank')
@@ -162,6 +181,7 @@ function openUrl(url: string) {
   }
   .format-listbox {
     min-width: 12rem;
+    --p-listbox-option-padding: 0.5rem 1.2rem 0.5rem 1rem;
     .accept {
       margin-inline-start: 0.3rem;
       opacity: 0.5;

@@ -44,18 +44,14 @@ export function parseLRC(lrc: string): Persist {
       metadata[key]!.push(value!.trim())
       return
     }
-    const matchTimestamp = (line: string) => {
-      const match = line.match(/^\[(\d{2}:\d{2}\.\d{2,3})\](.*)$/)
-      if (!match) return null
-      const [, timeStr, text] = match
-      return { timeStamp: str2ms(timeStr!)!, text: text! }
-    }
     const timeStamps: number[] = []
     while (true) {
-      const result = matchTimestamp(lineStr)
-      if (!result) break
-      timeStamps.push(result.timeStamp)
-      lineStr = result.text
+      const match = lineStr.match(/^\[(\d{1,3}:\d{1,2}\.\d{1,3})\](.*)$/)
+      if (!match) break
+      const [, timeStr, text] = match
+      const timeStamp = str2ms(timeStr!)!
+      timeStamps.push(timeStamp)
+      lineStr = text!
     }
     if (timeStamps.length === 0) return
     timeStamps.forEach((ts) => {
@@ -101,5 +97,3 @@ export function stringifyLRC(data: Persist): string {
     })
     .join('\n')
 }
-
-export const importLRC = (s: string) => importPersist(parseLRC(s))

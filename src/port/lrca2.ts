@@ -39,14 +39,14 @@ export function parseLRCa2(lrc: string): Persist {
       metadata[key]!.push(value!.trim())
       return
     }
-    const lineTimeStampmatch = lineStr.match(/^\[(\d{2}:\d{2}\.\d{2,3})\]/)
+    const lineTimeStampmatch = lineStr.match(/^\[(\d{1,3}:\d{1,2}\.\d{1,3})\]/)
     if (!lineTimeStampmatch) return
     const [lineTimeStamp, lineTimeStr] = lineTimeStampmatch
     const lineStartTime = str2ms(lineTimeStr!)!
     lineStr = lineStr.slice(lineTimeStamp.length).trim()
 
     const lineItems: (number | string)[] = []
-    const wordTimestampRegex = /^<(\d{2}:\d{2}\.\d{2,3})>/
+    const wordTimestampRegex = /^<(\d{1,3}:\d{1,2}\.\d{1,3})>/
     const textRegex = /^[^<]*/
     while (lineStr.length) {
       const timeStampMatch = lineStr.match(wordTimestampRegex)
@@ -108,5 +108,3 @@ export function stringifyLRCa2(data: Persist): string {
     })
     .join('\n')
 }
-
-export const importLRCa2 = (s: string) => importPersist(parseLRCa2(s))

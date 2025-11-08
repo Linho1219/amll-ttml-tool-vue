@@ -62,5 +62,3 @@ export function stringifyQRC(data: Persist): string {
     })
     .join('\n')
 }
-
-export const importQRC = (s: string) => importPersist(parseQRC(s))

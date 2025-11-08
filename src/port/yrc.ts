@@ -62,5 +62,3 @@ export function stringifyYRC(data: Persist): string {
     })
     .join('\n')
 }
-
-export const importYRC = (s: string) => importPersist(parseYRC(s))
