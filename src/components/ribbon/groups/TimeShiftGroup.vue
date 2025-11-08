@@ -1,6 +1,6 @@
 <template>
   <RibbonGroup label="时移">
-    <Button icon="pi pi-wave-pulse" label="延迟测试" size="small" severity="secondary" />
+    <Button icon="pi pi-wave-pulse" label="延迟测试" size="small" severity="secondary" disabled />
     <div class="hflex" style="align-items: center; gap: 0.5rem">
       <span>延迟</span>
       <InputNumber
@@ -12,7 +12,7 @@
         v-model="configStore.globalLatency"
       />
     </div>
-    <Button icon="pi pi-sliders-h" label="批量时移" size="small" severity="secondary" />
+    <Button icon="pi pi-sliders-h" label="批量时移" size="small" severity="secondary" disabled />
   </RibbonGroup>
 </template>
 

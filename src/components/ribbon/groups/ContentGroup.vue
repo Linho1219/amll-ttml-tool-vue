@@ -9,8 +9,8 @@
       "
       @click="runtimeStore.toogleSidebar(SidebarKey.SplitText)"
     />
-    <Button icon="pi pi-search" label="查找替换" size="small" severity="secondary" />
-    <Button icon="pi pi-info-circle" label="元数据" size="small" severity="secondary" />
+    <Button icon="pi pi-search" label="查找替换" size="small" severity="secondary" disabled />
+    <Button icon="pi pi-info-circle" label="元数据" size="small" severity="secondary" disabled />
   </RibbonGroup>
 </template>
 

@@ -7,6 +7,7 @@
         size="small"
         binary
         v-model="configStore.hltLineTimeConflicts"
+        disabled
       />
       <label for="ribbon-hlt-lineoverlap">高亮行时间冲突</label>
       <Checkbox
@@ -15,6 +16,7 @@
         size="small"
         binary
         v-model="configStore.hltWordTimeConflicts"
+        disabled
       />
       <label for="ribbon-hlt-wordoverlap">高亮词时间冲突</label>
       <Checkbox

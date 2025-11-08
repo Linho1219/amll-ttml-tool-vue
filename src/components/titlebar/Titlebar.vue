@@ -21,7 +21,7 @@
         </Dialog>
       </template>
 
-      <Button icon="pi pi-cog" variant="text" severity="secondary" />
+      <Button icon="pi pi-cog" variant="text" severity="secondary" disabled />
       <Button
         icon="pi pi-undo"
         variant="text"
@@ -38,7 +38,13 @@
       />
     </div>
     <div class="centerbar">
-      <SelectButton v-model="viewHandler" :options="viewOptions" optionLabel="name" size="large" />
+      <SelectButton
+        v-model="viewHandler"
+        :options="viewOptions"
+        optionLabel="name"
+        optionDisabled="disabled"
+        size="large"
+      />
     </div>
     <div class="rightbar">
       <SplitButton
@@ -46,6 +52,7 @@
         icon="pi pi-save"
         :model="[{ label: '另存为', icon: 'pi pi-file-export' }]"
         @click="handleSaveClick"
+        disabled
       />
     </div>
   </div>
@@ -72,7 +79,7 @@ const runtimeStore = useRuntimeStore()
 const viewOptions = [
   { name: '内容', value: View.Content },
   { name: '时轴', value: View.Timing },
-  { name: '预览', value: View.Preview },
+  { name: '预览', value: View.Preview, disabled: true },
 ]
 const stateToView = () => viewOptions.find((v) => v.value === runtimeStore.currentView)!
 const viewHandler = ref<(typeof viewOptions)[number] | null>(stateToView())
