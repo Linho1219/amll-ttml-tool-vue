@@ -1,9 +1,6 @@
 // QRC parser and stringifier
 // QRC is a lyric format used by QQ Music
 
-import { coreCreate, type LyricLine } from '@/stores/core'
-import { importPersist, type Persist } from '.'
-
 // Format:
 // [line1Start,line1Duration](word1Start,word1Duration)word1(word2Start,word2Duration)word2...\n
 // [line2Start,line2Duration]...
@@ -11,6 +8,9 @@ import { importPersist, type Persist } from '.'
 // Example:
 // [190871,1984]For(190871,361) (0,0)the(191232,172) (0,0)first(191404,376) (0,0)time(191780,1075)
 // [193459,4198]What's(193459,412) (0,0)past(193871,574) (0,0)is(194445,506) (0,0)past(194951,2706)
+
+import { coreCreate, type LyricLine } from '@/stores/core'
+import { importPersist, type Persist } from '.'
 
 export function parseQRC(qrc: string) {
   const lines = qrc

@@ -52,6 +52,7 @@ import { importPersist } from '@/port'
 import { importQRC } from '@/port/qrc'
 import { importYRC } from '@/port/yrc'
 import { importPlainText } from '@/port/paintext'
+import { importLRC } from '@/port/lrc'
 
 const runtimeStore = useRuntimeStore()
 
@@ -101,6 +102,11 @@ const openMenuItems: MenuItem[] = [
     label: '从 QRC 文件导入',
     icon: 'pi pi-file-arrow-up',
     command: handleImportFromFile('.qrc', importQRC),
+  },
+  {
+    label: '从 LRC 文件导入',
+    icon: 'pi pi-file-arrow-up',
+    command: handleImportFromFile('.lrc', importLRC),
   },
   {
     label: '从文本文件导入',

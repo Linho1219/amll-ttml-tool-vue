@@ -18,7 +18,7 @@
 import 'primeicons/primeicons.css'
 import '@/styles/common.scss'
 import '@/styles/fonts/index.scss'
-import Titlebar from './components/Titlebar.vue'
+import Titlebar from './components/titlebar/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
 import ContentEditor from './components/editor/content/ContentEditor.vue'
 import TimingEditor from './components/editor/timing/TimingEditor.vue'

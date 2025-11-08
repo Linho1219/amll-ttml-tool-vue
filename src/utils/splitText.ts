@@ -13,7 +13,7 @@ export type Splitter = (
 ) => string[] | Promise<string[]>
 
 const pureLatin = `0-9A-Za-z\\u00C0-\\u00ff\\u0370-\\u03FF\\u0400-\\u04FF`
-const halfwidthPunc = `‘’“”.,\\-/#!$%^&*;:{}=\\-_\`~()`
+const halfwidthPunc = `‘’“”.,\\-/#!?$%^&*;:{}=\\-_\`~()`
 
 export function basicSplitCore(str: string): string[] {
   const latin = pureLatin + halfwidthPunc
