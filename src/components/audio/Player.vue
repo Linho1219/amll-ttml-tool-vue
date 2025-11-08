@@ -57,6 +57,12 @@ useGlobalKeyboard('seekBackward', () => {
 useGlobalKeyboard('seekForward', () => {
   audio.seekBy(5000)
 })
+useGlobalKeyboard('volumeDown', () => {
+  audio.volumeRef.value = Math.max(0, audio.volumeRef.value - 0.1)
+})
+useGlobalKeyboard('volumeUp', () => {
+  audio.volumeRef.value = Math.min(1, audio.volumeRef.value + 0.1)
+})
 
 const refresher = ref(Symbol())
 onFileChange((files) => {

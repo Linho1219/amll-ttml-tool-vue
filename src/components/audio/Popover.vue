@@ -109,13 +109,6 @@ const rateSliderRef = computed({
   get: () => rateToSlider(playbackRateRef.value),
   set: (v: number) => (playbackRateRef.value = sliderToRate(v)),
 })
-
-useGlobalKeyboard('volumeDown', () => {
-  audio.volumeRef.value = Math.max(0, audio.volumeRef.value - 0.1)
-})
-useGlobalKeyboard('volumeUp', () => {
-  audio.volumeRef.value = Math.min(1, audio.volumeRef.value + 0.1)
-})
 </script>
 
 <style lang="scss">
