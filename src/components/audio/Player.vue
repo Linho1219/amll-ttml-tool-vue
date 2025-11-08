@@ -44,7 +44,7 @@ const audio = useStaticStore().audio
 const { progressRef, amendmentRef, lengthRef, playingRef, activatedRef } = audio
 
 const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
-  accept: 'audio/*',
+  accept: 'audio/*,.ncm',
   multiple: false,
 })
 useGlobalKeyboard('chooseMedia', () => handleSelectFile())
@@ -68,7 +68,8 @@ const refresher = ref(Symbol())
 onFileChange((files) => {
   const file = files?.[0]
   if (!file) return
-  audio.mount(file)
+  if (file.name.endsWith('.ncm')) audio.mountNcm(file)
+  else audio.mount(file)
 })
 audio.audioEl.onloadeddata = () => {
   nextTick(() => {

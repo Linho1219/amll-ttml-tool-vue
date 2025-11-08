@@ -1,5 +1,6 @@
 import { usePreferenceStore } from '@/stores/preference'
 import { computed, readonly, ref, watch } from 'vue'
+import { useNcmResolver } from './ncm'
 
 // use ms as time unit
 export function useAudioCtrl() {
@@ -7,7 +8,8 @@ export function useAudioCtrl() {
   let revokeUrlHook: (() => void) | null = null
   const activatedRef = ref(false)
   const lengthRef = ref(0)
-  function mount(src: Blob | File | string) {
+
+  function mount(src: Blob | File | string): Promise<void> {
     audio.pause()
     audio.currentTime = 0
     audio.playbackRate = 1
@@ -23,7 +25,18 @@ export function useAudioCtrl() {
     activatedRef.value = true
     progressRef.value = 0
     playingRef.value = false
-    audio.onloadedmetadata = () => (lengthRef.value = audio.duration * 1000)
+    return new Promise((resolve) => {
+      audio.onloadedmetadata = () => {
+        lengthRef.value = audio.duration * 1000
+        resolve()
+      }
+    })
+  }
+  async function mountNcm(src: Blob | File) {
+    const ncmResolver = useNcmResolver()
+    const decryptedBlob = await ncmResolver.transform(src)
+    await mount(decryptedBlob)
+    ncmResolver.destroy()
   }
 
   const seek = (time: number) => (audio.currentTime = time / 1000)
@@ -70,6 +83,7 @@ export function useAudioCtrl() {
   return {
     audioEl: audio,
     mount,
+    mountNcm,
     play,
     pause,
     togglePlay,
