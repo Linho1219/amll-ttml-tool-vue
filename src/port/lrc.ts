@@ -45,14 +45,10 @@ export function parseLRC(lrc: string): Persist {
       return
     }
     const matchTimestamp = (line: string) => {
-      const match = line.match(/^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)$/)
+      const match = line.match(/^\[(\d{2}:\d{2}\.\d{2,3})\](.*)$/)
       if (!match) return null
-      const [, minStr, secStr, msStr, text] = match
-      const minutes = Number(minStr)
-      const seconds = Number(secStr)
-      const milliseconds = Number(msStr!.padEnd(3, '0'))
-      const timeStamp = minutes * 60000 + seconds * 1000 + milliseconds
-      return { timeStamp, text: text! }
+      const [, timeStr, text] = match
+      return { timeStamp: str2ms(timeStr!)!, text: text! }
     }
     const timeStamps: number[] = []
     while (true) {

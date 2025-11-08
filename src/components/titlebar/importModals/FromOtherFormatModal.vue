@@ -5,7 +5,12 @@
     checkmark
     optionLabel="name"
     class="format-listbox"
-  />
+  >
+    <template #option="{ option: format }">
+      {{ format.name }}
+      <span class="accept">{{ format.accept }}</span>
+    </template>
+  </Listbox>
   <div class="format-details">
     <template v-if="selectedFormat">
       <div class="description">{{ selectedFormat.description || '未提供说明' }}</div>
@@ -55,10 +60,11 @@
 <script setup lang="ts">
 import { importPersist, type Persist } from '@/port'
 import { parseLRC } from '@/port/lrc'
+import { parseLRCa2 } from '@/port/lrca2'
 import { parseQRC } from '@/port/qrc'
 import { parseYRC } from '@/port/yrc'
 import { chooseFile } from '@/utils/file'
-import { Button, Dialog, IftaLabel, Listbox, Textarea } from 'primevue'
+import { Button, Dialog, IftaLabel, Listbox, Tag, Textarea } from 'primevue'
 import { ref } from 'vue'
 
 const [visible] = defineModel<boolean>({ required: true })
@@ -77,7 +83,7 @@ interface FormatInfo {
 
 const formats: FormatInfo[] = [
   {
-    name: 'LRC 格式',
+    name: '基本 LRC',
     description:
       '最常见的歌词格式。支持以行时间戳，不支持逐字时间戳。此处指基本 LRC 格式，如需导入基于 LRC 的扩展格式，请转到 LRC A2 扩展、SPL 等格式。',
     accept: '.lrc',
@@ -89,7 +95,7 @@ const formats: FormatInfo[] = [
     parser: parseLRC,
   },
   {
-    name: '网易云 YRC 格式',
+    name: '网易云逐字',
     description: '网易云音乐的私有逐字歌词格式。支持行时间戳和逐字时间戳。',
     accept: '.yrc',
     example:
@@ -98,13 +104,23 @@ const formats: FormatInfo[] = [
     parser: parseYRC,
   },
   {
-    name: 'QQ 音乐 QRC 格式',
+    name: 'QQ 音乐逐字',
     description: 'QQ 音乐的私有逐字歌词格式。支持行时间戳和逐字时间戳。',
     accept: '.qrc',
     example:
       `[190871,1984]For(190871,361) (0,0)the(191232,172) (0,0)first(191404,376) (0,0)time(191780,1075)\n` +
       `[193459,4198]What's(193459,412) (0,0)past(193871,574) (0,0)is(194445,506) (0,0)past(194951,2706)`,
     parser: parseQRC,
+  },
+  {
+    name: 'LRC A2 扩展',
+    description: '基于 LRC 的扩展格式，支持行时间戳和逐字时间戳，最早由 A2 Media Player 提出。',
+    accept: '.lrc',
+    example:
+      `[02:38.850]<02:38.850>Words <02:39.030>are <02:39.120>made <02:39.360>of <02:39.420>plastic<02:40.080\n` +
+      `[02:40.080]<02:40.080>Come <02:40.290>back <02:40.470>like <02:40.680>elastic<02:41.370`,
+    reference: [{ name: '维基百科', url: 'https://en.wikipedia.org/wiki/LRC_(file_format)' }],
+    parser: parseLRCa2,
   },
 ]
 const selectedFormat = ref<FormatInfo | undefined>(formats[0])
@@ -146,6 +162,10 @@ function openUrl(url: string) {
   }
   .format-listbox {
     min-width: 12rem;
+    .accept {
+      margin-inline-start: 0.3rem;
+      opacity: 0.5;
+    }
   }
   .format-details {
     width: 0;
