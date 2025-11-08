@@ -108,7 +108,13 @@ input {
 
 ::-webkit-scrollbar-track {
   background: transparent;
+  &:hover {
+    background: transparent;
+  }
+}
 
+::-webkit-scrollbar-corner {
+  background: transparent;
   &:hover {
     background: transparent;
   }
@@ -130,4 +136,14 @@ input {
   &:hover {
     background: transparent;
   }
+}
+
+a[href] {
+  text-decoration: none;
+}
+
+hr {
+  margin: 0;
+  border: none;
+  border-top: solid 1px var(--p-form-field-border-color);
 }

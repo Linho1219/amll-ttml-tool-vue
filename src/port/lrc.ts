@@ -16,8 +16,19 @@
 
 import { coreCreate, type LyricLine } from '@/stores/core'
 import { importPersist, type Persist } from '.'
+import { str2ms } from '@/utils/timeModel'
 
-export function parseLRC(lrc: string) {
+const tagMetadataMap: Record<string, string> = {
+  ti: 'title',
+  ar: 'artist',
+  al: 'album',
+  au: 'author',
+  lr: 'lyricist',
+  by: 'lrcAuthor',
+}
+
+export function parseLRC(lrc: string): Persist {
+  const metadata: Record<string, string[]> = {}
   const lines = lrc
     .split(/\r?\n/)
     .map((l) => l.trim())
@@ -25,6 +36,14 @@ export function parseLRC(lrc: string) {
   const lyricLines: LyricLine[] = []
   lines.forEach((lineStr) => {
     if (lineStr.startsWith('#') || lineStr.startsWith('{')) return
+    const tagMatch = lineStr.match(/^\[([a-z]):(.+)\]$/i)
+    if (tagMatch) {
+      const [, tag, value] = tagMatch
+      const key = tagMetadataMap[tag!.toLowerCase()] ?? tag!
+      if (!metadata[key]) metadata[key] = []
+      metadata[key]!.push(value!.trim())
+      return
+    }
     const matchTimestamp = (line: string) => {
       const match = line.match(/^\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)$/)
       if (!match) return null
@@ -59,8 +78,15 @@ export function parseLRC(lrc: string) {
     prevLine.endTime = line.startTime
     prevLine.words[0]!.endTime = line.startTime
   }
+  if (lyricLines.length && metadata.length && metadata.length.length) {
+    const length = str2ms(metadata.length[0]!)
+    if (length) {
+      lyricLines[lyricLines.length - 1]!.endTime = length
+      lyricLines[lyricLines.length - 1]!.words[0]!.endTime = length
+    }
+  }
   return {
-    metadata: {},
+    metadata,
     lyricLines,
   }
 }

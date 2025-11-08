@@ -7,7 +7,20 @@
         severity="secondary"
         @click="(e) => openMenu?.toggle(e)"
       />
-      <Menu ref="openMenu" :model="openMenuItems" popup />
+
+      <template>
+        <Menu ref="openMenu" :model="openMenuItems" popup />
+        <Dialog
+          v-model:visible="showImportFromOtherFormatModal"
+          modal
+          header="从其他歌词格式导入"
+          class="from-other-fmt-modal"
+          maximizable
+        >
+          <FromOtherFormatModal v-model="showImportFromOtherFormatModal" />
+        </Dialog>
+      </template>
+
       <Button icon="pi pi-cog" variant="text" severity="secondary" />
       <Button
         icon="pi pi-undo"
@@ -40,19 +53,18 @@
 
 <script setup lang="ts">
 import { View } from '@/stores/runtime'
-import { Button, Menu, SelectButton, SplitButton } from 'primevue'
+import { Button, Dialog, Menu, SelectButton, SplitButton } from 'primevue'
 import { useRuntimeStore } from '@/stores/runtime'
-import { nextTick, onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
+import { nextTick, ref, useTemplateRef, watch } from 'vue'
 import type { MenuItem } from 'primevue/menuitem'
-import { stringifyNative } from '@/port/native'
+
 import editHistory from '@/stores/editHistory'
 import { chooseFile } from '@/utils/file'
 import { importTTML, parseTTML } from '@/port/ttml'
 import { importPersist } from '@/port'
-import { importQRC } from '@/port/qrc'
-import { importYRC } from '@/port/yrc'
-import { importPlainText } from '@/port/paintext'
-import { importLRC } from '@/port/lrc'
+
+import FromTextModal from './importModals/FromTextModal.vue'
+import FromOtherFormatModal from './importModals/FromOtherFormatModal.vue'
 
 const runtimeStore = useRuntimeStore()
 
@@ -81,42 +93,40 @@ const handleImportFromFile = (accept: string, parser: (content: string) => void)
   if (!file) return
   return parser(file.content)
 }
+const handleImportFromClipboard = (parser: (content: string) => void) => async () => {
+  const text = await navigator.clipboard.readText()
+  if (!text) return
+  return parser(text)
+}
 
+const showImportFromTextModal = ref(false)
+const showImportFromOtherFormatModal = ref(false)
 const openMenuItems: MenuItem[] = [
   {
     label: '现有项目',
     icon: 'pi pi-file',
-    command: () => {},
+    command: handleImportFromFile('.aleproj', importTTML),
   },
   {
-    label: '从 TTML 文件导入',
-    icon: 'pi pi-file-arrow-up',
+    label: 'TTML 文件',
+    icon: 'pi pi-file',
     command: handleImportFromFile('.ttml', importTTML),
   },
+  { separator: true },
   {
-    label: '从 YRC 文件导入',
-    icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile('.yrc', importYRC),
+    label: '从剪贴板导入 TTML',
+    icon: 'pi pi-clipboard',
+    command: handleImportFromClipboard(importTTML),
   },
   {
-    label: '从 QRC 文件导入',
-    icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile('.qrc', importQRC),
-  },
-  {
-    label: '从 LRC 文件导入',
-    icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile('.lrc', importLRC),
-  },
-  {
-    label: '从文本文件导入',
-    icon: 'pi pi-file-arrow-up',
-    command: handleImportFromFile('text/plain', importPlainText),
+    label: '从其他歌词格式导入',
+    icon: 'pi pi-paperclip',
+    command: () => (showImportFromOtherFormatModal.value = true),
   },
   {
     label: '从纯文本导入',
     icon: 'pi pi-align-left',
-    command: () => {},
+    command: () => (showImportFromTextModal.value = true),
   },
   { separator: true },
   {
