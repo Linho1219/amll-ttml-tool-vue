@@ -22,6 +22,7 @@ self.onmessage = async (e) => {
   const { type, payload } = e.data
 
   if (type === 'decrypt') {
+    let inputDataPtr = null
     try {
       if (!isWasmReady) {
         throw new Error('WASM not ready')
@@ -30,7 +31,7 @@ self.onmessage = async (e) => {
       const fileData = new Uint8Array(payload.fileData)
       const baseName = payload.baseNameWithoutExtension || 'output'
 
-      const inputDataPtr = wasmModule._malloc(fileData.length)
+      inputDataPtr = wasmModule._malloc(fileData.length)
       if (!inputDataPtr) {
         throw new Error('Failed to allocate WASM memory for input file data')
       }
