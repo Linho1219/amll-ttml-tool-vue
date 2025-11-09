@@ -10,15 +10,8 @@
 
       <template>
         <Menu ref="openMenu" :model="openMenuItems" popup />
-        <Dialog
-          v-model:visible="showImportFromOtherFormatModal"
-          modal
-          header="从其他歌词格式导入"
-          class="from-other-fmt-modal"
-          maximizable
-        >
-          <FromOtherFormatModal v-model="showImportFromOtherFormatModal" />
-        </Dialog>
+        <FromOtherFormatModal v-model="showImportFromOtherFormatModal" />
+        <FromTextModal v-model="showImportFromTextModal" />
       </template>
 
       <Button icon="pi pi-cog" variant="text" severity="secondary" disabled />

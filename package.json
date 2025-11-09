@@ -18,6 +18,7 @@
     "@primeuix/themes": "^1.2.5",
     "@vueuse/core": "^14.0.0",
     "@xmldom/xmldom": "^0.8.11",
+    "codemirror": "^6.0.2",
     "compromise": "^14.14.4",
     "compromise-speech": "^0.1.1",
     "compromise-syllables": "^0.0.6",

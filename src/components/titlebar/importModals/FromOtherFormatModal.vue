@@ -1,65 +1,69 @@
 <template>
-  <Listbox
-    v-model="selectedFormat"
-    :options="formats"
-    checkmark
-    optionLabel="name"
-    class="format-listbox"
+  <Dialog
+    v-model:visible="visible"
+    modal
+    header="从其他歌词格式导入"
+    class="from-other-fmt-modal"
+    maximizable
   >
-    <template #option="{ option: format }">
-      {{ format.name }}
-      <span class="accept">{{ format.accept }}</span>
-    </template>
-  </Listbox>
-  <div class="format-details">
-    <template v-if="selectedFormat">
-      <div class="description">{{ selectedFormat.description || '未提供说明' }}</div>
-      <div class="references" v-if="selectedFormat.reference || selectedFormat.example">
-        <Button
-          label="显示示例"
-          size="small"
-          icon="pi pi-align-left"
-          :severity="showExample ? undefined : 'secondary'"
-          @click="showExample = !showExample"
-        />
-        <Button
-          v-for="item in selectedFormat.reference"
-          :key="item.url"
-          :label="item.name"
-          size="small"
-          icon="pi pi-external-link"
-          severity="secondary"
-          @click="openUrl(item.url)"
-        />
-      </div>
-      <div class="example monospace" v-if="selectedFormat.example && showExample">
-        {{ selectedFormat.example }}
-      </div>
-      <hr />
-      <Textarea v-model="inputText" class="input-textarea" />
-      <div class="action-buttons">
-        <Button
-          label="从文件打开"
-          icon="pi pi-paperclip"
-          severity="secondary"
-          @click="handleOpenFromFile"
-        />
-        <div style="flex: 1"></div>
-        <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
-        <Button
-          label="导入"
-          icon="pi pi-arrow-right"
-          :disabled="!inputText"
-          @click="handleImport"
-        />
-      </div>
-    </template>
-    <div v-else class="require-select-tip">请在左侧选择格式</div>
-  </div>
-  <!-- <template #footer>
-      <Button label="Cancel" text severity="secondary" @click="visible = false" autofocus />
-      <Button label="Save" @click="visible = false" autofocus />
-    </template> -->
+    <Listbox
+      v-model="selectedFormat"
+      :options="formats"
+      checkmark
+      optionLabel="name"
+      class="format-listbox"
+    >
+      <template #option="{ option: format }">
+        {{ format.name }}
+        <span class="accept">{{ format.accept }}</span>
+      </template>
+    </Listbox>
+    <div class="format-details">
+      <template v-if="selectedFormat">
+        <div class="description">{{ selectedFormat.description || '未提供说明' }}</div>
+        <div class="references" v-if="selectedFormat.reference || selectedFormat.example">
+          <Button
+            label="显示示例"
+            size="small"
+            icon="pi pi-align-left"
+            :severity="showExample ? undefined : 'secondary'"
+            @click="showExample = !showExample"
+          />
+          <Button
+            v-for="item in selectedFormat.reference"
+            :key="item.url"
+            :label="item.name"
+            size="small"
+            icon="pi pi-external-link"
+            severity="secondary"
+            @click="openUrl(item.url)"
+          />
+        </div>
+        <div class="example monospace" v-if="selectedFormat.example && showExample">
+          {{ selectedFormat.example }}
+        </div>
+        <hr />
+        <Textarea v-model="inputText" class="input-textarea" />
+        <div class="action-buttons">
+          <Button
+            label="从文件打开"
+            icon="pi pi-paperclip"
+            severity="secondary"
+            @click="handleOpenFromFile"
+          />
+          <div style="flex: 1"></div>
+          <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
+          <Button
+            label="导入"
+            icon="pi pi-arrow-right"
+            :disabled="!inputText"
+            @click="handleImport"
+          />
+        </div>
+      </template>
+      <div v-else class="require-select-tip">请在左侧选择格式</div>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
