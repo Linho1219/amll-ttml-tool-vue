@@ -36,6 +36,7 @@ const preferenceStore = usePreferenceStore()
 const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 
+const modalDialogActivated = () => !!document.querySelector('.p-dialog-mask.p-overlay-mask')
 const handleRootKeydown = (e: KeyboardEvent) => {
   if (e.target !== document.body)
     if (e.target instanceof HTMLElement) {
@@ -43,6 +44,7 @@ const handleRootKeydown = (e: KeyboardEvent) => {
       if (tagName === 'textarea' || e.target.isContentEditable) return
       if (tagName === 'input' && (<HTMLInputElement>e.target).type === 'text') return
     }
+  if (modalDialogActivated()) return
   const hotkey = parseKeyEvent(e)
   if (!hotkey) return
   const command = matchHotkeyInMap(hotkey, preferenceStore.hotkeyMap)
