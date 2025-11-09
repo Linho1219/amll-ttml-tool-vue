@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@codemirror/commands':
+        specifier: ^6.10.0
+        version: 6.10.0
+      '@codemirror/search':
+        specifier: ^6.5.11
+        version: 6.5.11
+      '@codemirror/state':
+        specifier: ^6.5.2
+        version: 6.5.2
       '@codemirror/view':
         specifier: ^6.38.6
         version: 6.38.6

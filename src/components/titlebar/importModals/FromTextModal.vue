@@ -11,7 +11,7 @@
       />
       <CodeMirror
         class="textfield"
-        v-model:content="content"
+        v-model:content="content2"
         v-model:scroll-top="scrollTop"
         v-model:current-line="currentLine"
       />
@@ -31,6 +31,7 @@ import CodeMirror from './CodeMirror.vue'
 
 const [visible] = defineModel<boolean>({ required: true })
 const content = ref<string>('')
+const content2 = ref<string>('')
 const currentLine = ref<number>(1)
 const scrollTop = ref<number>(0)
 </script>
@@ -59,6 +60,7 @@ const scrollTop = ref<number>(0)
   .textfield {
     display: flex;
     flex: 1;
+    width: 0;
   }
   .actions {
     display: flex;

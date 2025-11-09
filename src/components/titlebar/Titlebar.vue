@@ -99,7 +99,7 @@ const handleImportFromClipboard = (parser: (content: string) => void) => async (
   return parser(text)
 }
 
-const showImportFromTextModal = ref(true)
+const showImportFromTextModal = ref(false)
 const showImportFromOtherFormatModal = ref(false)
 const openMenuItems: MenuItem[] = [
   {

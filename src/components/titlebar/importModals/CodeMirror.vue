@@ -3,25 +3,30 @@
 </template>
 
 <script setup lang="ts">
-import { basicSetup } from 'codemirror'
-import { Decoration, EditorView, lineNumbers, ViewPlugin, ViewUpdate } from '@codemirror/view'
+import { type Extension, EditorState } from '@codemirror/state'
+import {
+  Decoration,
+  EditorView,
+  lineNumbers,
+  ViewPlugin,
+  ViewUpdate,
+  drawSelection,
+  keymap,
+  crosshairCursor,
+  rectangularSelection,
+} from '@codemirror/view'
 import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch, type Ref } from 'vue'
-import { usePreferredDark } from '@vueuse/core'
-import { vsCodeLight } from '@fsegurai/codemirror-theme-vscode-light'
-import { vsCodeDark } from '@fsegurai/codemirror-theme-vscode-dark'
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
+import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
 
-const [contentUpstream] = defineModel<string>('content')
-const [scrollTopUpstream] = defineModel<number>('scrollTop')
-const scrollTopRef = ref<number>(scrollTopUpstream.value ?? 0)
-const [currentLineUpstream] = defineModel<number>('currentLine')
-const currentLineRef = ref<number>(currentLineUpstream.value ?? 1)
+const [content] = defineModel<string>('content')
+const [scrollTop] = defineModel<number>('scrollTop')
+const [currentLine] = defineModel<number>('currentLine')
 
 const props = defineProps<{
-  extensions?: any[]
+  extensions?: Extension[]
   showLineNumbers?: boolean
 }>()
-
-const isDark = usePreferredDark()
 
 function highlightCurrentLine() {
   return ViewPlugin.fromClass(
@@ -38,7 +43,7 @@ function highlightCurrentLine() {
       getDeco(view: EditorView) {
         const pos = view.state.selection.main.head
         const line = view.state.doc.lineAt(pos)
-        currentLineRef.value = line.number
+        currentLine.value = line.number
         return Decoration.set([
           Decoration.line({ attributes: { class: 'cm-current-line-highlight' } }).range(line.from),
         ])
@@ -53,24 +58,30 @@ const editorInstance = shallowRef<EditorView | null>(null)
 onMounted(() => {
   if (!shellEl.value) return
   editorInstance.value = new EditorView({
-    doc: contentUpstream.value,
+    doc: content.value,
     parent: shellEl.value,
     extensions: [
-      isDark.value ? vsCodeDark : vsCodeLight,
+      highlightCurrentLine(),
+      drawSelection(),
+      rectangularSelection(),
+      crosshairCursor(),
+      highlightSelectionMatches(),
+      history(),
+      EditorState.allowMultipleSelections.of(true),
+      keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
       EditorView.updateListener.of((update) => {
         if (!update.docChanged) return
         const val = update.state.doc.toString()
-        contentUpstream.value = val
+        content.value = val
       }),
       EditorView.domEventHandlers({
         scroll: (_event, view) => {
-          scrollTopRef.value = view.scrollDOM.scrollTop
+          scrollTop.value = view.scrollDOM.scrollTop
         },
       }),
-      highlightCurrentLine(),
       props.showLineNumbers ? lineNumbers() : null,
       ...(props.extensions || []),
-    ].filter(Boolean),
+    ].filter((e) => !!e),
   })
   editorInstance.value
 })
@@ -78,7 +89,7 @@ onUnmounted(() => {
   editorInstance.value?.destroy()
 })
 
-watch(contentUpstream, (newVal) => {
+watch(content, (newVal) => {
   if (!editorInstance.value) return
   const currentDoc = editorInstance.value.state.doc.toString()
   if (newVal !== currentDoc) {
@@ -87,52 +98,73 @@ watch(contentUpstream, (newVal) => {
     })
   }
 })
-watch(scrollTopUpstream, (newVal) => {
+watch(scrollTop, (newVal) => {
   if (!editorInstance.value || newVal === undefined) return
-  if (scrollTopRef.value === newVal) return
   const el = editorInstance.value.scrollDOM
+  if (el.scrollTop === newVal) return
   if (Math.abs(el.scrollTop - newVal) > 1) {
     el.scrollTop = newVal
-    scrollTopRef.value = newVal
+    scrollTop.value = newVal
   }
 })
-watch(scrollTopRef, (newVal) => {
-  if (newVal !== scrollTopUpstream.value) {
-    scrollTopUpstream.value = newVal
-  }
-})
-watch(currentLineUpstream, (newVal) => {
+watch(currentLine, (newVal) => {
   if (!editorInstance.value || newVal === undefined) return
-  if (currentLineRef.value === newVal) return
+  const currentLine = editorInstance.value.state.doc.lineAt(
+    editorInstance.value.state.selection.main.head,
+  ).number
+  if (currentLine === newVal) return
   const line = editorInstance.value.state.doc.line(newVal)
   editorInstance.value.dispatch({
     selection: { anchor: line.from },
     scrollIntoView: true,
   })
 })
-watch(currentLineRef, (newVal) => {
-  if (newVal !== currentLineUpstream.value) {
-    currentLineUpstream.value = newVal
-  }
-})
 </script>
 
 <style lang="scss">
 .codemirror-shell {
+  background-color: var(--p-form-field-background);
+  border: 1px solid var(--p-form-field-border-color);
+  border-radius: var(--p-form-field-border-radius);
+  overflow: hidden;
   .cm-editor {
     height: 100%;
     width: 100%;
+    &.cm-focused {
+      outline: none;
+    }
+  }
+  .cm-content {
+    padding-bottom: 5rem;
   }
   .cm-scroller {
     font-family: var(--font-monospace);
-    font-size: 1.2rem;
-    line-height: 1.6;
-  }
-  .cm-lineNumbers {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    &::-webkit-scrollbar {
+      width: 16px;
+      height: 16px;
+    }
   }
   .cm-current-line-highlight {
-    background-color: #f002;
+    box-shadow: 0 0 0 0.15rem inset color-mix(in srgb, var(--p-primary-color), transparent 50%);
+  }
+  .cm-gutters {
+    background-color: var(--p-button-secondary-background);
+    border-color: var(--p-content-border-color);
+    color: var(--p-button-secondary-color);
+  }
+  .cm-cursor {
+    border-color: color-mix(in srgb, currentColor 20%, var(--p-primary-color) 80%);
+    border-width: 2px;
+  }
+  .cm-selectionBackground {
+    background-color: color-mix(in srgb, var(--p-primary-color), transparent 60%) !important;
+    .cm-focused > .cm-scroller > .cm-selectionLayer & {
+      filter: none;
+    }
+  }
+  .cm-selectionMatch {
+    background-color: color-mix(in srgb, currentColor 20%, transparent 80%);
   }
 }
 </style>
