@@ -120,44 +120,83 @@ const lineInsertMenuItems: MenuItem[] = [
 ]
 const lineMenuItems: MenuItem[] = [
   {
+    label: '设为对唱',
+    icon: 'pi pi-align-right',
+    command: () => {
+      runtimeStore.selectedLines.forEach((l) => (l.duet = true))
+    },
+  },
+  {
+    label: '设为背景',
+    icon: 'pi pi-expand',
+    command: () => {
+      runtimeStore.selectedLines.forEach((l) => (l.background = true))
+    },
+  },
+  {
+    label: '清除属性',
+    icon: 'pi pi-ban',
+    command: () => {
+      runtimeStore.selectedLines.forEach((l) => (l.duet = l.background = false))
+    },
+  },
+  { separator: true },
+  {
     label: '在前插入行',
     icon: 'pi pi-arrow-up',
     command: () => {
-      if (contextLineIndex === undefined) return
-      const newLine = coreStore.newLine()
-      coreStore.lyricLines.splice(contextLineIndex, 0, newLine)
-      runtimeStore.selectLine(newLine)
+      const newLines: LyricLine[] = []
+      for (const line of runtimeStore.selectedLines) {
+        const newLine = coreStore.newLine()
+        newLines.push(newLine)
+        const lineIndex = coreStore.lyricLines.indexOf(line)
+        if (lineIndex === -1) continue
+        coreStore.lyricLines.splice(lineIndex, 0, newLine)
+      }
+      runtimeStore.selectLine(...newLines)
     },
   },
   {
     label: '在后插入行',
     icon: 'pi pi-arrow-down',
     command: () => {
-      if (contextLineIndex === undefined) return
-      const newLine = coreStore.newLine()
-      coreStore.lyricLines.splice(contextLineIndex + 1, 0, newLine)
-      runtimeStore.selectLine(newLine)
+      const newLines: LyricLine[] = []
+      for (const line of runtimeStore.selectedLines) {
+        const newLine = coreStore.newLine()
+        newLines.push(newLine)
+        const lineIndex = coreStore.lyricLines.indexOf(line)
+        if (lineIndex === -1) continue
+        coreStore.lyricLines.splice(lineIndex + 1, 0, newLine)
+      }
+      runtimeStore.selectLine(...newLines)
     },
   },
   {
     label: '克隆行',
     icon: 'pi pi-clone',
     command: () => {
-      if (contextLineIndex === undefined) return
-      const line = coreStore.lyricLines[contextLineIndex]!
-      const duplicate = coreStore.newLine({
-        ...line,
-        words: line.words.map(coreStore.newWord),
-      })
-      coreStore.lyricLines.splice(contextLineIndex + 1, 0, duplicate)
+      const duplicates = [...runtimeStore.selectedLines].map((line) =>
+        coreStore.newLine({
+          ...line,
+          words: line.words.map(coreStore.newWord),
+        }),
+      )
+      const lastLineIndex = (() => {
+        for (let i = coreStore.lyricLines.length - 1; i >= 0; i--)
+          if (runtimeStore.selectedLines.has(coreStore.lyricLines[i]!)) return i
+        return -1
+      })()
+      if (lastLineIndex === -1) return
+      coreStore.lyricLines.splice(lastLineIndex + 1, 0, ...duplicates)
+      runtimeStore.selectLine(...duplicates)
     },
   },
   {
     label: '删除行',
     icon: 'pi pi-trash',
     command: () => {
-      if (contextLineIndex === undefined) return
-      coreStore.lyricLines.splice(contextLineIndex, 1)
+      coreStore.deleteLine(...runtimeStore.selectedLines)
+      runtimeStore.clearSelection()
     },
   },
 ]

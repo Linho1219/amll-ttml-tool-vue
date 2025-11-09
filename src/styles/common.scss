@@ -55,7 +55,7 @@ input {
 .p-contextmenu.p-contextmenu {
   &-enter-active,
   &-leave-active {
-    transition: none;
+    transition: opacity 0.1s;
   }
 }
 
