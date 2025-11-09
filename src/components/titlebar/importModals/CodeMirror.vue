@@ -15,9 +15,9 @@ import {
   crosshairCursor,
   rectangularSelection,
 } from '@codemirror/view'
-import { onMounted, onUnmounted, ref, shallowRef, useTemplateRef, watch, type Ref } from 'vue'
+import { nextTick, onMounted, onUnmounted, shallowRef, useTemplateRef, watch } from 'vue'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
-import { searchKeymap, highlightSelectionMatches } from '@codemirror/search'
+import { highlightSelectionMatches } from '@codemirror/search'
 
 const [content] = defineModel<string>('content')
 const [scrollTop] = defineModel<number>('scrollTop')
@@ -68,7 +68,7 @@ onMounted(() => {
       highlightSelectionMatches(),
       history(),
       EditorState.allowMultipleSelections.of(true),
-      keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
+      keymap.of([...defaultKeymap, ...historyKeymap]),
       EditorView.updateListener.of((update) => {
         if (!update.docChanged) return
         const val = update.state.doc.toString()
@@ -86,7 +86,7 @@ onMounted(() => {
   editorInstance.value
 })
 onUnmounted(() => {
-  editorInstance.value?.destroy()
+  nextTick(() => editorInstance.value?.destroy())
 })
 
 watch(content, (newVal) => {
@@ -112,6 +112,8 @@ watch(currentLine, (newVal) => {
   const currentLine = editorInstance.value.state.doc.lineAt(
     editorInstance.value.state.selection.main.head,
   ).number
+  const maxLine = editorInstance.value.state.doc.lines
+  if (newVal > maxLine) newVal = maxLine
   if (currentLine === newVal) return
   const line = editorInstance.value.state.doc.line(newVal)
   editorInstance.value.dispatch({
@@ -149,6 +151,7 @@ watch(currentLine, (newVal) => {
     box-shadow: 0 0 0 0.15rem inset color-mix(in srgb, var(--p-primary-color), transparent 50%);
   }
   .cm-gutters {
+    opacity: 0.8;
     background-color: var(--p-button-secondary-background);
     border-color: var(--p-content-border-color);
     color: var(--p-button-secondary-color);

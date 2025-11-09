@@ -16,7 +16,6 @@
         v-model:current-line="currentLine"
       />
     </div>
-    {{ content }} {{ scrollTop }}
     <div class="actions">
       <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
       <Button label="导入" icon="pi pi-arrow-right" />
