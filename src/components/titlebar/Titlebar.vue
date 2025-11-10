@@ -119,14 +119,14 @@ const openMenuItems: MenuItem[] = [
     command: handleImportFromClipboard(importTTML),
   },
   {
-    label: '从其他歌词格式导入',
-    icon: 'pi pi-paperclip',
-    command: () => (showImportFromOtherFormatModal.value = true),
-  },
-  {
     label: '从纯文本导入',
     icon: 'pi pi-align-left',
     command: () => (showImportFromTextModal.value = true),
+  },
+  {
+    label: '从其他歌词格式导入',
+    icon: 'pi pi-paperclip',
+    command: () => (showImportFromOtherFormatModal.value = true),
   },
   { separator: true },
   {
