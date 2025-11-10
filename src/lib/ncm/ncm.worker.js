@@ -1,3 +1,13 @@
+/**
+ * NCM container parser worker.
+ * Derived from https://github.com/AthBe1337/ncmdump-web
+ * (No LICENSE at time of inclusion, pending clarification)
+ * Modified to integrate with this project's playback pipeline.
+ *
+ * This module performs local decoding for user-supplied files.
+ * It does not provide or enable any DRM circumvention functionality.
+ */
+
 import createModule from './wasm/ncmdump.js'
 import wasmUrl from './wasm/ncmdump.wasm?url'
 
@@ -22,7 +32,7 @@ createModule({
 self.onmessage = async (e) => {
   const { type, payload } = e.data
 
-  if (type === 'decrypt') {
+  if (type === 'extract') {
     let inputDataPtr = null
     try {
       if (!isWasmReady) {
@@ -46,7 +56,7 @@ self.onmessage = async (e) => {
 
       self.postMessage(
         {
-          type: 'decrypted',
+          type: 'extracted',
           payload: {
             index: payload.index,
             result: result.buffer,

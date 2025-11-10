@@ -19,7 +19,7 @@ export function useNcmResolver() {
         ready.value = true
       } else if (type === 'error') {
         errorMessage.value = error || payload?.error || 'Unknown error'
-      } else if (type === 'decrypted') {
+      } else if (type === 'extracted') {
         const resolve = pending.get(payload.index)
         if (resolve) {
           resolve(payload.result)
@@ -71,7 +71,7 @@ export function useNcmResolver() {
         })
 
         worker.value?.postMessage({
-          type: 'decrypt',
+          type: 'extract',
           payload: { index: id, fileData, baseNameWithoutExtension },
         })
       }

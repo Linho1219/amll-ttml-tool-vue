@@ -34,8 +34,8 @@ export function useAudioCtrl() {
   }
   async function mountNcm(src: Blob | File) {
     const ncmResolver = useNcmResolver()
-    const decryptedBlob = await ncmResolver.transform(src)
-    await mount(decryptedBlob)
+    const extractedBlob = await ncmResolver.transform(src)
+    await mount(extractedBlob)
     ncmResolver.destroy()
   }
 

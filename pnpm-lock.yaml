@@ -20,21 +20,6 @@ importers:
       '@codemirror/view':
         specifier: ^6.38.6
         version: 6.38.6
-      '@fsegurai/codemirror-theme-abcdef':
-        specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)
-      '@fsegurai/codemirror-theme-material-dark':
-        specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)
-      '@fsegurai/codemirror-theme-material-light':
-        specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)
-      '@fsegurai/codemirror-theme-vscode-dark':
-        specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)
-      '@fsegurai/codemirror-theme-vscode-light':
-        specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)
       '@primeuix/themes':
         specifier: ^1.2.5
         version: 1.2.5
@@ -322,46 +307,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@fsegurai/codemirror-theme-abcdef@6.2.2':
-    resolution: {integrity: sha512-pf9r0jOutR0yajaqV7vLEz+qOIcpQar62jnPXjIFR6NYoexP1S5Y5pwNY1fXzWXd0c2ZUcBvGE6YqhUAB0yy1w==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      '@lezer/highlight': ^1.0.0
-
-  '@fsegurai/codemirror-theme-material-dark@6.2.2':
-    resolution: {integrity: sha512-RISNwSHEmxpUwYB81UuZSzxpTO49znJr4eBnjNCuhVP4Q88TTHh2ENlNcKEvhzIiaH81Nzk1Q68u4InquxG9HA==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      '@lezer/highlight': ^1.0.0
-
-  '@fsegurai/codemirror-theme-material-light@6.2.2':
-    resolution: {integrity: sha512-HkXow6grTdK6paZI4YRIdxghZo5XpedRE8PB96grb6EMOOXDs8xTUbUgkEP05MI8gjUPMAYF+ZuDZSOGIiMqkA==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      '@lezer/highlight': ^1.0.0
-
-  '@fsegurai/codemirror-theme-vscode-dark@6.2.2':
-    resolution: {integrity: sha512-TyyHxUoI1VcPaa22k0978o7p6nh5cucvlpsWdU4KS3leB+9mQPw8lwcpIfuuwicDNjKzf1ATxjx3WdDUd97H5Q==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      '@lezer/highlight': ^1.0.0
-
-  '@fsegurai/codemirror-theme-vscode-light@6.2.2':
-    resolution: {integrity: sha512-bKVIvdmukbcI/OPuzmbkuLSrbqiii+SamSHdMFl/nV3olEumbcEo0tq9arJDL/vsboe/uXEa/MjwXSpWMVTCcQ==}
-    peerDependencies:
-      '@codemirror/language': ^6.0.0
-      '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
-      '@lezer/highlight': ^1.0.0
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -1469,41 +1414,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.11':
     optional: true
-
-  '@fsegurai/codemirror-theme-abcdef@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6
-      '@lezer/highlight': 1.2.3
-
-  '@fsegurai/codemirror-theme-material-dark@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6
-      '@lezer/highlight': 1.2.3
-
-  '@fsegurai/codemirror-theme-material-light@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6
-      '@lezer/highlight': 1.2.3
-
-  '@fsegurai/codemirror-theme-vscode-dark@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6
-      '@lezer/highlight': 1.2.3
-
-  '@fsegurai/codemirror-theme-vscode-light@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6)(@lezer/highlight@1.2.3)':
-    dependencies:
-      '@codemirror/language': 6.11.3
-      '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6
-      '@lezer/highlight': 1.2.3
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
