@@ -96,6 +96,7 @@ const romanInput = ref<string>('')
 const cmCurrentLine = ref<number>(1)
 const cmScrollTop = ref<number>(0)
 
+// Force type convert: TS just cannot infer the type here correctly, don't know why
 const lineOrderInput = useTemplateRef('lineOrderInput') as unknown as Readonly<
   ShallowRef<typeof LineOrderInput | undefined>
 >
