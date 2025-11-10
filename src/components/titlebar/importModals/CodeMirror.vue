@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Extension, EditorState } from '@codemirror/state'
+import { type Extension, Compartment, EditorState } from '@codemirror/state'
 import {
   Decoration,
   EditorView,
@@ -26,6 +26,7 @@ const [currentLine] = defineModel<number>('currentLine')
 const props = defineProps<{
   extensions?: Extension[]
   showLineNumbers?: boolean
+  highlightPattern?: { cycleLength: number; map: Record<number, string> }
 }>()
 
 function highlightCurrentLine() {
@@ -55,6 +56,7 @@ function highlightCurrentLine() {
 
 const shellEl = useTemplateRef('shellEl')
 const editorInstance = shallowRef<EditorView | null>(null)
+const highlightCompartment = new Compartment()
 onMounted(() => {
   if (!shellEl.value) return
   editorInstance.value = new EditorView({
@@ -80,6 +82,7 @@ onMounted(() => {
         },
       }),
       props.showLineNumbers ? lineNumbers() : null,
+      highlightCompartment.of([]),
       ...(props.extensions || []),
     ].filter((e) => !!e),
   })
@@ -121,6 +124,57 @@ watch(currentLine, (newVal) => {
     scrollIntoView: true,
   })
 })
+
+function createCycleHighlightExtension(pattern: {
+  cycleLength: number
+  map: Record<number, string>
+}) {
+  const nonMatchClass = 'cm-cycle-highlight-else'
+  return ViewPlugin.fromClass(
+    class {
+      decorations
+      constructor(view: EditorView) {
+        this.decorations = this.buildDeco(view)
+      }
+      update(update: ViewUpdate) {
+        if (update.docChanged || update.viewportChanged) {
+          this.decorations = this.buildDeco(update.view)
+        }
+      }
+      buildDeco(view: EditorView) {
+        const builder = []
+        const { cycleLength, map } = pattern
+        for (const { from, to } of view.visibleRanges) {
+          let line = view.state.doc.lineAt(from)
+          while (line.from < to) {
+            const cls = map[(line.number - 1) % cycleLength]
+            if (cls) builder.push(Decoration.line({ attributes: { class: cls } }).range(line.from))
+            else
+              builder.push(
+                Decoration.line({ attributes: { class: nonMatchClass } }).range(line.from),
+              )
+            if (line.to >= to) break
+            line = view.state.doc.line(line.number + 1)
+          }
+        }
+        return Decoration.set(builder)
+      }
+    },
+    { decorations: (v) => v.decorations },
+  )
+}
+
+watch(
+  () => props.highlightPattern,
+  (pattern) => {
+    if (!editorInstance.value) return
+    const extension = pattern ? createCycleHighlightExtension(pattern) : []
+    editorInstance.value.dispatch({
+      effects: highlightCompartment.reconfigure(extension),
+    })
+  },
+  { immediate: true, deep: true },
+)
 </script>
 
 <style lang="scss">

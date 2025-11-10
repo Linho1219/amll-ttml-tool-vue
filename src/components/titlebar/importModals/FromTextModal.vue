@@ -27,19 +27,28 @@
       </div>
     </div>
     <div class="textfields">
+      <LineOrderInput
+        v-if="currentMode === interleaved"
+        :trans-enabled="translationChecked"
+        :roman-enabled="romanChecked"
+        ref="lineOrderInput"
+      />
       <div class="textfield-shell">
         <div class="textfield-label" v-if="currentMode === separate">原文</div>
         <CodeMirror
+          :key="1"
           class="textfield"
           v-model:content="originalInput"
           v-model:scroll-top="cmScrollTop"
           v-model:current-line="cmCurrentLine"
+          :highlightPattern="highlightPattern"
           showLineNumbers
         />
       </div>
       <div class="textfield-shell" v-if="currentMode === separate && translationChecked">
         <div class="textfield-label">翻译</div>
         <CodeMirror
+          :key="2"
           class="textfield"
           v-model:content="translationInput"
           v-model:scroll-top="cmScrollTop"
@@ -49,6 +58,7 @@
       <div class="textfield-shell" v-if="currentMode === separate && romanChecked">
         <div class="textfield-label">音译</div>
         <CodeMirror
+          :key="3"
           class="textfield"
           v-model:content="romanInput"
           v-model:scroll-top="cmScrollTop"
@@ -59,10 +69,11 @@
     <div class="actions">
       <Button
         label="去除时间戳"
-        icon="pi pi-times"
+        icon="pi pi-minus-circle"
         severity="secondary"
         @click="handleRemoveTimestamps"
       />
+      <div style="flex: 1"></div>
       <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
       <Button label="导入" icon="pi pi-arrow-right" @click="handleImportAction" />
     </div>
@@ -71,10 +82,11 @@
 
 <script setup lang="ts">
 import { Button, Checkbox, Dialog, Select } from 'primevue'
-import { ref, shallowRef } from 'vue'
+import { computed, ref, shallowRef, useTemplateRef, type ShallowRef } from 'vue'
 import CodeMirror from './CodeMirror.vue'
 import { importPersist } from '@/port'
-import { parseSeparatePlainText } from '@/port/paintext'
+import { parseInterleavedPlainText, parseSeparatePlainText } from '@/port/paintext'
+import LineOrderInput from './LineOrderInput.vue'
 
 const [visible] = defineModel<boolean>({ required: true })
 const originalInput = ref<string>('')
@@ -83,6 +95,23 @@ const romanInput = ref<string>('')
 
 const cmCurrentLine = ref<number>(1)
 const cmScrollTop = ref<number>(0)
+
+const lineOrderInput = useTemplateRef('lineOrderInput') as unknown as Readonly<
+  ShallowRef<typeof LineOrderInput | undefined>
+>
+
+const highlightPattern = computed(() => {
+  if (currentMode.value !== interleaved) return undefined
+  const cycleLength = lineOrderInput.value?.cycleLength ?? 1
+  const map: Record<number, string> = {}
+  const originalOrder = lineOrderInput.value?.originalOrder
+  const translationOrder = lineOrderInput.value?.translationOrder
+  const romanizationOrder = lineOrderInput.value?.romanizationOrder
+  if (originalOrder !== undefined) map[originalOrder] = 'cm-original-line'
+  if (translationOrder !== undefined) map[translationOrder] = 'cm-translation-line'
+  if (romanizationOrder !== undefined) map[romanizationOrder] = 'cm-romanization-line'
+  return { cycleLength, map }
+})
 
 interface ModeSelectItem {
   name: string
@@ -111,6 +140,20 @@ function handleImportAction() {
         originalInput.value,
         translationChecked.value ? translationInput.value : undefined,
         romanChecked.value ? romanInput.value : undefined,
+      ),
+    )
+  } else if (currentMode.value === interleaved) {
+    const loi = lineOrderInput.value
+    if (!loi) return
+    importPersist(
+      parseInterleavedPlainText(
+        {
+          originalIndex: loi.originalOrder,
+          translationIndex: translationChecked.value ? loi.translationOrder : undefined,
+          romanIndex: romanChecked.value ? loi.romanizationOrder : undefined,
+          groupSize: loi.cycleLength,
+        },
+        originalInput.value,
       ),
     )
   }
@@ -198,6 +241,15 @@ function handleRemoveTimestamps() {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
+  }
+  .cm-translation-line {
+    color: var(--p-button-text-help-color);
+  }
+  .cm-romanization-line {
+    color: var(--p-button-text-info-color);
+  }
+  .cm-cycle-highlight-else {
+    color: var(--p-button-text-danger-color);
   }
 }
 </style>

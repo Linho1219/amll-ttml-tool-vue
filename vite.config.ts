@@ -19,7 +19,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          ui: ['primevue', '@primeuix/themes', 'wavesurfer.js'],
+          ui: ['primevue', '@primeuix/themes', 'wavesurfer.js', 'vue-draggable-plus'],
           vue: ['vue', 'pinia'],
           compromise: ['compromise', 'compromise-speech', 'compromise-syllables'],
           lodash: ['lodash-es'],
