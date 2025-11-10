@@ -43,7 +43,7 @@
           {{ selectedFormat.example }}
         </div>
         <hr />
-        <Textarea v-model="inputText" class="input-textarea" />
+        <CodeMirror class="input-cm" showLineNumbers v-model:content="inputText" />
         <div class="action-buttons">
           <Button
             label="从文件打开"
@@ -76,6 +76,7 @@ import { parseYRC } from '@/port/yrc'
 import { chooseFile } from '@/utils/file'
 import { Button, Dialog, IftaLabel, Listbox, Tag, Textarea } from 'primevue'
 import { ref } from 'vue'
+import CodeMirror from './CodeMirror.vue'
 
 const [visible] = defineModel<boolean>({ required: true })
 
@@ -224,19 +225,9 @@ function openUrl(url: string) {
       }
     }
   }
-  .input-textarea {
-    resize: none;
+  .input-cm {
     height: 0;
     flex: 1;
-    width: 100% !important;
-    height: 100% !important;
-    font-family: var(--font-monospace);
-    line-height: 1.6;
-    white-space: nowrap;
-    caret-color: var(--p-primary-color);
-    &::-webkit-scrollbar {
-      width: 16px;
-    }
   }
   .action-buttons {
     display: flex;
