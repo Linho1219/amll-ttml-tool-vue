@@ -5,6 +5,7 @@
     @dragover="handleDragOver"
     @contextmenu="handleBlankContext"
     selection-root
+    spellcheck="false"
   >
     <VList
       :data="coreStore.lyricLines"
