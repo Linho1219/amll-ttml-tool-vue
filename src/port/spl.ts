@@ -40,8 +40,8 @@ export function parseSPL(spl: string): Persist {
       (lineTimeStamps.length === 1 && lineTimeStamps[0] === lastLine?.startTime)
     ) {
       if (!lastLine) return
-      if (!lastLine.translatedLyric) lastLine.translatedLyric = lineStr
-      else lastLine.romanLyric = lineStr
+      if (!lastLine.translation) lastLine.translation = lineStr
+      else lastLine.romanization = lineStr
       return
     }
     const wordTimestampRegex = /^[<[](\d{1,3}:\d{1,2}\.\d{1,3})\d{0,3}[>\]]/
@@ -112,8 +112,8 @@ export function stringifySPL(data: Persist): string {
       lineItems.map((item) => (typeof item === 'number' ? `<${ms2str(item)}>` : item)).join('') +
       `[${ms2str(line.endTime)}]`
     lineStrs.push(lineStr)
-    if (line.translatedLyric) lineStrs.push(line.translatedLyric)
-    if (line.romanLyric) lineStrs.push(line.romanLyric)
+    if (line.translation) lineStrs.push(line.translation)
+    if (line.romanization) lineStrs.push(line.romanization)
   })
   return lineStrs.join('\n')
 }

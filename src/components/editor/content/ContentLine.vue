@@ -162,12 +162,12 @@ const secondaryFields = [
   {
     key: 'translated',
     label: '行翻译',
-    model: 'translatedLyric',
+    model: 'translation',
   },
   {
     key: 'roman',
     label: '行音译',
-    model: 'romanLyric',
+    model: 'romanization',
   },
 ] as const
 const orderedFields = computed(() =>

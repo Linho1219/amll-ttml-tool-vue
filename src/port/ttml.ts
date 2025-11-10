@@ -96,9 +96,9 @@ export function parseTTML(ttmlString: string): Persist {
           // so nested background line will be after current line
           processLine(child, true)
         } else if (role === 'x-translation') {
-          line.translatedLyric = textContent
+          line.translation = textContent
         } else if (role === 'x-roman') {
-          line.romanLyric = textContent
+          line.romanization = textContent
         } else {
           const word = coreCreate.newWord({
             word: textContent,
@@ -204,16 +204,16 @@ export function stringifyTTML(data: Persist) {
 
     // Additional contents
     for (const bgLine of bgLines) parentNode.appendChild(writeLineToEl(bgLine))
-    if (line.translatedLyric) {
+    if (line.translation) {
       const translationSpan = doc.createElement('span')
       applyAttrToEl(translationSpan, { 'ttm:role': 'x-translation' })
-      translationSpan.appendChild(doc.createTextNode(line.translatedLyric))
+      translationSpan.appendChild(doc.createTextNode(line.translation))
       parentNode.appendChild(translationSpan)
     }
-    if (line.romanLyric) {
+    if (line.romanization) {
       const romanSpan = doc.createElement('span')
       applyAttrToEl(romanSpan, { 'ttm:role': 'x-roman' })
-      romanSpan.appendChild(doc.createTextNode(line.romanLyric))
+      romanSpan.appendChild(doc.createTextNode(line.romanization))
       parentNode.appendChild(romanSpan)
     }
 

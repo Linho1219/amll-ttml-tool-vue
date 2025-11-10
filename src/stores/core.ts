@@ -10,8 +10,8 @@ const newLine = (attrs: Partial<LyricLine> = {}): LyricLine => ({
   words: [],
   ignoreInTiming: false,
   bookmarked: false,
-  translatedLyric: '',
-  romanLyric: '',
+  translation: '',
+  romanization: '',
   background: false,
   duet: false,
   ...attrs,
@@ -32,7 +32,7 @@ const newWord = (attrs: Partial<LyricWord> = {}): LyricWord => ({
 const line: LyricLine = newLine({
   startTime: 0,
   endTime: 3000,
-  translatedLyric: '你好，世界！',
+  translation: '你好，世界！',
 })
 const word1: LyricWord = newWord({
   startTime: 0,
@@ -118,9 +118,9 @@ export type Metadata = Map<MetadataKey, string[]>
 export interface LyricLine {
   id: string
   /** 该行的翻译 */
-  translatedLyric: string
+  translation: string
   /** 该行的音译 */
-  romanLyric: string
+  romanization: string
   /** 该行是否为背景歌词行 */
   background: boolean
   /** 该行是否为对唱歌词行（即歌词行靠右对齐） */
