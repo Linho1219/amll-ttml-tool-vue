@@ -22,6 +22,7 @@
         class="line-order-empty-line-input"
         v-model="emptyLineCountModel"
         :useGrouping="false"
+        :min="0"
         placeholder="0"
         fluid
         showButtons
@@ -174,9 +175,8 @@ defineExpose({
     font-family: var(--font-monospace);
     width: auto;
     .p-inputtext {
-      width: 1ch;
+      width: 2ch;
       box-sizing: content-box;
-      text-align: right;
     }
   }
 }
