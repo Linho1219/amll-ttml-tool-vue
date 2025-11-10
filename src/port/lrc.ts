@@ -15,7 +15,7 @@
 // [02:06.103][02:08.916][02:11.135]On the journey
 
 import { coreCreate, type LyricLine } from '@/stores/core'
-import { importPersist, type Persist } from '.'
+import { type Persist } from '.'
 import { str2ms } from '@/utils/timeModel'
 
 const tagMetadataMap: Record<string, string> = {
@@ -64,6 +64,7 @@ export function parseLRC(lrc: string): Persist {
       )
     })
   })
+  lyricLines.sort((a, b) => a.startTime - b.startTime)
   for (let i = lyricLines.length - 1; i > 0; i--) {
     const line = lyricLines[i]!
     const prevLine = lyricLines[i - 1]!
