@@ -34,7 +34,9 @@
         </TabList>
       </Tabs>
     </div>
-    <component class="sidebar-inner" :is="currentSidebarTab?.component" />
+    <KeepAlive>
+      <component class="sidebar-inner" :is="currentSidebarTab?.component" />
+    </KeepAlive>
     <div class="sidebar-resizer" @mousedown="handleResizeStart"></div>
   </aside>
 </template>

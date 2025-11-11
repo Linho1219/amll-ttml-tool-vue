@@ -6,7 +6,9 @@
   <template v-else>
     <Ribbon />
     <main>
-      <Sidebar v-if="runtimeStore.sidebarShown" />
+      <KeepAlive>
+        <Sidebar v-if="runtimeStore.sidebarShown" />
+      </KeepAlive>
       <ContentEditor v-if="runtimeStore.isContentView" class="editor" />
       <TimingEditor v-if="runtimeStore.isTimingView" class="editor" />
     </main>
@@ -33,7 +35,6 @@ import { useCoreStore } from './stores/core'
 editHistory.init()
 
 const preferenceStore = usePreferenceStore()
-const coreStore = useCoreStore()
 const runtimeStore = useRuntimeStore()
 
 const modalDialogActivated = () => !!document.querySelector('.p-dialog-mask.p-overlay-mask')
