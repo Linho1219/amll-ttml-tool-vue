@@ -63,6 +63,14 @@
         @click="applyToSelectedLines"
       />
       <Button
+        label="应用到选定行及之后"
+        icon="pi pi-angle-double-right"
+        fluid
+        severity="secondary"
+        :disabled="working || !selectedEngine || runtimeStore.selectedLines.size === 0"
+        @click="applyToSelectedLinesAndAfter"
+      />
+      <Button
         label="应用到所有行"
         icon="pi pi-angle-double-right"
         fluid
@@ -113,6 +121,18 @@ const coreStore = useCoreStore()
 
 function applyToSelectedLines() {
   return applyToLines([...runtimeStore.selectedLines])
+}
+function applyToSelectedLinesAndAfter() {
+  let startApplying = false
+  const lines: LyricLine[] = []
+  for (const line of coreStore.lyricLines) {
+    if (startApplying) lines.push(line)
+    else if (runtimeStore.selectedLines.has(line)) {
+      startApplying = true
+      lines.push(line)
+    }
+  }
+  return applyToLines(lines)
 }
 function applyToAllLines() {
   return applyToLines(coreStore.lyricLines)
