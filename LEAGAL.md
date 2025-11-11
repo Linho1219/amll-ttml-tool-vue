@@ -11,7 +11,7 @@ for certain proprietary audio container formats.
 
 - **ncmdump-web** (Emscripten WebAssembly build)  
   Source: [https://github.com/AthBe1337/ncmdump-web/](https://github.com/AthBe1337/ncmdump-web/)  
-  No LICENSE at time of inclusion, pending clarification
+  License: MIT License
 
 The files `src/lib/ncm/wasm/ncmdump.js` and `src/lib/ncm/wasm/ncmdump.wasm`
 are directly built from the `ncmdump-web` repository.  

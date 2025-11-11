@@ -1,7 +1,6 @@
 /**
  * NCM container parser worker.
- * Derived from https://github.com/AthBe1337/ncmdump-web
- * (No LICENSE at time of inclusion, pending clarification)
+ * Derived from https://github.com/AthBe1337/ncmdump-web (MIT License)
  * Modified to integrate with this project's playback pipeline.
  *
  * This module performs local decoding for user-supplied files.
