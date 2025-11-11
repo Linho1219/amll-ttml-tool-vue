@@ -1,4 +1,4 @@
-import SplitTextTab from './tabs/SplitTextTab.vue'
+import SplitTextTab from './tabs/splitText/SplitTextTab.vue'
 
 export enum SidebarKey {
   SplitText = 'SplitText',
