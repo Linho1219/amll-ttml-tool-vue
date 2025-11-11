@@ -76,6 +76,7 @@ function handleTextDbClick() {
 
 <style lang="scss">
 .tword {
+  cursor: cell;
   height: var(--word-height);
   display: flex;
   flex-direction: column;
