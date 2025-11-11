@@ -27,12 +27,14 @@
       </div>
     </div>
     <div class="textfields">
-      <LineOrderInput
-        v-if="currentMode === interleaved"
-        :trans-enabled="translationChecked"
-        :roman-enabled="romanChecked"
-        ref="lineOrderInput"
-      />
+      <KeepAlive>
+        <LineOrderInput
+          v-if="currentMode === interleaved"
+          :trans-enabled="translationChecked"
+          :roman-enabled="romanChecked"
+          ref="lineOrderInput"
+        />
+      </KeepAlive>
       <div class="textfield-shell">
         <div class="textfield-label" v-if="currentMode === separate">原文</div>
         <CodeMirror
