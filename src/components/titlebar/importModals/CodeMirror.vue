@@ -196,10 +196,6 @@ watch(
   .cm-scroller {
     font-family: var(--font-monospace);
     font-size: 1rem;
-    &::-webkit-scrollbar {
-      width: 16px;
-      height: 16px;
-    }
   }
   .cm-current-line-highlight {
     box-shadow: 0 0 0 0.15rem inset color-mix(in srgb, var(--p-primary-color), transparent 50%);

@@ -111,5 +111,8 @@ main {
 .editor {
   flex: 1;
   overflow-x: hidden;
+  .editor-scroller::-webkit-scrollbar {
+    width: 16px;
+  }
 }
 </style>
