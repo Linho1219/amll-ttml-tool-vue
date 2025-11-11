@@ -40,6 +40,7 @@ export type HotkeyCmd =
   | 'preferences'
   | 'splitText'
   | 'batchSplitText'
+  | 'metadata'
   | 'chooseMedia'
 
 export interface HotKey {
@@ -100,6 +101,7 @@ export const getDefaultHotkeyMap = (): HotkeyMap => ({
   bookmark: [hkey(Ctrl, 'd')],
   preferences: [hkey(Ctrl, ',')],
   chooseMedia: [hkey(Ctrl, 'm')],
+  metadata: [hkey(Ctrl, 'i')],
 })
 
 export function isHotkeyMatch(a: HotKey, b: HotKey) {

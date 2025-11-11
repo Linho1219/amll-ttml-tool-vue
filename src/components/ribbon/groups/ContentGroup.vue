@@ -9,8 +9,16 @@
       "
       @click="runtimeStore.toogleSidebar(SidebarKey.SplitText)"
     />
+    <Button
+      icon="pi pi-info-circle"
+      label="元数据"
+      size="small"
+      :severity="
+        runtimeStore.openedSidebars.includes(SidebarKey.Metadata) ? undefined : 'secondary'
+      "
+      @click="runtimeStore.toogleSidebar(SidebarKey.Metadata)"
+    />
     <Button icon="pi pi-search" label="查找替换" size="small" severity="secondary" disabled />
-    <Button icon="pi pi-info-circle" label="元数据" size="small" severity="secondary" disabled />
   </RibbonGroup>
 </template>
 
@@ -24,5 +32,8 @@ const runtimeStore = useRuntimeStore()
 
 useGlobalKeyboard('batchSplitText', () => {
   runtimeStore.toogleSidebar(SidebarKey.SplitText)
+})
+useGlobalKeyboard('metadata', () => {
+  runtimeStore.toogleSidebar(SidebarKey.Metadata)
 })
 </script>

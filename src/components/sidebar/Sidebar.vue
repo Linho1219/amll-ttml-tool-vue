@@ -16,7 +16,20 @@
       <Tabs v-model:value="runtimeStore.currentSidebarIndex">
         <TabList>
           <Tab v-for="(tab, index) in openedSidebarTabs" :key="tab.key" :value="index">
-            {{ tab.title }}
+            <div
+              class="p-tab-inner"
+              @mousedown="(e) => e.button === 1 && runtimeStore.closeSidebar(tab.key)"
+            >
+              {{ tab.title }}
+              <Button
+                icon="pi pi-times"
+                size="small"
+                variant="text"
+                severity="secondary"
+                rounded
+                @click.stop="runtimeStore.closeSidebar(tab.key)"
+              />
+            </div>
           </Tab>
         </TabList>
       </Tabs>
@@ -71,11 +84,37 @@ function handleResizeStart(e: MouseEvent) {
     sidebar-enter 0.4s cubic-bezier(0, 1, 0, 1),
     fade 0.3s;
 }
-.sidebar-title.single {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.3rem 0.5rem 0.5rem 1rem;
+.sidebar-title {
+  &.single {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 0.5rem 0.5rem 1rem;
+  }
+  &.multiple {
+    margin-bottom: 0.25rem;
+    --p-tabs-tab-padding: 0.9rem 0.6rem 0.9rem 1rem;
+    --p-tabs-active-bar-height: 2px;
+    --p-tabs-tablist-border-width: 0;
+    --p-tabs-tablist-border-color: transparent;
+    --p-tabs-tab-active-background: var(--global-background);
+    --p-button-sm-icon-only-width: 1.3rem;
+    --p-button-sm-font-size: 0.8rem;
+    .p-tablist-active-bar {
+      top: 0;
+      bottom: unset;
+      transition-duration: 0.15s;
+    }
+    .p-tab {
+      padding: 0;
+    }
+    .p-tab-inner {
+      padding: var(--p-tabs-tab-padding);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+  }
 }
 .sidebar-title-single-text {
   font-size: 1.4rem;

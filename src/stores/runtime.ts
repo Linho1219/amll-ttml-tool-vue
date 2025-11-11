@@ -64,6 +64,7 @@ export const useRuntimeStore = defineStore('runtime', () => {
     openSidebar,
     closeCurrentSidebar,
     toogleSidebar,
+    closeSidebar,
   }
 
   function clearSelection() {
@@ -144,5 +145,12 @@ export const useRuntimeStore = defineStore('runtime', () => {
   function toogleSidebar(key: SidebarKey) {
     if (openedSidebars[currentSidebarIndex.value] === key) closeCurrentSidebar()
     else openSidebar(key)
+  }
+  function closeSidebar(key: SidebarKey) {
+    const index = openedSidebars.indexOf(key)
+    if (index === -1) return
+    openedSidebars.splice(index, 1)
+    if (currentSidebarIndex.value >= index)
+      currentSidebarIndex.value = Math.max(0, currentSidebarIndex.value - 1)
   }
 })

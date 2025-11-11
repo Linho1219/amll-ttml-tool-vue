@@ -98,6 +98,7 @@ const touch = () => {
 const isSelected = computed(() => runtimeStore.selectedWords.has(props.word))
 let leftForClick = false
 function handleMousedown(e: MouseEvent) {
+  if (e.button > 2) return
   leftForClick = false
   if (e.ctrlKey || e.metaKey) {
     touch()

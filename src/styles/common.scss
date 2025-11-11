@@ -11,12 +11,11 @@
   --font-monospace:
     'JetBrains Mono', 'Sarasa Term SC', 'Iosevka', 'Fira Code', 'Source Code Pro', monospace;
   user-select: none;
-  background-color: white;
+  --global-background: white;
   @media (prefers-color-scheme: dark) {
-    & {
-      background-color: #121212;
-    }
+    --global-background: #121212;
   }
+  background-color: var(--global-background);
 }
 
 :root,

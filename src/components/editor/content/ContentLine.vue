@@ -101,6 +101,7 @@ function handleFocus() {
 }
 let leftForClick = false
 function handleMouseDown(e: MouseEvent) {
+  if (e.button > 2) return
   leftForClick = false
   if (e.metaKey || e.ctrlKey) {
     touch()

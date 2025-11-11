@@ -1,7 +1,9 @@
 import SplitTextTab from './tabs/splitText/SplitTextTab.vue'
+import MetadataTab from './tabs/metadata/MetadataTab.vue'
 
 export enum SidebarKey {
   SplitText = 'SplitText',
+  Metadata = 'Metadata',
 }
 
 interface SidebarTab {
@@ -15,5 +17,10 @@ export const sidebarRegs = {
     key: SidebarKey.SplitText,
     title: '批量分词',
     component: SplitTextTab,
+  },
+  [SidebarKey.Metadata]: {
+    key: SidebarKey.Metadata,
+    title: '元数据',
+    component: MetadataTab,
   },
 } as const satisfies Record<SidebarKey, SidebarTab>
