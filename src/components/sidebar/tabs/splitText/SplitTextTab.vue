@@ -21,7 +21,13 @@
         <Checkbox v-model="caseSensitive" binary inputId="caseSensitive" size="small" />
         <label for="caseSensitive">区分大小写</label>
       </div>
-      <div class="rewrite-field">
+      <div
+        class="rewrite-field"
+        @dragenter="handleDragEnter"
+        @dragleave="handleDragLeave"
+        @dragover="handleDragOver"
+        @drop="handleDrop"
+      >
         <div class="rewrite-field-inner">
           <div v-for="(item, index) in customRewrites" class="rewrite-item">
             <InputText placeholder="原词" type="text" v-model.lazy.trim="item.target" fluid />
@@ -128,6 +134,52 @@ function applyToLines(lines: LyricLine[]) {
   const final = Promise.all(promises)
   final.finally(() => (working.value = false))
   return final
+}
+
+let dragCounter = 0
+function handleDragEnter() {
+  dragCounter++
+}
+function handleDragOver(e: DragEvent) {
+  if (!runtimeStore.isDraggingWord) return
+  e.preventDefault()
+  runtimeStore.canDrop = true
+  runtimeStore.isDraggingCopy = true
+}
+function handleDragLeave() {
+  dragCounter--
+  if (dragCounter > 0) return
+  runtimeStore.canDrop = false
+  runtimeStore.isDraggingCopy = false
+}
+function handleDrop() {
+  dragCounter = 0
+  runtimeStore.canDrop = false
+  runtimeStore.isDraggingCopy = false
+  const words: string[] = []
+  let continuity = false
+  for (const line of runtimeStore.selectedLines) {
+    for (const word of line.words) {
+      if (!runtimeStore.selectedWords.has(word)) {
+        continuity = false
+        continue
+      }
+      if (continuity && words.length) words[words.length - 1] += word.word
+      else words.push(word.word)
+      continuity = true
+    }
+    continuity = false
+  }
+
+  customRewrites.push(
+    ...words
+      .map((w) => w.trim())
+      .filter((w) => w.length)
+      .map((word) => ({
+        target: word,
+        indices: [],
+      })),
+  )
 }
 </script>
 
