@@ -55,7 +55,8 @@ export function basicSplit(
           }
         }
         if (!isLatin(token)) {
-          stickToLast()
+          if (token === '-') result.push(token)
+          else stickToLast()
           continue
         }
         const key = caseSensitive ? token : token.toLowerCase()
@@ -131,41 +132,16 @@ export async function prosoticSplit(
   }
   const dict = dictCache
   const nlpWithPlg = nlp.extend(nlpSpeech)
-  const partReg = /[a-zA-Z]+|[^a-zA-Z]+/
-  return basicSplit(strs, rewrites, caseSensitive, (word) => {
-    if (word.length === 0) return []
-    const parts = word.match(partReg)!
-    const result: string[] = []
-    const stickToLast = (part: string) => {
-      if (result.length) result[result.length - 1] += part
-      else result.push(part)
+  return basicSplit(strs, rewrites, caseSensitive, (part) => {
+    if (part.length === 0) return []
+    const key = part.toLowerCase()
+    if (dict.has(key)) {
+      const lengths = dict.get(key)!
+      if (!lengths) return [part]
+      return splitTextByLengths(part, lengths)
+    } else {
+      return compromiseSplitCore(nlpWithPlg, part)
     }
-    for (const part of parts) {
-      if (!/[a-zA-Z]/.test(part)) {
-        stickToLast(part)
-        continue
-      }
-      const key = part.toLowerCase()
-      if (dict.has(key)) {
-        const lengths = dict.get(key)!
-        if (!lengths) {
-          stickToLast(part)
-          continue
-        }
-        const subParts = splitTextByLengths(part, lengths)
-        subParts.forEach((subPart, index) => {
-          if (index === 0) stickToLast(subPart)
-          else result.push(subPart)
-        })
-      } else {
-        const subParts = compromiseSplitCore(nlpWithPlg, part)
-        subParts.forEach((subPart, index) => {
-          if (index === 0) stickToLast(subPart)
-          else result.push(subPart)
-        })
-      }
-    }
-    return result
   })
 }
 
