@@ -1,12 +1,12 @@
 <template>
   <div class="splittext">
     <div class="group">
-      <div class="subtitle">分词引擎</div>
+      <div class="subtitle">断词引擎</div>
       <Select
         v-model="selectedEngine"
         :options="engines"
         optionLabel="name"
-        placeholder="选择分词引擎"
+        placeholder="选择断词引擎"
         checkmark
         :highlightOnSelect="false"
         fluid
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="action">
-      <div class="warn">批量分词会导致现有词语信息（包含时间戳）丢失。</div>
+      <div class="warn">批量断词会导致现有词语信息（包含时间戳）丢失。</div>
       <Button
         label="应用到选定行"
         icon="pi pi-angle-right"
@@ -89,7 +89,13 @@ import { Button, Checkbox, Select } from 'primevue'
 import { reactive, ref } from 'vue'
 import SplitTextRewriteEditor from './SplitTextRewriteEditor.vue'
 import InputText from '@/components/repack/InputText.vue'
-import { basicSplit, compromiseSplit, type Rewrite, type Splitter } from '@/utils/splitText'
+import {
+  basicSplit,
+  compromiseSplit,
+  prosoticSplit,
+  type Rewrite,
+  type Splitter,
+} from '@/utils/splitText'
 
 interface Engine {
   name: string
@@ -99,16 +105,22 @@ interface Engine {
 
 const engines: Engine[] = [
   {
-    name: '基本分词',
+    name: '基本断词',
     description:
       '对西文按词拆分，对于 CJK 按字拆分。若有自定义规则，将对拆分后的词应用，已拆分的词不会合并。',
     processor: basicSplit,
   },
   {
-    name: 'Compromise 英文分词',
+    name: 'Compromise 英文正字法断词',
     description:
-      '在基本分词基础上，添加基于正字法的英文音节拆分。若有自定义规则，将覆盖词内音节拆分。',
+      '在基本断词基础上，添加基于正字法规则匹配的英文音节拆分。若有自定义规则，将覆盖词内音节拆分。',
     processor: compromiseSplit,
+  },
+  {
+    name: 'Prosodic 英文词库断词',
+    description:
+      '将 SUBTLEXus 作为语料，由 Prosodic 根据 CMUDict 进行音节划分后，匹配回拼写得到词典。未命中的词将回退至 Compromise。',
+    processor: prosoticSplit,
   },
 ]
 
@@ -137,23 +149,21 @@ function applyToSelectedLinesAndAfter() {
 function applyToAllLines() {
   return applyToLines(coreStore.lyricLines)
 }
-function applyToLines(lines: LyricLine[]) {
+async function applyToLines(lines: LyricLine[]) {
   if (!selectedEngine.value) return
   runtimeStore.clearWordSelection()
   const processor = selectedEngine.value.processor
   working.value = true
-  const promises = lines.map(async (line) => {
-    const lineText = line.words.map((w) => w.word).join('')
-    const newWords = await processor(
-      lineText,
-      customRewrites.filter(({ target }) => target.trim()),
-      caseSensitive.value,
-    )
+  const results = await processor(
+    lines.map((line) => line.words.map((w) => w.word).join('')),
+    customRewrites.filter(({ target }) => target.trim()),
+    caseSensitive.value,
+  )
+  lines.forEach((line, i) => {
+    const newWords = results[i]!
     line.words = newWords.map((word) => coreStore.newWord({ word }))
   })
-  const final = Promise.all(promises)
-  final.finally(() => (working.value = false))
-  return final
+  working.value = false
 }
 
 let dragCounter = 0
