@@ -41,11 +41,10 @@
     </div>
     <div class="rightbar">
       <SplitButton
-        label="保存"
+        label="复制"
         icon="pi pi-save"
         :model="[{ label: '另存为', icon: 'pi pi-file-export' }]"
         @click="handleSaveClick"
-        disabled
       />
     </div>
   </div>
@@ -60,8 +59,8 @@ import type { MenuItem } from 'primevue/menuitem'
 
 import editHistory from '@/stores/editHistory'
 import { chooseFile } from '@/utils/file'
-import { importTTML, parseTTML } from '@/port/ttml'
-import { importPersist } from '@/port'
+import { importTTML, parseTTML, stringifyTTML } from '@/port/ttml'
+import { exportPersist, importPersist } from '@/port'
 
 import FromTextModal from './importModals/FromTextModal.vue'
 import FromOtherFormatModal from './importModals/FromOtherFormatModal.vue'
@@ -145,7 +144,8 @@ async function handleNewProject() {
 
 // File save
 function handleSaveClick() {
-  // console.log(stringifyNative())
+  //test: clipboard
+  navigator.clipboard.writeText(stringifyTTML(exportPersist()))
 }
 </script>
 
