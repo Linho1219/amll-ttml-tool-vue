@@ -147,3 +147,9 @@ hr {
   border: none;
   border-top: solid 1px var(--p-form-field-border-color);
 }
+
+.p-dialog.thin-padding {
+  --p-overlay-modal-padding: 0.6rem;
+  --p-dialog-header-padding: 0.5rem 0.3rem 0.4rem 0.9rem;
+  --p-dialog-content-padding: 0 0.8rem 0.8rem;
+}

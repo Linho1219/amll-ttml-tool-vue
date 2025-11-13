@@ -12,7 +12,14 @@
         v-model="configStore.globalLatency"
       />
     </div>
-    <Button icon="pi pi-sliders-h" label="批量时移" size="small" severity="secondary" disabled />
+    <Button
+      icon="pi pi-sliders-h"
+      label="批量时移"
+      size="small"
+      :severity="batchShiftDialogVisible ? undefined : 'secondary'"
+      @click="batchShiftDialogVisible = !batchShiftDialogVisible"
+    />
+    <BatchTimeShiftDialog v-model="batchShiftDialogVisible" />
   </RibbonGroup>
 </template>
 
@@ -20,6 +27,9 @@
 import { Button, InputNumber } from 'primevue'
 import RibbonGroup from '../RibbonGroupShell.vue'
 import { usePreferenceStore } from '@/stores/preference'
+import BatchTimeShiftDialog from '@/components/dialogs/BatchTimeShiftDialog.vue'
+import { ref } from 'vue'
 
 const configStore = usePreferenceStore()
+const batchShiftDialogVisible = ref(false)
 </script>
