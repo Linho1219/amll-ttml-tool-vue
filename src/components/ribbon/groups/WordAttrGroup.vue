@@ -64,9 +64,9 @@
         <Slider
           :step="1"
           style="margin: 0.5rem"
-          :disabled="wordSelectedEmpty"
+          :disabled="wordSelectedEmpty || !phBeatInput"
           :min="0"
-          :max="phBeatInput"
+          :max="phBeatInput || 1"
           v-model="currPhBeatInput"
         />
       </div>

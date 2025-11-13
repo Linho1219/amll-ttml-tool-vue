@@ -122,6 +122,7 @@ useGlobalKeyboard('markBegin', () => {
   const word = runtimeStore.getFirstSelectedWord()!
   const line = runtimeStore.getFirstSelectedLine()!
   word.startTime = getAmendedProgress()
+  word.currentplaceholdingBeat = 0
   if (isWordFirstOfLine(line, word)) line.startTime = word.startTime
   const lineIndex = coreStore.lyricLines.indexOf(runtimeStore.getFirstSelectedLine()!)
   if (lineIndex === -1) return
@@ -146,6 +147,11 @@ useGlobalKeyboard('markEndBegin', () => {
   preferenceStore.scrollWithPlayback = false
   const word = runtimeStore.getFirstSelectedWord()!
   const line = runtimeStore.getFirstSelectedLine()!
+  if (word.currentplaceholdingBeat < word.placeholdingBeat) {
+    word.currentplaceholdingBeat++
+    return
+  }
+  word.currentplaceholdingBeat = 0
   const progress = getAmendedProgress()
   word.endTime = progress
   if (isWordLastOfLine(line, word)) line.endTime = word.endTime
