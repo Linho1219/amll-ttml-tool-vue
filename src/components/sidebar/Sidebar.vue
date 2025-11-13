@@ -4,7 +4,12 @@
       v-if="currentSidebarTab && runtimeStore.openedSidebars.length === 1"
       class="sidebar-title single"
     >
-      <div class="sidebar-title-single-text">{{ currentSidebarTab.title }}</div>
+      <div
+        class="sidebar-title-single-text"
+        @mousedown="(e) => e.button === 1 && runtimeStore.closeCurrentSidebar()"
+      >
+        {{ currentSidebarTab.title }}
+      </div>
       <Button
         icon="pi pi-times"
         variant="text"
