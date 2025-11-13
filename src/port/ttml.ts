@@ -174,8 +174,8 @@ export function stringifyTTML(data: Persist) {
         isPlaceholder ? Math.min(...bgLines.map((l) => l.startTime), 0) : line.startTime,
       ),
       end: ms2str(isPlaceholder ? Math.max(...bgLines.map((l) => l.endTime), 0) : line.endTime),
-      'ttm:agent': line.duet ? `v2` : 'v0',
-      'itunes:key': `L${line.background ? undefined : lineIndex++}`,
+      'ttm:agent': line.duet ? `v2` : 'v1',
+      'itunes:key': line.background ? undefined : `L${lineIndex++}`,
     })
     hasDuet ||= line.duet
     globalStart = Math.min(globalStart, line.startTime)
