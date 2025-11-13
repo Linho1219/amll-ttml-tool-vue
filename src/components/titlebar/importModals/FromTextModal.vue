@@ -75,6 +75,12 @@
         severity="secondary"
         @click="handleRemoveTimestamps"
       />
+      <Button
+        label="规范化空格"
+        icon="pi pi-hammer"
+        severity="secondary"
+        @click="handleNormalizeSpaces"
+      />
       <div style="flex: 1"></div>
       <Button label="取消" icon="pi pi-times" severity="secondary" @click="visible = false" />
       <Button label="导入" icon="pi pi-arrow-right" @click="handleImportAction" />
@@ -162,18 +168,30 @@ function handleImportAction() {
   }
   visible.value = false
 }
+
+function applyProcessToInputs(process: (text: string) => string) {
+  originalInput.value = process(originalInput.value)
+  if (currentMode.value === separate) {
+    if (translationChecked.value) translationInput.value = process(translationInput.value)
+    if (romanChecked.value) romanInput.value = process(romanInput.value)
+  }
+}
 function handleRemoveTimestamps() {
   const timestampRegex = /^\[\d{1,2}:\d{1,2}(?:\.\d{1,3})?\] */
-  const rmTimestamp = (text: string) =>
+  applyProcessToInputs((text: string) =>
     text
       .split(/\r?\n/)
       .map((line) => line.replace(timestampRegex, ''))
-      .join('\n')
-  originalInput.value = rmTimestamp(originalInput.value)
-  if (currentMode.value === separate) {
-    if (translationChecked.value) translationInput.value = rmTimestamp(translationInput.value)
-    if (romanChecked.value) romanInput.value = rmTimestamp(romanInput.value)
-  }
+      .join('\n'),
+  )
+}
+function handleNormalizeSpaces() {
+  applyProcessToInputs((text: string) =>
+    text
+      .split(/\r?\n/)
+      .map((line) => line.replace(/\s+/g, ' ').trim())
+      .join('\n'),
+  )
 }
 </script>
 
