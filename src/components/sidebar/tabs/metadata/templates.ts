@@ -32,3 +32,19 @@ export const lrcMetaTemplate: MetadataTemplate = {
     { key: 're', label: '歌词文件创建工具' },
   ],
 }
+
+export const amllMetaTemplate: MetadataTemplate = {
+  name: 'AMLL TTML 元数据',
+  fields: [
+    { key: 'musicName', label: '歌曲名称' },
+    { key: 'artists', label: '艺术家' },
+    { key: 'album', label: '专辑名' },
+    { key: 'ncmMusicId', label: '网易云音乐 ID' },
+    { key: 'qqMusicId', label: 'QQ 音乐 ID' },
+    { key: 'spotifyId', label: 'Spotify 音乐 ID' },
+    { key: 'appleMusicId', label: 'Apple Music 音乐 ID' },
+    { key: 'isrc', label: 'ISRC 号' },
+    { key: 'ttmlAuthorGithub', label: 'TTML 作者 GitHub UID' },
+    { key: 'ttmlAuthorGithubLogin', label: 'TTML 作者 GitHub 用户名' },
+  ],
+}
