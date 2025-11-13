@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="timestamp"
-    ref="timestampEl"
-    :class="{ begin: props.begin, end: props.end, flashing }"
-  >
+  <div class="timestamp" ref="timestampEl" :class="{ begin: props.begin, end: props.end }">
     <div class="timestamp-caption" v-if="!showInput" @dblclick="showInput = true">
       {{ ms2str(upstream) }}
     </div>
@@ -43,12 +39,12 @@ watch(showInput, (v) => {
 })
 
 const timestampEl = useTemplateRef('timestampEl')
-const flashing = ref(false)
 watch(upstream, () => {
   if (!timestampEl.value) return
-  flashing.value = false
+  // Can't use Vue's reactivity to control here: Vue will batch DOM updates
+  timestampEl.value.classList.remove('flashing')
   void timestampEl.value.offsetWidth
-  flashing.value = true
+  timestampEl.value.classList.add('flashing')
 })
 </script>
 

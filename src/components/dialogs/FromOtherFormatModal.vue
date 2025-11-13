@@ -76,7 +76,7 @@ import { parseYRC } from '@/port/yrc'
 import { chooseFile } from '@/utils/file'
 import { Button, Dialog, IftaLabel, Listbox, Tag, Textarea } from 'primevue'
 import { ref } from 'vue'
-import CodeMirror from './CodeMirror.vue'
+import CodeMirror from '@/components/repack/CodeMirror.vue'
 
 const [visible] = defineModel<boolean>({ required: true })
 

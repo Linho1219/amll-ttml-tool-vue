@@ -62,8 +62,8 @@ import { chooseFile } from '@/utils/file'
 import { importTTML, parseTTML, stringifyTTML } from '@/port/ttml'
 import { exportPersist, importPersist } from '@/port'
 
-import FromTextModal from './importModals/FromTextModal.vue'
-import FromOtherFormatModal from './importModals/FromOtherFormatModal.vue'
+import FromTextModal from '@/components/dialogs/FromTextModal.vue'
+import FromOtherFormatModal from '@/components/dialogs/FromOtherFormatModal.vue'
 
 const runtimeStore = useRuntimeStore()
 

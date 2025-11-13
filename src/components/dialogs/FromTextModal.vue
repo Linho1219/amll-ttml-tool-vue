@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import { Button, Checkbox, Dialog, Select } from 'primevue'
 import { computed, ref, shallowRef, useTemplateRef, type ShallowRef } from 'vue'
-import CodeMirror from './CodeMirror.vue'
+import CodeMirror from '@/components/repack/CodeMirror.vue'
 import { importPersist } from '@/port'
 import { parseInterleavedPlainText, parseSeparatePlainText } from '@/port/paintext'
 import LineOrderInput from './LineOrderInput.vue'
