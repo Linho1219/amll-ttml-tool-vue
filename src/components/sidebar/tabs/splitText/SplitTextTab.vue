@@ -92,6 +92,7 @@ import InputText from '@/components/repack/InputText.vue'
 import {
   basicSplit,
   compromiseSplit,
+  japaneseSplit,
   prosoticSplit,
   type Rewrite,
   type Splitter,
@@ -111,16 +112,22 @@ const engines: Engine[] = [
     processor: basicSplit,
   },
   {
-    name: 'Compromise 英文正字法断词',
+    name: 'Compromise 英语正字法断词',
     description:
-      '在基本断词基础上，由 Compromise 库提供基于正字法规则匹配的英文音节拆分。若有自定义规则，将覆盖词内音节拆分。',
+      '在基本断词基础上，由 Compromise 库提供基于正字法规则匹配的英语音节拆分。若有自定义规则，将覆盖词内音节拆分。',
     processor: compromiseSplit,
   },
   {
-    name: 'Prosodic 英文词库断词',
+    name: 'Prosodic 英语词库断词',
     description:
       '将 SUBTLEXus 作为语料，由 Prosodic 根据 CMUDict 进行音节划分后，匹配回拼写得到词典，高频词经人工校对。未命中的词将回退至 Compromise。',
     processor: prosoticSplit,
+  },
+  {
+    name: '日语基本断词',
+    description:
+      '针对日语拗音等做专门处理，逻辑来自 @Xionghaizi001。若有自定义规则，将优先提取自定义词拆分，其余部分按规则拆分。',
+    processor: japaneseSplit,
   },
 ]
 
@@ -161,7 +168,9 @@ async function applyToLines(lines: LyricLine[]) {
   )
   lines.forEach((line, i) => {
     const newWords = results[i]!
-    line.words = newWords.map((word) => coreStore.newWord({ word }))
+    line.words = newWords.map((word) =>
+      coreStore.newWord(typeof word === 'string' ? { word } : word),
+    )
   })
   working.value = false
 }
