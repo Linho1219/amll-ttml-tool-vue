@@ -29,6 +29,8 @@ export function useAudioCtrl() {
       audio.onloadedmetadata = () => {
         lengthRef.value = audio.duration * 1000
         resolve()
+        audio.playbackRate = playbackRateRef.value
+        audio.volume = volumeRef.value
       }
     })
   }
