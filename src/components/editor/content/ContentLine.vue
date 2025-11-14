@@ -29,7 +29,6 @@
         <div style="flex: 1"></div>
         <Button
           class="cline-tag cline-tag-duet"
-          severity="info"
           variant="text"
           size="small"
           icon="pi pi-align-right"
@@ -38,7 +37,6 @@
         />
         <Button
           class="cline-tag cline-tag-background"
-          severity="help"
           variant="text"
           size="small"
           icon="pi pi-expand"
@@ -244,16 +242,26 @@ const orderedFields = computed(() =>
 .cline-tag {
   opacity: 0.3;
   filter: saturate(0);
+  transition: all var(--p-button-transition-duration);
   .cline.selected & {
     opacity: 0.5;
   }
   &:hover {
     opacity: 1 !important;
-    transition: all var(--p-button-transition-duration);
   }
   &.active {
     opacity: 1 !important;
     filter: none;
+  }
+  &-duet {
+    --p-button-text-primary-color: var(--e-duet-text-color);
+    --p-button-text-primary-hover-background: var(--e-duet-hover-background);
+    --p-button-text-primary-active-background: var(--e-duet-active-background);
+  }
+  &-background {
+    --p-button-text-primary-color: var(--e-bg-text-color);
+    --p-button-text-primary-hover-background: var(--e-bg-hover-background);
+    --p-button-text-primary-active-background: var(--e-bg-active-background);
   }
 }
 

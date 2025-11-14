@@ -18,18 +18,20 @@
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
         />
         <Button
-          :severity="props.line.duet ? 'info' : 'secondary'"
+          :severity="props.line.duet ? undefined : 'secondary'"
           variant="text"
           size="small"
           icon="pi pi-align-right"
+          class="tline-tag-duet"
           :class="{ active: props.line.duet }"
           @click.stop="props.line.duet = !props.line.duet"
         />
         <Button
-          :severity="props.line.background ? 'help' : 'secondary'"
+          :severity="props.line.background ? undefined : 'secondary'"
           variant="text"
           size="small"
           icon="pi pi-expand"
+          class="tline-tag-background"
           :class="{ active: props.line.background }"
           @click.stop="props.line.background = !props.line.background"
         />
@@ -111,5 +113,17 @@ const preferenceStore = usePreferenceStore()
   display: flex;
   flex-wrap: wrap;
   margin-bottom: -1px;
+}
+.tline-tag {
+  &-duet {
+    --p-button-text-primary-color: var(--e-duet-text-color);
+    --p-button-text-primary-hover-background: var(--e-duet-hover-background);
+    --p-button-text-primary-active-background: var(--e-duet-active-background);
+  }
+  &-background {
+    --p-button-text-primary-color: var(--e-bg-text-color);
+    --p-button-text-primary-hover-background: var(--e-bg-hover-background);
+    --p-button-text-primary-active-background: var(--e-bg-active-background);
+  }
 }
 </style>
