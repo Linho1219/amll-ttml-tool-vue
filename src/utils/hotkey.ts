@@ -42,6 +42,8 @@ export type HotkeyCmd =
   | 'batchSplitText'
   | 'metadata'
   | 'chooseMedia'
+  | 'open'
+  | 'batchTimeShift'
 
 export interface HotKey {
   code: string
@@ -102,6 +104,8 @@ export const getDefaultHotkeyMap = (): HotkeyMap => ({
   preferences: [hkey(Ctrl, ',')],
   chooseMedia: [hkey(Ctrl, 'm')],
   metadata: [hkey(Ctrl, 'i')],
+  open: [hkey(Ctrl, 'o')],
+  batchTimeShift: [hkey(Ctrl, Alt, 't')],
 })
 
 export function isHotkeyMatch(a: HotKey, b: HotKey) {
@@ -145,6 +149,7 @@ const keyRewrites: Record<string, string> = {
   ArrowRight: '→',
   ArrowUp: '↑',
   ArrowDown: '↓',
+  Backquote: '`',
 }
 export function hotkeyToString(hotkey: HotKey, isMac: boolean = false) {
   const parts: string[] = []

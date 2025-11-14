@@ -57,6 +57,7 @@
                 fluid
                 :disabled="wordSelectedEmpty || !phBeatApplyToAllEnabled"
                 @click="phBeatApplyToAll"
+                v-tooltip="'应用到所有相同词'"
               />
             </InputGroupAddon>
           </InputGroup>

@@ -173,3 +173,42 @@ hr {
   );
   --e-bg-active-background: color-mix(in srgb, var(--p-blue-400), transparent 80%);
 }
+
+.v-popper--theme-tooltip .v-popper__inner {
+  background: color-mix(in srgb, var(--global-background), transparent 10%);
+  border: 1px solid var(--p-form-field-border-color);
+  color: var(--p-text-color);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  box-shadow: 0 0.5rem 1rem #0002;
+  backdrop-filter: blur(5px);
+  max-width: 12em;
+  box-sizing: content-box;
+  .tooltip-hotkey {
+    opacity: 0.6;
+    font-size: 0.8rem;
+  }
+  &:has(.tooltip-headline) {
+    padding: 0.6rem 0.75rem;
+  }
+  .tooltip-headline {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--p-form-field-border-color);
+    margin-bottom: 0.35rem;
+  }
+  .tooltip-title {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  .tooltip-desc {
+    opacity: 0.8;
+  }
+}
+.v-popper--theme-tooltip .v-popper__arrow-outer {
+  border-color: #000c;
+  display: none;
+}

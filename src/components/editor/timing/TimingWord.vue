@@ -4,7 +4,7 @@
     @mousedown="handleMouseDown"
     :class="{ selected: isSelected, active: isActive }"
   >
-    <Timestamp class="tword-timestamp" begin v-model="props.word.startTime" />
+    <Timestamp class="tword-timestamp" begin v-model="props.word.startTime" v-tooltip="'词起始时间'" />
     <div class="tword-content">
       <i
         v-if="props.word.bookmarked"
@@ -15,7 +15,7 @@
         {{ props.word.word }}
       </span>
     </div>
-    <Timestamp class="tword-timestamp" end v-model="props.word.endTime" />
+    <Timestamp class="tword-timestamp" end v-model="props.word.endTime" v-tooltip="'词结束时间'" />
   </div>
 </template>
 

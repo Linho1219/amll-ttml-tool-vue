@@ -5,6 +5,13 @@ import Aura from '@primeuix/themes/aura'
 import App from './App.vue'
 import { definePreset } from '@primeuix/themes'
 
+import FloatingVue from 'floating-vue'
+
+import 'floating-vue/dist/style.css'
+import 'primeicons/primeicons.css'
+import '@/styles/common.scss'
+import '@/styles/fonts/index.scss'
+
 const app = createApp(App)
 
 app.use(createPinia())
@@ -21,6 +28,18 @@ app.use(PrimeVue, {
         },
       },
     }),
+  },
+})
+
+app.use(FloatingVue, {
+  themes: {
+    tooltip: {
+      triggers: ['hover', 'focus'],
+      delay: {
+        show: 750,
+        hide: 0,
+      },
+    },
   },
 })
 

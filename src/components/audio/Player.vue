@@ -3,13 +3,24 @@
     <template #content>
       <Spectrogram v-if="showSpectrogram" :key="refresher" />
       <div class="player-toolbar">
-        <Button icon="pi pi-upload" severity="secondary" @click="() => handleSelectFile()" />
-        <Button icon="pi pi-sliders-v" severity="secondary" @click="tooglePopover" />
+        <Button
+          icon="pi pi-upload"
+          severity="secondary"
+          @click="() => handleSelectFile()"
+          v-tooltip="tipHotkey('选择音频文件', 'chooseMedia')"
+        />
+        <Button
+          icon="pi pi-sliders-v"
+          severity="secondary"
+          @click="tooglePopover"
+          v-tooltip="'播放选项'"
+        />
         <Popover ref="popover"> <PopoverPane /> </Popover>
         <Button
           :icon="playingRef ? 'pi pi-pause' : 'pi pi-play'"
           @click="playingRef = !playingRef"
           :disabled="!activatedRef"
+          v-tooltip="tipHotkey(playingRef ? '暂停' : '播放', 'playPauseAudio')"
         />
         <div class="audio-progress monospace">
           <div class="audio-progress-primary">{{ ms2str(displayProgress) }}</div>
@@ -23,6 +34,7 @@
           icon="pi pi-chart-bar"
           :severity="showSpectrogram ? 'primary' : 'secondary'"
           @click="showSpectrogram = !showSpectrogram"
+          v-tooltip="showSpectrogram ? '隐藏频谱图' : '显示频谱图'"
         />
       </div>
     </template>
@@ -39,6 +51,7 @@ import { ms2str } from '@/utils/timeModel'
 import Waveform from './Waveform.vue'
 import { useStaticStore } from '@/stores/static'
 import { useGlobalKeyboard } from '@/utils/hotkey'
+import { tipHotkey } from '@/utils/tooltip'
 
 const audio = useStaticStore().audio
 const { progressRef, amendmentRef, lengthRef, playingRef, activatedRef } = audio

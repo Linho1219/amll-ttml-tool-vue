@@ -6,6 +6,7 @@
         icon="pi pi-folder-open"
         severity="secondary"
         @click="(e) => openMenu?.toggle(e)"
+        v-tooltip="tipHotkey('打开或导入', 'open')"
       />
 
       <template>
@@ -14,13 +15,20 @@
         <FromTextModal v-model="showImportFromTextModal" />
       </template>
 
-      <Button icon="pi pi-cog" variant="text" severity="secondary" disabled />
+      <Button
+        icon="pi pi-cog"
+        variant="text"
+        severity="secondary"
+        disabled
+        v-tooltip="tipHotkey('偏好设置', 'preferences')"
+      />
       <Button
         icon="pi pi-undo"
         variant="text"
         severity="secondary"
         @click="editHistory.undo()"
         :disabled="!editHistory.undoable.value"
+        v-tooltip="tipHotkey('撤销', 'undo')"
       />
       <Button
         icon="pi pi-refresh"
@@ -28,6 +36,7 @@
         severity="secondary"
         @click="editHistory.redo()"
         :disabled="!editHistory.redoable.value"
+        v-tooltip="tipHotkey('重做', 'redo')"
       />
     </div>
     <div class="centerbar">
@@ -64,6 +73,7 @@ import { exportPersist, importPersist } from '@/port'
 
 import FromTextModal from '@/components/dialogs/FromTextModal.vue'
 import FromOtherFormatModal from '@/components/dialogs/FromOtherFormatModal.vue'
+import { tipHotkey } from '@/utils/tooltip'
 
 const runtimeStore = useRuntimeStore()
 

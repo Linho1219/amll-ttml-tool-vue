@@ -24,6 +24,7 @@
           :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
           :class="{ active: props.line.bookmarked }"
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
+          v-tooltip="'书签'"
         />
         <div class="cline-index">{{ props.index + 1 }}</div>
         <div style="flex: 1"></div>
@@ -34,6 +35,7 @@
           icon="pi pi-align-right"
           :class="{ active: props.line.duet }"
           @click.stop="props.line.duet = !props.line.duet"
+          v-tooltip="'对唱'"
         />
         <Button
           class="cline-tag cline-tag-background"
@@ -42,6 +44,7 @@
           icon="pi pi-expand"
           :class="{ active: props.line.background }"
           @click.stop="props.line.background = !props.line.background"
+          v-tooltip="'背景'"
         />
       </div>
     </div>

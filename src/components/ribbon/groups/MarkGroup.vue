@@ -7,6 +7,13 @@
       size="small"
       severity="secondary"
       @click="bookmarkClick"
+      v-tooltip="
+        tipDesc(
+          bookmarkAdd ? '添加书签' : '移除书签',
+          '在选定行或词上添加或移除书签。书签可以用于标记重要的部分，且不会导出到歌词文件中。',
+          'bookmark',
+        )
+      "
     />
     <Button icon="pi pi-comment" label="添加批注" size="small" disabled severity="secondary" />
     <Button
@@ -15,6 +22,7 @@
       size="small"
       severity="secondary"
       @click="removeAllMarks"
+      v-tooltip="tipDesc('移除全部', '移除全文所有行和词的书签与批注。您可以稍后撤销。')"
     />
   </RibbonGroup>
 </template>
@@ -26,6 +34,7 @@ import { useRuntimeStore } from '@/stores/runtime'
 import { computed } from 'vue'
 import { useGlobalKeyboard } from '@/utils/hotkey'
 import { useCoreStore } from '@/stores/core'
+import { tipDesc, tipHotkey } from '@/utils/tooltip'
 const runtimeStore = useRuntimeStore()
 
 const focusingSet = computed(() =>

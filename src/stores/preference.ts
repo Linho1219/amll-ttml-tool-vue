@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { reactive, readonly, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { getDefaultHotkeyMap } from '@/utils/hotkey'
 
@@ -12,6 +12,9 @@ export const usePreferenceStore = defineStore('preference', () => {
   const sidebarWidth = ref(360)
   const hotkeyMap = reactive(getDefaultHotkeyMap())
 
+  const __test_forceMac = false
+  const isMac = __test_forceMac || navigator.platform.toLowerCase().includes('mac')
+
   return {
     globalLatency,
     hltLineTimeConflicts,
@@ -21,5 +24,6 @@ export const usePreferenceStore = defineStore('preference', () => {
     scrollWithPlayback,
     sidebarWidth,
     hotkeyMap,
+    isMac,
   }
 })

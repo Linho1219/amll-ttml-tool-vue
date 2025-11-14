@@ -18,6 +18,9 @@
       size="small"
       :severity="batchShiftDialogVisible ? undefined : 'secondary'"
       @click="batchShiftDialogVisible = !batchShiftDialogVisible"
+      v-tooltip="
+        tipDesc('批量时移', '打开批量时移对话框，调整多个词或行的时间戳。', 'batchTimeShift')
+      "
     />
     <BatchTimeShiftDialog v-model="batchShiftDialogVisible" />
   </RibbonGroup>
@@ -29,7 +32,13 @@ import RibbonGroup from '../RibbonGroupShell.vue'
 import { usePreferenceStore } from '@/stores/preference'
 import BatchTimeShiftDialog from '@/components/dialogs/BatchTimeShiftDialog.vue'
 import { ref } from 'vue'
+import { tipDesc } from '@/utils/tooltip'
+import { useGlobalKeyboard } from '@/utils/hotkey'
 
 const configStore = usePreferenceStore()
 const batchShiftDialogVisible = ref(false)
+
+useGlobalKeyboard('batchTimeShift', () => {
+  batchShiftDialogVisible.value = !batchShiftDialogVisible.value
+})
 </script>

@@ -36,6 +36,7 @@
             icon="pi pi-plus"
             severity="secondary"
             @click="appendWord(line)"
+            v-tooltip="'插入词'"
           />
         </Line>
         <LineInsertIndicator :index="lineIndex + 1" @contextmenu="handleLineInsertContext" />
@@ -98,7 +99,7 @@ const menu = useTemplateRef('menu')
 
 const blankMenuItems: MenuItem[] = [
   {
-    label: '插入新行',
+    label: '插入行',
     icon: 'pi pi-plus',
     command: () => {
       const newLine = coreStore.newLine()
@@ -109,7 +110,7 @@ const blankMenuItems: MenuItem[] = [
 ]
 const lineInsertMenuItems: MenuItem[] = [
   {
-    label: '插入新行',
+    label: '插入行',
     icon: 'pi pi-plus',
     command: () => {
       if (contextLineIndex === undefined) return

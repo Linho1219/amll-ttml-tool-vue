@@ -17,9 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import 'primeicons/primeicons.css'
-import '@/styles/common.scss'
-import '@/styles/fonts/index.scss'
 import Titlebar from './components/titlebar/Titlebar.vue'
 import Ribbon from './components/ribbon/Ribbon.vue'
 import ContentEditor from './components/editor/content/ContentEditor.vue'

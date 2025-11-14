@@ -16,6 +16,7 @@
           :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
           :class="{ active: props.line.bookmarked }"
           @click.stop="props.line.bookmarked = !props.line.bookmarked"
+          v-tooltip="'书签'"
         />
         <Button
           :severity="props.line.duet ? undefined : 'secondary'"
@@ -25,6 +26,7 @@
           class="tline-tag-duet"
           :class="{ active: props.line.duet }"
           @click.stop="props.line.duet = !props.line.duet"
+          v-tooltip="'对唱'"
         />
         <Button
           :severity="props.line.background ? undefined : 'secondary'"
@@ -34,12 +36,13 @@
           class="tline-tag-background"
           :class="{ active: props.line.background }"
           @click.stop="props.line.background = !props.line.background"
+          v-tooltip="'背景'"
         />
       </div>
       <div class="tline-head-timestamps">
-        <Timestamp begin v-model="props.line.startTime" />
+        <Timestamp begin v-model="props.line.startTime" v-tooltip="'行起始时间'" />
         <span class="tline-index">{{ props.index + 1 }}</span>
-        <Timestamp end v-model="props.line.endTime" />
+        <Timestamp end v-model="props.line.endTime" v-tooltip="'行结束时间'" />
       </div>
     </div>
     <div class="tline-content">
