@@ -5,7 +5,9 @@
       ignored:
         props.line.ignoreInTiming ||
         (preferenceStore.alwaysIgnoreBackground && props.line.background),
+      selected: runtimeStore.selectedLines.has(props.line),
     }"
+    @mousedown="handleMouseDown"
   >
     <div class="tline-head">
       <div class="tline-head-btns">
@@ -56,6 +58,7 @@ import type { LyricLine } from '@/stores/core'
 import { Button } from 'primevue'
 import Timestamp from './Timestamp.vue'
 import { usePreferenceStore } from '@/stores/preference'
+import { useRuntimeStore } from '@/stores/runtime'
 
 const props = defineProps<{
   index: number
@@ -63,16 +66,21 @@ const props = defineProps<{
 }>()
 
 const preferenceStore = usePreferenceStore()
+const runtimeStore = useRuntimeStore()
+
+function handleMouseDown(event: MouseEvent) {
+  runtimeStore.selectLine(props.line)
+}
 </script>
 
 <style lang="scss">
 .tline {
   box-sizing: content-box;
   display: flex;
-  // box-shadow:
-  //   -1px -1px 0 var(--tline-border-color),
-  //   inset -1px -1px 0 var(--tline-border-color);
-  border: 2px solid var(--p-button-secondary-background);
+  --l-border-color: var(--p-button-secondary-background);
+  --l-bg-color: transparent;
+  border: 2px solid var(--l-border-color);
+  background-color: var(--l-bg-color);
   border-radius: 0.5rem;
   overflow: hidden;
   margin: 0.2rem 0.5rem;
@@ -82,13 +90,21 @@ const preferenceStore = usePreferenceStore()
   &.ignored {
     opacity: 0.5;
   }
+  &:hover,
+  &.selected {
+    --l-bg-color: var(--p-content-background);
+  }
+  &.selected {
+    --l-border-color: var(--p-button-secondary-hover-background);
+    opacity: 1;
+  }
 }
 .tline-head {
   display: flex;
   gap: 0.5rem;
   padding-right: 0.5rem;
   border-right: 1px solid transparent;
-  background-color: color-mix(in srgb, var(--p-content-border-color), transparent 70%);
+  background-color: color-mix(in srgb, var(--l-border-color), transparent 40%);
 }
 .tline-head-btns {
   display: flex;
@@ -97,8 +113,25 @@ const preferenceStore = usePreferenceStore()
   --p-button-text-secondary-color: color-mix(
     in srgb,
     var(--p-form-field-placeholder-color),
-    transparent 60%
+    transparent 70%
   );
+  --p-button-text-secondary-hover-background: color-mix(
+    in srgb,
+    var(--l-border-color),
+    transparent 40%
+  );
+  .tline-tag {
+    &-duet {
+      --p-button-text-primary-color: var(--e-duet-text-color);
+      --p-button-text-primary-hover-background: var(--e-duet-hover-background);
+      --p-button-text-primary-active-background: var(--e-duet-active-background);
+    }
+    &-background {
+      --p-button-text-primary-color: var(--e-bg-text-color);
+      --p-button-text-primary-hover-background: var(--e-bg-hover-background);
+      --p-button-text-primary-active-background: var(--e-bg-active-background);
+    }
+  }
 }
 .tline-head-timestamps {
   display: flex;
@@ -116,17 +149,6 @@ const preferenceStore = usePreferenceStore()
   display: flex;
   flex-wrap: wrap;
   margin-bottom: -1px;
-}
-.tline-tag {
-  &-duet {
-    --p-button-text-primary-color: var(--e-duet-text-color);
-    --p-button-text-primary-hover-background: var(--e-duet-hover-background);
-    --p-button-text-primary-active-background: var(--e-duet-active-background);
-  }
-  &-background {
-    --p-button-text-primary-color: var(--e-bg-text-color);
-    --p-button-text-primary-hover-background: var(--e-bg-hover-background);
-    --p-button-text-primary-active-background: var(--e-bg-active-background);
-  }
+  cursor: cell;
 }
 </style>

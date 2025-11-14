@@ -19,7 +19,7 @@
       <div class="cline-head-info">
         <Button
           class="cline-tag cline-bookmark"
-          severity="warn"
+          :severity="props.line.bookmarked ? 'warn' : 'secondary'"
           variant="text"
           :icon="'pi pi-bookmark' + (props.line.bookmarked ? '-fill' : '')"
           :class="{ active: props.line.bookmarked }"
@@ -30,6 +30,7 @@
         <div style="flex: 1"></div>
         <Button
           class="cline-tag cline-tag-duet"
+          :severity="props.line.duet ? undefined : 'secondary'"
           variant="text"
           size="small"
           icon="pi pi-align-right"
@@ -39,6 +40,7 @@
         />
         <Button
           class="cline-tag cline-tag-background"
+          :severity="props.line.background ? undefined : 'secondary'"
           variant="text"
           size="small"
           icon="pi pi-expand"
@@ -206,7 +208,7 @@ const orderedFields = computed(() =>
 }
 .cline-head {
   display: flex;
-  background-color: var(--l-border-color);
+  background-color: color-mix(in srgb, var(--l-border-color), transparent 40%);
   color: var(--p-button-secondary-color);
   cursor: move;
 }
@@ -243,19 +245,16 @@ const orderedFields = computed(() =>
   border-top-right-radius: 0;
 }
 .cline-tag {
-  opacity: 0.3;
-  filter: saturate(0);
-  transition: all var(--p-button-transition-duration);
-  .cline.selected & {
-    opacity: 0.5;
-  }
-  &:hover {
-    opacity: 1 !important;
-  }
-  &.active {
-    opacity: 1 !important;
-    filter: none;
-  }
+  --p-button-text-secondary-color: color-mix(
+    in srgb,
+    var(--p-form-field-placeholder-color),
+    transparent 70%
+  );
+  --p-button-text-secondary-hover-background: color-mix(
+    in srgb,
+    var(--l-border-color),
+    transparent 40%
+  );
   &-duet {
     --p-button-text-primary-color: var(--e-duet-text-color);
     --p-button-text-primary-hover-background: var(--e-duet-hover-background);

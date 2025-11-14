@@ -4,6 +4,11 @@
   --p-border-radius-xl: 6px;
 }
 
+html,
+body {
+  overflow: hidden;
+}
+
 :root {
   --font-main:
     'HarmonyOS Sans SC', MiSans, 'Sarasa UI SC', 'PingFang SC', 'Noto Sans CJK SC',
@@ -159,7 +164,7 @@ hr {
 }
 
 :root {
-  --e-duet-text-color: light-dark(var(--p-lime-500), var(--p-lime-400));
+  --e-duet-text-color: light-dark(var(--p-lime-600), var(--p-lime-400));
   --e-duet-hover-background: light-dark(
     color-mix(in srgb, var(--p-lime-100), transparent 50%),
     color-mix(in srgb, var(--p-lime-400), transparent 90%)

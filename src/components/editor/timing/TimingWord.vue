@@ -1,10 +1,15 @@
 <template>
   <div
     class="tword"
-    @mousedown="handleMouseDown"
+    @mousedown.stop="handleMouseDown"
     :class="{ selected: isSelected, active: isActive }"
   >
-    <Timestamp class="tword-timestamp" begin v-model="props.word.startTime" v-tooltip="'词起始时间'" />
+    <Timestamp
+      class="tword-timestamp"
+      begin
+      v-model="props.word.startTime"
+      v-tooltip="'词起始时间'"
+    />
     <div class="tword-content">
       <i
         v-if="props.word.bookmarked"
@@ -76,7 +81,6 @@ function handleTextDbClick() {
 
 <style lang="scss">
 .tword {
-  cursor: cell;
   height: var(--word-height);
   display: flex;
   flex-direction: column;
