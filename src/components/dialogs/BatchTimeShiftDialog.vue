@@ -1,6 +1,9 @@
 <template>
   <Dialog class="thin-padding" v-model:visible="visible" header="批量时移">
     <div class="timeshift-content">
+      <div class="timeshift-description">
+        推迟为正，提前为负
+      </div>
       <InputNumber
         v-model="shiftMs"
         class="timeshift-ms-input"
@@ -9,12 +12,13 @@
         fluid
         :use-grouping="false"
         :invalid="shiftMs === null"
+        :step="10"
       >
-        <template #incrementicon>
-          <span class="pi pi-plus" />
-        </template>
         <template #decrementicon>
-          <span class="pi pi-minus" />
+          <span class="pi pi-arrow-left" />
+        </template>
+        <template #incrementicon>
+          <span class="pi pi-arrow-right" />
         </template>
       </InputNumber>
       <Button
@@ -89,8 +93,12 @@ function handleApplyToAll() {
 .timeshift-content {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
-  width: 15rem;
+  gap: 0.5rem;
+  width: 12rem;
+}
+.timeshift-description {
+  font-size: 0.9rem;
+  opacity: 0.75;
 }
 .timeshift-ms-input {
   --p-inputtext-padding-y: 0.4rem;
