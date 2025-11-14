@@ -13,7 +13,7 @@ export const usePreferenceStore = defineStore('preference', () => {
   const hotkeyMap = reactive(getDefaultHotkeyMap())
 
   const __test_forceMac = false
-  const isMac = __test_forceMac || navigator.platform.toLowerCase().includes('mac')
+  const isMac = __test_forceMac || isAppleDevice()
 
   return {
     globalLatency,
@@ -27,3 +27,21 @@ export const usePreferenceStore = defineStore('preference', () => {
     isMac,
   }
 })
+
+function isAppleDevice() {
+  const ua = navigator.userAgent
+  // Chrome-based browsers
+  if (navigator.userAgentData?.platform) {
+    return (
+      navigator.userAgentData.platform === 'macOS' || navigator.userAgentData.platform === 'iOS'
+    )
+  }
+  // Safari fallback
+  if (ua.includes('Macintosh')) return true
+  if (/iPhone|iPad|iPod/.test(ua)) return true
+
+  // navigator.plaform is deprecated, only for fallback
+  if (navigator.platform.toLowerCase().includes('mac')) return true
+
+  return false
+}
