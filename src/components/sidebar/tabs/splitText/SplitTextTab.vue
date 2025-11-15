@@ -1,5 +1,5 @@
 <template>
-  <div class="splittext">
+  <div class="splittext-panel">
     <div class="group">
       <div class="subtitle">断词引擎</div>
       <Select
@@ -223,7 +223,7 @@ function handleDrop() {
 </script>
 
 <style lang="scss">
-.splittext {
+.splittext-panel {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;

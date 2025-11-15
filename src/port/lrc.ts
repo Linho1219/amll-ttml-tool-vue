@@ -18,15 +18,6 @@ import { coreCreate, type LyricLine } from '@/stores/core'
 import { type Persist } from '.'
 import { str2ms } from '@/utils/timeModel'
 
-const tagMetadataMap: Record<string, string> = {
-  ti: 'title',
-  ar: 'artist',
-  al: 'album',
-  au: 'author',
-  lr: 'lyricist',
-  by: 'lrcAuthor',
-}
-
 export function parseLRC(lrc: string): Persist {
   const metadata: Record<string, string[]> = {}
   const lines = lrc
@@ -36,12 +27,13 @@ export function parseLRC(lrc: string): Persist {
   const lyricLines: LyricLine[] = []
   lines.forEach((lineStr) => {
     if (lineStr.startsWith('#') || lineStr.startsWith('{')) return
-    const tagMatch = lineStr.match(/^\[([a-z]):(.+)\]$/i)
+    const tagMatch = lineStr.match(/^\[([a-z]+):([^\]]+)\]$/)
     if (tagMatch) {
       const [, tag, value] = tagMatch
-      const key = tagMetadataMap[tag!.toLowerCase()] ?? tag!
+      const key = tag!
       if (!metadata[key]) metadata[key] = []
       metadata[key]!.push(value!.trim())
+      console.log('Metadata', key, value)
       return
     }
     const timeStamps: number[] = []

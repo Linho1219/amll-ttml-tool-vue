@@ -13,10 +13,10 @@ export function importPersist(data: Persist) {
   const coreStore = useCoreStore()
   const runtimeStore = useRuntimeStore()
   runtimeStore.clearSelection()
-  coreStore.metadata.clear()
-  for (const [key, values] of Object.entries(data.metadata)) {
-    const k = key as MetadataKey
-    coreStore.metadata.set(k, values)
+  coreStore.metadata.length = 0
+  for (const [k, values] of Object.entries(data.metadata)) {
+    const key = k as MetadataKey
+    coreStore.metadata.push({ key, values })
   }
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...data.lyricLines)
   editHistory.init()
@@ -26,7 +26,7 @@ export function exportPersist(): Persist {
   const coreStore = useCoreStore()
   const outputData: Persist = {
     metadata: [...coreStore.metadata].reduce(
-      (obj, [key, value]) => ((obj[key] = value), obj),
+      (obj, { key, values }) => ((obj[key] = values), obj),
       {} as Record<MetadataKey, string[]>,
     ),
     lyricLines: coreStore.lyricLines,

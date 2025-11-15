@@ -78,8 +78,8 @@ function wayback(snapshot: Snapshot) {
   stopRecording = true
   const runtimeStore = useRuntimeStore()
   const coreStore = useCoreStore()
-  coreStore.metadata.clear()
-  snapshot.core.metadata.forEach((value, key) => coreStore.metadata.set(key, value))
+  coreStore.metadata.length = 0
+  snapshot.core.metadata.forEach(({ key, values }) => coreStore.metadata.push({ key, values }))
   coreStore.lyricLines.splice(0, coreStore.lyricLines.length, ...snapshot.core.lyricLines)
   runtimeStore.currentView = snapshot.runtime.currentView
   const selectedLines: LyricLine[] = []

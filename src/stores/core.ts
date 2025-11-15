@@ -54,7 +54,7 @@ line.words.push(word1, word2, word3)
 
 export const useCoreStore = defineStore('core', () => {
   // const createdAt = ref(Date.now())
-  const metadata = reactive<Metadata>(new Map())
+  const metadata = reactive<Metadata>([])
   const lyricLines = reactive<LyricLine[]>([line])
   // const comments = reactive<Comment[]>([])
   return {
@@ -101,7 +101,10 @@ export const useCoreStore = defineStore('core', () => {
 export const coreCreate = { newLine, newWord }
 
 export type MetadataKey = string
-export type Metadata = Map<MetadataKey, string[]>
+export type Metadata = {
+  key: MetadataKey
+  values: string[]
+}[]
 
 /** 批注 */
 // export interface Comment {
