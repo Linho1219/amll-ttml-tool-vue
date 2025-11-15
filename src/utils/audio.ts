@@ -72,7 +72,6 @@ export function useAudioCtrl() {
     maintainProgressRef()
   }
   audio.onpause = () => (playingRef.value = false)
-  watch(playingRef, (v) => (v ? play() : pause()))
 
   const volumeRef = ref(audio.volume)
   audio.onvolumechange = () => (volumeRef.value = audio.volume)
@@ -96,7 +95,7 @@ export function useAudioCtrl() {
     progressRef: readonly(progressRef),
     lengthRef: readonly(lengthRef),
     amendmentRef,
-    playingRef,
+    playingRef: readonly(playingRef),
     volumeRef,
     playbackRateRef,
     activatedRef,

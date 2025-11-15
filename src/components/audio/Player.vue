@@ -18,7 +18,7 @@
         <Popover ref="popover"> <PopoverPane /> </Popover>
         <Button
           :icon="playingRef ? 'pi pi-pause' : 'pi pi-play'"
-          @click="playingRef = !playingRef"
+          @click="audio.togglePlay()"
           :disabled="!activatedRef"
           v-tooltip="tipHotkey(playingRef ? '暂停' : '播放', 'playPauseAudio')"
         />
@@ -62,7 +62,7 @@ const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
 })
 useGlobalKeyboard('chooseMedia', () => handleSelectFile())
 useGlobalKeyboard('playPauseAudio', () => {
-  if (activatedRef.value) playingRef.value = !playingRef.value
+  if (activatedRef.value) audio.togglePlay()
 })
 useGlobalKeyboard('seekBackward', () => {
   audio.seekBy(-5000)
