@@ -8,7 +8,6 @@
         optionLabel="name"
         placeholder="选择断词引擎"
         checkmark
-        :highlightOnSelect="false"
         fluid
       />
       <div class="description">

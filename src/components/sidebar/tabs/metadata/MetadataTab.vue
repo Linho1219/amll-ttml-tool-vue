@@ -17,7 +17,6 @@
       <Button
         v-if="currentTemplate.docUrl"
         label="文档"
-        size="small"
         icon="pi pi-external-link"
         fluid
         severity="secondary"
@@ -26,7 +25,6 @@
       />
       <Button
         label="添加全部预设"
-        size="small"
         icon="pi pi-plus"
         fluid
         severity="secondary"
@@ -36,7 +34,7 @@
     </div>
     <Divider v-if="currentTemplate" />
     <div class="metadata-field-list">
-      <div class="metadata-field" v-for="(field, index) in coreStore.metadata">
+      <div class="metadata-field" v-for="(field, index) in coreStore.metadata" :key="field.key">
         <div class="keylabel"><i class="pi pi-info-circle"></i></div>
         <div class="keycontent">
           <AutoComplete
@@ -94,7 +92,6 @@
     <div class="add-field">
       <Button
         label="清除"
-        size="small"
         icon="pi pi-ban"
         fluid
         severity="secondary"
@@ -105,7 +102,6 @@
       <Button
         class="add-field-btn"
         label="添加字段"
-        size="small"
         icon="pi pi-plus"
         severity="secondary"
         fluid
