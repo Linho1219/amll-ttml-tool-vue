@@ -1,5 +1,5 @@
 <template>
-  <div class="metadata-panel">
+  <div class="metadata-panel" ref="panelEl">
     <IftaLabel>
       <Select
         v-model="currentTemplate"
@@ -37,7 +37,7 @@
     <Divider v-if="currentTemplate" />
     <div class="metadata-field-list">
       <div class="metadata-field" v-for="(field, index) in coreStore.metadata">
-        <div class="keylabel">键名</div>
+        <div class="keylabel"><i class="pi pi-info-circle"></i></div>
         <div class="keycontent">
           <AutoComplete
             v-if="currentTemplate"
@@ -71,8 +71,24 @@
             {{ currentLabelMap.get(field.key) }}
           </div>
         </div>
-        <div class="valuelabel">值</div>
-        <div class="valuecontent">{{ field.values.join(', ') }}</div>
+        <div class="valuelabel">
+          <Button
+            icon="pi pi-trash"
+            variant="text"
+            size="small"
+            severity="danger"
+            @click="coreStore.metadata.splice(index, 1)"
+          />
+        </div>
+        <div class="valuecontent">
+          <AutoComplete
+            class="meta-values-autocomplete"
+            v-model="field.values"
+            multiple
+            fluid
+            :typeahead="false"
+          />
+        </div>
       </div>
     </div>
     <div class="add-field">
@@ -101,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, shallowRef } from 'vue'
+import { computed, onMounted, shallowRef, useTemplateRef } from 'vue'
 import { amllMetaTemplate, lrcMetaTemplate, type MetadataTemplate } from './templates'
 import { AutoComplete, Button, Divider, IftaLabel, InputText, Message, Select } from 'primevue'
 import { useCoreStore } from '@/stores/core'
@@ -134,11 +150,15 @@ function handleAddAllFields() {
 function handleClearAllFields() {
   coreStore.metadata.length = 0
 }
+const panelEl = useTemplateRef('panelEl')
 function handleAddField() {
   const defaultName = 'unnamed_field'
   let suffix = 1
   while (coreStore.metadata.find(({ key }) => key === `${defaultName}_${suffix}`)) suffix++
   coreStore.metadata.push({ key: `${defaultName}_${suffix}`, values: [] })
+  requestAnimationFrame(() => {
+    if (panelEl.value) panelEl.value.scrollTop = panelEl.value.scrollHeight
+  })
 }
 function isKeyInvalid(key: string) {
   if (!key || key.trim().length === 0) return true
@@ -207,17 +227,18 @@ function search({ query }: { query: string }) {
 }
 .metadata-field {
   display: grid;
+  justify-items: stretch;
+  align-items: stretch;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
-  gap: 0.25rem 1rem;
-  align-items: start;
+  gap: 0.25rem 0.3rem;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--p-divider-border-color);
   .keylabel,
   .valuelabel {
-    font-weight: bold;
-    font-size: 1.1rem;
-    padding-top: var(--p-inputtext-padding-y);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   --p-inputtext-padding-y: 0.4rem;
   --p-inputtext-padding-x: 0.5rem;
@@ -247,17 +268,22 @@ function search({ query }: { query: string }) {
   .meta-key-autocomplete {
     font-family: var(--font-monospace);
   }
+  .p-autocomplete-input-chip {
+    flex: 1;
+  }
 }
-.meta-key-autocomplete-item {
-  display: flex;
-  flex-direction: column;
-}
-.meta-key-autocomplete-key {
-  font-family: var(--font-monospace);
-}
-.meta-key-autocomplete-description {
-  font-size: 0.8rem;
-  opacity: 0.7;
+.meta-key-autocomplete {
+  &-item {
+    display: flex;
+    flex-direction: column;
+  }
+  &-key {
+    font-family: var(--font-monospace);
+  }
+  &-description {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
 }
 .p-autocomplete-option:has(.meta-key-autocomplete-description) {
   --p-autocomplete-option-padding: 0.3rem 0.5rem;
