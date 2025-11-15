@@ -58,13 +58,23 @@ export function useAudioCtrl() {
     () => usePreferenceStore().globalLatency * playbackRateRef.value * (playingRef.value ? 1 : 0),
   )
 
+  /**
+   * Media playback in browsers is not idempotent — calling `audio.play()` or
+   * `audio.pause()` repeatedly can trigger unstable behavior (especially on
+   * Firefox/Linux), including aborted media fetches and rapid play/pause loops.
+   * Always check the current state.
+   */
   const play = () => {
-    if (audio.src) audio.play()
+    if (audio.src && audio.paused) audio.play()
   }
   const pause = () => {
-    if (audio.src) audio.pause()
+    if (audio.src && !audio.paused) audio.pause()
   }
-  const togglePlay = () => (audio.paused ? play() : pause())
+  const togglePlay = () => {
+    if (!audio.src) return
+    if (audio.paused) audio.play()
+    else audio.pause()
+  }
 
   const playingRef = ref(false)
   audio.onplay = () => {
@@ -73,13 +83,32 @@ export function useAudioCtrl() {
   }
   audio.onpause = () => (playingRef.value = false)
 
-  const volumeRef = ref(audio.volume)
-  audio.onvolumechange = () => (volumeRef.value = audio.volume)
-  watch(volumeRef, (v) => (audio.volume = v))
+  const _volume = ref(audio.volume)
+  audio.onvolumechange = () => {
+    if (_volume.value !== audio.volume) {
+      _volume.value = audio.volume
+    }
+  }
+  const volumeRef = computed({
+    get: () => _volume.value,
+    set: (v: number) => {
+      v = Math.min(Math.max(0, v), 1)
+      if (v !== audio.volume) audio.volume = v
+    },
+  })
 
-  const playbackRateRef = ref(audio.playbackRate || 1)
-  audio.onratechange = () => (playbackRateRef.value = audio.playbackRate)
-  watch(playbackRateRef, (v) => (audio.playbackRate = v))
+  const _playbackRate = ref(audio.playbackRate)
+  audio.onratechange = () => {
+    if (_playbackRate.value !== audio.playbackRate) {
+      _playbackRate.value = audio.playbackRate
+    }
+  }
+  const playbackRateRef = computed({
+    get: () => _playbackRate.value,
+    set: (v: number) => {
+      if (v !== audio.playbackRate) audio.playbackRate = v
+    },
+  })
 
   return {
     audioEl: audio,
@@ -92,10 +121,11 @@ export function useAudioCtrl() {
     seekBy,
     getProgress,
     /** Readonly: use `seek` to change */
-    progressRef: readonly(progressRef),
-    lengthRef: readonly(lengthRef),
+    progressComputed: readonly(progressRef),
+    lengthComputed: readonly(lengthRef),
     amendmentRef,
-    playingRef: readonly(playingRef),
+    /** Readonly: use `play`, `pause`, `togglePlay` to change */
+    playingComputed: readonly(playingRef),
     volumeRef,
     playbackRateRef,
     activatedRef,

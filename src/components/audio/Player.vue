@@ -54,7 +54,13 @@ import { useGlobalKeyboard } from '@/utils/hotkey'
 import { tipHotkey } from '@/utils/tooltip'
 
 const audio = useStaticStore().audio
-const { progressRef, amendmentRef, lengthRef, playingRef, activatedRef } = audio
+const {
+  progressComputed: progressRef,
+  amendmentRef,
+  lengthComputed: lengthRef,
+  playingComputed: playingRef,
+  activatedRef,
+} = audio
 
 const { open: handleSelectFile, onChange: onFileChange } = useFileDialog({
   accept: 'audio/*,.ncm',
