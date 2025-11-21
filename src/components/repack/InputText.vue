@@ -2,6 +2,7 @@
   <InputText
     v-model="innerModel"
     ref="inputComponent"
+    class="r-inputtext"
     @focus="handleFocus"
     @blur="handleBlur"
     @keydown="handleKeydown"

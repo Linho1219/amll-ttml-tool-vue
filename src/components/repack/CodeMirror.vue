@@ -1,5 +1,5 @@
 <template>
-  <div class="codemirror-shell" ref="shellEl"></div>
+  <div class="r-codemirror-shell" ref="shellEl"></div>
 </template>
 
 <script setup lang="ts">
@@ -303,7 +303,7 @@ watch(
 </script>
 
 <style lang="scss">
-.codemirror-shell {
+.r-codemirror-shell {
   background-color: var(--p-form-field-background);
   border: 1px solid var(--p-form-field-border-color);
   border-radius: var(--p-form-field-border-radius);
